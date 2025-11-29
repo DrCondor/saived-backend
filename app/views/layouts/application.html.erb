@@ -1,23 +1,59 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for(:title) || "Saived Backend" %></title>
+    <title>SAIVED</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="apple-mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <%= yield :head %>
-
-    <link rel="manifest" href="/manifest.json">
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-    <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
   </head>
 
-  <body>
-    <%= yield %>
+  <body class="min-h-screen bg-neutral-50 text-neutral-900">
+    <div class="min-h-screen flex flex-col">
+      <!-- Top bar -->
+      <header class="border-b border-neutral-200/70 bg-white/80 backdrop-blur">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <%= image_tag "saived-logo.jpg", class: "h-9 w-9 object-contain" %>
+            <div class="flex flex-col leading-tight">
+              <span class="font-semibold tracking-tight text-sm sm:text-base">SAIVED</span>
+              <span class="text-xs text-neutral-500 hidden sm:block">
+                smart cost & moodboard for interiors
+              </span>
+            </div>
+          </div>
+
+          <nav class="flex items-center gap-4 text-sm">
+            <a href="#features" class="text-neutral-600 hover:text-neutral-900 hidden sm:inline-flex">
+              Funkcje
+            </a>
+            <a href="#for-who" class="text-neutral-600 hover:text-neutral-900 hidden sm:inline-flex">
+              Dla kogo
+            </a>
+
+            <button class="text-sm font-medium text-neutral-700 hover:text-neutral-900">
+              Zaloguj
+            </button>
+            <button class="inline-flex items-center rounded-full bg-emerald-500 px-4 py-1.5 text-sm font-medium text-white shadow-sm hover:bg-emerald-600 transition">
+              Załóż konto
+            </button>
+          </nav>
+        </div>
+      </header>
+
+      <!-- Page content -->
+      <main class="flex-1">
+        <%= yield %>
+      </main>
+
+      <footer class="border-t border-neutral-200/70 bg-white/80">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 text-xs text-neutral-500 flex items-center justify-between">
+          <span>© <%= Time.current.year %> SAIVED</span>
+          <span>Made for interior designers</span>
+        </div>
+      </footer>
+    </div>
   </body>
 </html>

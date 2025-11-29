@@ -1,0 +1,83 @@
+<div class="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
+  <section class="grid gap-12 lg:grid-cols-[minmax(0,2fr)_minmax(0,1.5fr)] items-center">
+    <!-- Tekst / hero -->
+    <div>
+      <p class="text-xs font-medium tracking-[0.2em] uppercase text-neutral-500 mb-3">
+        Smart interior projects
+      </p>
+      <h1 class="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-neutral-900 mb-5">
+        Kosztorysy, moodboardy i produkty
+        <span class="block">w jednym, spokojnym miejscu.</span>
+      </h1>
+
+      <p class="text-sm sm:text-base text-neutral-600 max-w-xl mb-8">
+        SAIVED pomaga architektom wnętrz szybciej zbierać produkty z różnych sklepów,
+        aktualizować ceny i układać czytelne zestawienia dla klientów – bez Excela
+        i ręcznego przepisywania.
+      </p>
+
+      <div class="flex flex-wrap items-center gap-3 mb-6">
+        <button class="inline-flex items-center rounded-full bg-emerald-500 px-5 py-2 text-sm font-medium text-white shadow-sm hover:bg-emerald-600 transition">
+          Dołącz do wczesnego dostępu
+        </button>
+        <button class="inline-flex items-center rounded-full border border-neutral-300/80 bg-white/70 px-4 py-2 text-sm font-medium text-neutral-800 hover:bg-neutral-50 transition">
+          Zobacz, jak to działa
+        </button>
+      </div>
+
+      <p class="text-xs text-neutral-500">
+        Idealne dla: architektów wnętrz, pracowni projektowych, stylistów i home stagerów.
+      </p>
+    </div>
+
+    <!-- Prawa strona – mock layoutu / moodboardu -->
+    <div class="rounded-3xl border border-neutral-200/80 bg-white/80 shadow-sm p-4 sm:p-6">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <p class="text-xs font-medium text-neutral-500 uppercase tracking-[0.2em]">
+            Podgląd projektu
+          </p>
+          <p class="text-sm font-semibold text-neutral-900">
+            Zakrzewscy – salon
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-700">
+            15 259 zł
+          </span>
+          <span class="rounded-full bg-neutral-100 px-3 py-1 text-xs text-neutral-600">
+            12 pozycji
+          </span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4 mb-4">
+        <% 4.times do %>
+          <div class="flex flex-col gap-2">
+            <div class="aspect-[3/4] w-full rounded-2xl bg-neutral-100"></div>
+            <div class="space-y-1">
+              <p class="text-xs font-medium text-neutral-900 truncate">
+                Produkt przykładowy
+              </p>
+              <p class="text-[11px] text-neutral-500">
+                XS · jasna szarość
+              </p>
+              <p class="text-xs text-neutral-800">
+                199,00 zł
+              </p>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <div class="flex items-center justify-between border-t border-neutral-200 pt-3 mt-2">
+        <p class="text-[11px] text-neutral-500">
+          Czytelna lista + moodboard w jednym PDF dla klienta.
+        </p>
+        <button class="text-[11px] font-medium text-neutral-700 hover:text-neutral-900 underline-offset-2 hover:underline">
+          Podgląd PDF
+        </button>
+      </div>
+    </div>
+  </section>
+</div>
