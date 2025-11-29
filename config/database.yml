@@ -1,0 +1,22 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  host: <%= ENV.fetch("PGHOST", "127.0.0.1") %>
+  port: <%= ENV.fetch("PGPORT", 5433) %>
+  username: <%= ENV.fetch("PGUSER", "postgres") %>
+  password: <%= ENV.fetch("PGPASSWORD", "postgres") %>
+  pool: 5
+
+development:
+  <<: *default
+  database: saived_backend_development
+
+test:
+  <<: *default
+  database: saived_backend_test
+
+production:
+  <<: *default
+  database: saived_backend_production
+  username: saived_backend
+  password: <%= ENV["SAIVED_BACKEND_DATABASE_PASSWORD"] %>
