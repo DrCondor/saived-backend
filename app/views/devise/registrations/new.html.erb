@@ -1,0 +1,63 @@
+<div class="min-h-[calc(100vh-64px)] flex items-center justify-center px-4 py-10">
+  <div class="w-full max-w-md">
+    <div class="mb-8 text-center">
+      <h1 class="text-2xl font-semibold tracking-tight text-neutral-900">
+        Załóż konto
+      </h1>
+      <p class="mt-2 text-sm text-neutral-600">
+        Utwórz konto, aby budować projekty i kosztorysy w jednym miejscu.
+      </p>
+    </div>
+
+    <div class="rounded-3xl border border-neutral-200 bg-white/90 shadow-sm px-6 py-6 sm:px-7 sm:py-7">
+      <%= form_for(resource,
+                   as: resource_name,
+                   url: registration_path(resource_name),
+                   data: { turbo: false }) do |f| %>
+
+        <%= render "devise/shared/error_messages", resource: resource %>
+
+        <div class="space-y-4">
+          <div>
+            <%= f.label :email, "Adres e-mail", class: "block text-sm font-medium text-neutral-800 mb-1.5" %>
+            <%= f.email_field :email,
+                  autofocus: true,
+                  autocomplete: "email",
+                  class: "block w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 shadow-sm focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900" %>
+          </div>
+
+          <div>
+            <%= f.label :password, "Hasło", class: "block text-sm font-medium text-neutral-800 mb-1.5" %>
+            <% if @minimum_password_length %>
+              <p class="mb-1 text-[11px] text-neutral-500">
+                Minimum <%= @minimum_password_length %> znaków.
+              </p>
+            <% end %>
+            <%= f.password_field :password,
+                  autocomplete: "new-password",
+                  class: "block w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 shadow-sm focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900" %>
+          </div>
+
+          <div>
+            <%= f.label :password_confirmation, "Powtórz hasło", class: "block text-sm font-medium text-neutral-800 mb-1.5" %>
+            <%= f.password_field :password_confirmation,
+                  autocomplete: "new-password",
+                  class: "block w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 shadow-sm focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900" %>
+          </div>
+        </div>
+
+        <div class="mt-6 flex flex-col gap-3">
+          <%= f.submit "Załóż konto",
+                class: "inline-flex w-full items-center justify-center rounded-full bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-neutral-800 transition" %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="mt-4 text-center text-sm text-neutral-600">
+      Masz już konto?
+      <%= link_to "Zaloguj się",
+                  new_user_session_path,
+                  class: "font-medium text-neutral-900 underline underline-offset-2" %>
+    </div>
+  </div>
+</div>

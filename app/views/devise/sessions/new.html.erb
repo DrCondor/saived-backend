@@ -1,0 +1,80 @@
+<div class="min-h-[calc(100vh-64px)] flex items-center justify-center px-4 py-10">
+  <div class="w-full max-w-md">
+    <div class="mb-8 text-center">
+      <div class="inline-flex items-center gap-3 mb-3">
+        <%# tymczasowo JPG, później podmienimy na SVG %>
+        <%= image_tag "saived-logo.jpg", class: "h-10 w-10 object-contain rounded-xl bg-neutral-900" rescue nil %>
+        <div class="text-left">
+          <p class="text-xs font-medium tracking-[0.2em] uppercase text-neutral-500">
+            SAIVED
+          </p>
+          <p class="text-sm text-neutral-600">
+            Panel dla architektów wnętrz
+          </p>
+        </div>
+      </div>
+
+      <h1 class="text-2xl font-semibold tracking-tight text-neutral-900">
+        Zaloguj się
+      </h1>
+      <p class="mt-2 text-sm text-neutral-600">
+        Wpisz e-mail i hasło, aby przejść do swojego panelu.
+      </p>
+    </div>
+
+    <div class="rounded-3xl border border-neutral-200 bg-white/90 shadow-sm px-6 py-6 sm:px-7 sm:py-7">
+      <%= form_for(resource,
+                   as: resource_name,
+                   url: session_path(resource_name),
+                   data: { turbo: false }) do |f| %>
+
+        <%= render "devise/shared/error_messages", resource: resource %>
+
+        <div class="space-y-4">
+          <div>
+            <%= f.label :email, "Adres e-mail", class: "block text-sm font-medium text-neutral-800 mb-1.5" %>
+            <%= f.email_field :email,
+                  autofocus: true,
+                  autocomplete: "email",
+                  class: "block w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 shadow-sm focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900" %>
+          </div>
+
+          <div>
+            <%= f.label :password, "Hasło", class: "block text-sm font-medium text-neutral-800 mb-1.5" %>
+            <%= f.password_field :password,
+                  autocomplete: "current-password",
+                  class: "block w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 shadow-sm focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900" %>
+          </div>
+
+          <% if devise_mapping.rememberable? %>
+            <div class="flex items-center justify-between text-xs text-neutral-600 pt-1">
+              <label class="inline-flex items-center gap-2 cursor-pointer">
+                <%= f.check_box :remember_me,
+                      class: "h-3.5 w-3.5 rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900" %>
+                <span>Zapamiętaj mnie na tym urządzeniu</span>
+              </label>
+            </div>
+          <% end %>
+        </div>
+
+        <div class="mt-6 flex flex-col gap-3">
+          <%= f.submit "Zaloguj się",
+                class: "inline-flex w-full items-center justify-center rounded-full bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-neutral-800 transition" %>
+
+          <div class="text-xs text-neutral-500 text-center">
+            <%= link_to "Nie pamiętasz hasła?",
+                        new_password_path(resource_name),
+                        class: "underline underline-offset-2 hover:text-neutral-800" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="mt-4 text-center text-sm text-neutral-600">
+      Nie masz jeszcze konta?
+      <%= link_to "Załóż konto",
+                  new_user_registration_path,
+                  class: "font-medium text-neutral-900 underline underline-offset-2" %>
+    </div>
+  </div>
+</div>

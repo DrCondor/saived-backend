@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>SAIVED – Panel</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
+  </head>
+
+  <body class="min-h-screen bg-neutral-50 text-neutral-900">
+    <div class="min-h-screen flex flex-col">
+      <!-- Header panelu -->
+      <header class="border-b border-neutral-200/70 bg-white/90 backdrop-blur">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <%= link_to root_path, class: "h-8 w-8 block" do %>
+              <div class="h-full w-full rounded-lg bg-neutral-900 flex items-center justify-center text-white text-sm font-semibold tracking-tight">
+                S
+              </div>
+            <% end %>
+            <div class="flex flex-col leading-tight">
+              <span class="font-semibold tracking-tight text-sm sm:text-base">
+                SAIVED
+              </span>
+              <span class="text-xs text-neutral-500">
+                Panel projektów i kosztorysów
+              </span>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3 text-xs sm:text-sm text-neutral-600">
+            <% if current_user %>
+              <span class="hidden sm:inline">
+                <%= current_user.email %>
+              </span>
+            <% end %>
+
+            <%= button_to "Wyloguj się",
+                          destroy_user_session_path,
+                          method: :delete,
+                          class: "inline-flex items-center rounded-full border border-neutral-300 px-3 py-1 text-xs font-medium text-neutral-700 hover:bg-neutral-100 bg-white" %>
+          </div>
+        </div>
+      </header>
+
+      <!-- Treść + flash -->
+      <main class="flex-1">
+        <% if notice.present? %>
+          <div class="bg-emerald-50 text-emerald-800 text-sm py-2">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6">
+              <%= notice %>
+            </div>
+          </div>
+        <% end %>
+
+        <% if alert.present? %>
+          <div class="bg-rose-50 text-rose-800 text-sm py-2">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6">
+              <%= alert %>
+            </div>
+          </div>
+        <% end %>
+
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+          <%= yield %>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

@@ -15,15 +15,17 @@
       <!-- Top bar -->
       <header class="border-b border-neutral-200/70 bg-white/80 backdrop-blur">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
-          <div class="flex items-center gap-3">
-            <%= image_tag "saived-logo.jpg", class: "h-9 w-9 object-contain" %>
-            <div class="flex flex-col leading-tight">
-              <span class="font-semibold tracking-tight text-sm sm:text-base">SAIVED</span>
-              <span class="text-xs text-neutral-500 hidden sm:block">
-                smart cost & moodboard for interiors
-              </span>
+          <%= link_to root_path do %>
+            <div class="flex items-center gap-3">
+              <%= image_tag "saived-logo.jpg", class: "h-9 w-9 object-contain" %>
+              <div class="flex flex-col leading-tight">
+                <span class="font-semibold tracking-tight text-sm sm:text-base">SAIVED</span>
+                <span class="text-xs text-neutral-500 hidden sm:block">
+                  smart cost & moodboard for interiors
+                </span>
+              </div>
             </div>
-          </div>
+          <% end %>
 
           <nav class="flex items-center gap-4 text-sm">
             <a href="#features" class="text-neutral-600 hover:text-neutral-900 hidden sm:inline-flex">
@@ -33,18 +35,40 @@
               Dla kogo
             </a>
 
-            <button class="text-sm font-medium text-neutral-700 hover:text-neutral-900">
-              Zaloguj
-            </button>
-            <button class="inline-flex items-center rounded-full bg-emerald-500 px-4 py-1.5 text-sm font-medium text-white shadow-sm hover:bg-emerald-600 transition">
-              Załóż konto
-            </button>
+            <% if user_signed_in? %>
+              <%= link_to "Przejdź do panelu", dashboard_path,
+                    class: "inline-flex items-center rounded-full bg-emerald-500 px-4 py-1.5 text-sm font-medium text-white shadow-sm hover:bg-emerald-600 transition" %>
+            <% else %>
+              <%= link_to "Zaloguj",
+                    new_user_session_path,
+                    class: "text-sm font-medium text-neutral-700 hover:text-neutral-900" %>
+
+              <%= link_to "Załóż konto",
+                    new_user_registration_path,
+                    class: "inline-flex items-center rounded-full bg-emerald-500 px-4 py-1.5 text-sm font-medium text-white shadow-sm hover:bg-emerald-600 transition" %>
+            <% end %>
           </nav>
         </div>
       </header>
 
       <!-- Page content -->
       <main class="flex-1">
+        <% if notice.present? %>
+          <div class="bg-emerald-50 text-emerald-800 text-sm py-2">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6">
+              <%= notice %>
+            </div>
+          </div>
+        <% end %>
+
+        <% if alert.present? %>
+          <div class="bg-rose-50 text-rose-800 text-sm py-2">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6">
+              <%= alert %>
+            </div>
+          </div>
+        <% end %>
+
         <%= yield %>
       </main>
 
