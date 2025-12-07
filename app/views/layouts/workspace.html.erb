@@ -17,9 +17,7 @@
         <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
           <div class="flex items-center gap-3">
             <%= link_to root_path, class: "h-8 w-8 block" do %>
-              <div class="h-full w-full rounded-lg bg-neutral-900 flex items-center justify-center text-white text-sm font-semibold tracking-tight">
-                S
-              </div>
+              <%= image_tag "saived-logo.jpg", class: "h-9 w-9 object-contain" %>
             <% end %>
             <div class="flex flex-col leading-tight">
               <span class="font-semibold tracking-tight text-sm sm:text-base">
@@ -31,18 +29,17 @@
             </div>
           </div>
 
-          <div class="flex items-center gap-3 text-xs sm:text-sm text-neutral-600">
+            <div class="flex items-center gap-3 text-xs sm:text-sm text-neutral-600">
             <% if current_user %>
-              <span class="hidden sm:inline">
+                <span class="hidden sm:inline">
                 <%= current_user.email %>
-              </span>
+                </span>
             <% end %>
 
-            <%= button_to "Wyloguj się",
-                          destroy_user_session_path,
-                          method: :delete,
-                          class: "inline-flex items-center rounded-full border border-neutral-300 px-3 py-1 text-xs font-medium text-neutral-700 hover:bg-neutral-100 bg-white" %>
-          </div>
+            <%= link_to "Wyloguj się",
+                        destroy_user_session_path,
+                        class: "inline-flex items-center rounded-full border border-neutral-300 px-3 py-1 text-xs font-medium text-neutral-700 hover:bg-neutral-100 bg-white" %>
+            </div>
         </div>
       </header>
 

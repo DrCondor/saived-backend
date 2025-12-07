@@ -1,0 +1,164 @@
+<%# workspace/projects/index.html.erb %>
+
+<div class="flex gap-6">
+  <%# SIDEBAR %>
+  <aside class="w-64 shrink-0">
+    <div class="rounded-[32px] bg-neutral-100 border border-neutral-200 px-4 py-5 flex flex-col gap-6">
+      <div>
+        <%= link_to "Nowy projekt",
+                    new_project_path,
+                    class: "inline-flex w-full items-center justify-center rounded-full border border-neutral-300 bg-white px-3 py-2 text-xs font-medium text-neutral-800 hover:bg-neutral-50" %>
+      </div>
+
+      <div class="text-xs space-y-6">
+        <div>
+          <p class="mb-2 text-[11px] font-semibold tracking-[0.2em] uppercase text-neutral-500">
+            Projekty
+          </p>
+
+          <div class="space-y-1">
+            <% @projects.each do |project| %>
+              <% active = (@current_project && project.id == @current_project.id) %>
+
+              <div class="rounded-2xl px-2 py-2 <%= active ? "bg-white shadow-sm border border-neutral-200" : "hover:bg-neutral-200/70" %>">
+                <%= link_to projects_path(project_id: project.id),
+                            class: "flex flex-col gap-0.5 text-left" do %>
+                  <span class="text-xs font-medium truncate text-neutral-900">
+                    <%= project.name.presence || "Bez nazwy" %>
+                  </span>
+                  <span class="text-[11px] text-neutral-500">
+                    <%= l(project.created_at.to_date, format: :short) rescue project.created_at.to_date %>
+                  </span>
+                <% end %>
+
+                <% if active && @current_project %>
+                  <div class="mt-2 pl-1 space-y-0.5">
+                    <% @current_project.sections.order(:position, :created_at).each do |section| %>
+                      <a href="#section-<%= section.id %>"
+                         class="flex items-center rounded-xl px-2 py-1 text-[11px] text-neutral-700 hover:bg-white/60">
+                        <span class="truncate"><%= section.name %></span>
+                      </a>
+                    <% end %>
+                  </div>
+                <% end %>
+              </div>
+            <% end %>
+
+            <% if @projects.empty? %>
+              <p class="text-[11px] text-neutral-500">
+                Nie masz jeszcze żadnych projektów. Utwórz pierwszy, aby rozpocząć.
+              </p>
+            <% end %>
+          </div>
+        </div>
+
+        <div>
+          <p class="mb-1 text-[11px] font-semibold tracking-[0.2em] uppercase text-neutral-500">
+            Ulubione
+          </p>
+          <p class="text-[11px] text-neutral-400">
+            (w przyszłości)
+          </p>
+        </div>
+
+        <div>
+          <p class="mb-1 text-[11px] font-semibold tracking-[0.2em] uppercase text-neutral-500">
+            Ustawienia
+          </p>
+          <p class="text-[11px] text-neutral-400">
+            (w przyszłości)
+          </p>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <%# MAIN: widok projektu + wszystkie sekcje jedna pod drugą %>
+  <section class="flex-1">
+    <% if @current_project.present? %>
+      <%# Header projektu %>
+      <header class="flex items-center justify-between mb-6">
+        <div>
+          <p class="text-xs font-medium tracking-[0.2em] uppercase text-neutral-500 mb-1">
+            Projekt
+          </p>
+          <h1 class="text-xl font-semibold tracking-tight text-neutral-900">
+            <%= @current_project.name %>
+          </h1>
+          <p class="mt-1 text-xs text-neutral-500">
+            Suma projektu:
+            <span class="font-semibold text-neutral-900">
+              <%= number_to_currency(@current_project.total_price, unit: "PLN ", precision: 2) %>
+            </span>
+          </p>
+        </div>
+
+        <div class="flex items-center gap-2 text-xs">
+          <button class="rounded-full border border-neutral-300 px-3 py-1.5 text-neutral-700 hover:bg-neutral-100">
+            Podgląd PDF
+          </button>
+          <button class="rounded-full border border-neutral-300 px-3 py-1.5 text-neutral-700 hover:bg-neutral-100">
+            Znajdź
+          </button>
+          <button class="rounded-full border border-neutral-300 px-3 py-1.5 text-neutral-700 hover:bg-neutral-100">
+            Sortuj
+          </button>
+          <button class="rounded-full border border-neutral-300 px-3 py-1.5 text-neutral-700 hover:bg-neutral-100">
+            Filtr
+          </button>
+        </div>
+      </header>
+
+      <% sections = @current_project.sections.order(:position, :created_at) %>
+
+      <% sections.each do |section| %>
+        <div id="section-<%= section.id %>" class="mb-12 scroll-mt-24">
+          <div class="flex items-center justify-between mb-4">
+            <%= form_with model: [@current_project, section],
+                          url: project_project_section_path(@current_project, section),
+                          method: :patch,
+                          local: true,
+                          data: { turbo: false },
+                          class: "flex items-center gap-2" do |f| %>
+              <%= f.text_field :name,
+                              value: section.name,
+                              autofocus: (params[:section_id].to_i == section.id),
+                              class: "text-lg font-semibold text-neutral-900 bg-transparent border-0 p-0 focus:ring-0 focus:outline-none" %>
+            <% end %>
+
+            <div class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
+              <%= number_to_currency(section.total_price, unit: "PLN ", precision: 2) %>
+            </div>
+          </div>
+
+          <%= render "workspace/projects/section_items", section: section %>
+        </div>
+      <% end %>
+
+      <%# Pusta sekcja na dole – dodaj sekcję %>
+      <div class="mb-16">
+        <%= form_with model: [@current_project, ProjectSection.new],
+                      url: project_project_sections_path(@current_project),
+                      local: true,
+                      data: { turbo: false },
+                      class: "flex items-center justify-center border-2 border-dashed border-neutral-300 rounded-2xl py-6 cursor-pointer hover:border-neutral-400 hover:bg-neutral-50" do |f| %>
+
+          <button type="submit" class="flex items-center gap-2 text-neutral-500 text-sm">
+            <span class="inline-flex items-center justify-center h-5 w-5 rounded-full border border-neutral-400 text-[10px]">+</span>
+            Dodaj sekcję
+          </button>
+
+        <% end %>
+      </div>
+    <% else %>
+      <div class="flex flex-col items-center justify-center h-full text-center text-sm text-neutral-600">
+        <p class="mb-2">
+          Nie masz jeszcze żadnych projektów.
+        </p>
+        <%= link_to "Utwórz pierwszy projekt",
+                    new_project_path,
+                    class: "inline-flex items-center rounded-full bg-neutral-900 px-4 py-2 text-xs font-medium text-white hover:bg-neutral-800" %>
+      </div>
+    <% end %>
+  </section>
+</div>

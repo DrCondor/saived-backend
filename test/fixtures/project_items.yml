@@ -1,0 +1,29 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  project_section: one
+  name: MyString
+  note: MyText
+  quantity: 1
+  unit_price_cents: 1
+  currency: MyString
+  category: MyString
+  dimensions: MyString
+  status: MyString
+  external_url: MyString
+  discount_label: MyString
+  position: 1
+
+two:
+  project_section: two
+  name: MyString
+  note: MyText
+  quantity: 1
+  unit_price_cents: 1
+  currency: MyString
+  category: MyString
+  dimensions: MyString
+  status: MyString
+  external_url: MyString
+  discount_label: MyString
+  position: 1

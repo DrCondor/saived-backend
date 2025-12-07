@@ -1,0 +1,180 @@
+<%# workspace/projects/_section_items.html.erb %>
+<% items = section.items.order(:position, :created_at) %>
+
+<div class="overflow-hidden rounded-3xl border border-neutral-200 bg-white shadow-sm">
+  <table class="min-w-full text-xs">
+    <thead class="bg-neutral-50 text-neutral-500">
+      <tr>
+        <th class="px-4 py-3 text-left font-medium">Produkt</th>
+        <th class="px-4 py-3 text-left font-medium">Wymiary</th>
+        <th class="px-4 py-3 text-left font-medium">Kategoria</th>
+        <th class="px-4 py-3 text-left font-medium">Ilość</th>
+        <th class="px-4 py-3 text-left font-medium">Cena</th>
+        <th class="px-4 py-3 text-left font-medium">Rabat</th>
+        <th class="px-4 py-3 text-left font-medium">Suma</th>
+        <th class="px-4 py-3 text-left font-medium">Status</th>
+        <th class="px-4 py-3 text-left font-medium"></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-neutral-100">
+      <% items.each do |item| %>
+        <tr class="hover:bg-neutral-50/60">
+          <td class="px-4 py-3 align-top">
+            <div class="flex gap-3">
+              <div class="h-10 w-10 rounded-full bg-neutral-100 overflow-hidden">
+                <% if item.thumbnail.present? %>
+                  <%= image_tag item.thumbnail,
+                                class: "h-full w-full object-cover",
+                                alt: item.name %>
+                <% else %>
+                  <div class="h-full w-full flex items-center justify-center text-[10px] text-neutral-300">
+                    img
+                  </div>
+                <% end %>
+              </div>
+              <div class="space-y-0.5">
+                <p class="font-medium text-neutral-900"><%= item.name %></p>
+
+                <% if item.note.present? %>
+                  <p class="text-[11px] text-neutral-500">
+                    <%= item.note %>
+                  </p>
+                <% end %>
+
+                <% if item.external_url.present? %>
+                  <p class="text-[11px] text-neutral-400 underline underline-offset-2">
+                    <%= link_to "link…", item.external_url, target: "_blank", rel: "noopener" %>
+                  </p>
+                <% end %>
+              </div>
+            </div>
+          </td>
+
+          <td class="px-4 py-3 align-top text-neutral-700">
+            <%= item.dimensions.presence || "—" %>
+          </td>
+
+          <td class="px-4 py-3 align-top text-neutral-700">
+            <%= item.category.presence || "—" %>
+          </td>
+
+          <td class="px-4 py-3 align-top text-neutral-700">
+            <%= item.quantity %> szt.
+          </td>
+
+          <td class="px-4 py-3 align-top text-neutral-700">
+            <% if item.unit_price %>
+              <%= item.formatted_unit_price %>
+            <% else %>
+              —
+            <% end %>
+          </td>
+
+          <td class="px-4 py-3 align-top text-neutral-700">
+            <%= item.discount_label.presence || "—" %>
+          </td>
+
+          <td class="px-4 py-3 align-top font-medium text-neutral-900">
+            <% if item.total_price %>
+              <%= item.formatted_total_price %>
+            <% else %>
+              —
+            <% end %>
+          </td>
+
+          <td class="px-4 py-3 align-top">
+            <% status_label = item.status.presence || "—" %>
+            <% css = case item.status
+                    when "ordered", "zamówione"
+                      "bg-emerald-100 text-emerald-700"
+                    when "selected", "wybrane"
+                      "bg-violet-100 text-violet-700"
+                    when "proposal", "propozycja"
+                      "bg-neutral-100 text-neutral-700"
+                    else
+                      "bg-neutral-50 text-neutral-500"
+                    end %>
+
+            <span class="inline-flex items-center rounded-full px-3 py-1 text-[11px] font-medium <%= css %>">
+              <%= status_label.upcase %>
+            </span>
+          </td>
+
+          <td class="px-4 py-3 align-top text-right">
+            <%= button_to "Usuń",
+                          [section, item],
+                          method: :delete,
+                          data: { turbo: false },
+                          form: { class: "inline" },
+                          class: "text-[11px] text-neutral-400 hover:text-rose-600" %>
+          </td>
+        </tr>
+      <% end %>
+
+      <%# Wiersz dodawania nowej pozycji %>
+      <tr class="bg-neutral-50/60">
+        <td colspan="9" class="px-4 py-3">
+          <%= form_with model: [section, ProjectItem.new],
+                        local: true,
+                        data: { turbo: false },
+                        class: "flex flex-wrap items-end gap-3 text-[11px]" do |f| %>
+
+            <div class="flex-1 min-w-[160px]">
+              <%= f.label :name, "Nazwa produktu", class: "block mb-1 text-neutral-600" %>
+              <%= f.text_field :name,
+                               required: true,
+                               class: "w-full rounded-xl border border-neutral-300 bg-white px-2 py-1.5 text-[11px] placeholder-neutral-400 focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900",
+                               placeholder: "np. Szafka nocna" %>
+            </div>
+
+            <div class="w-32">
+              <%= f.label :quantity, "Ilość", class: "block mb-1 text-neutral-600" %>
+              <%= f.number_field :quantity,
+                                 value: 1,
+                                 min: 1,
+                                 class: "w-full rounded-xl border border-neutral-300 bg-white px-2 py-1.5 text-[11px] focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900" %>
+            </div>
+
+            <div class="w-40">
+              <%= f.label :unit_price, "Cena", class: "block mb-1 text-neutral-600" %>
+              <%= f.number_field :unit_price,
+                                 step: 0.01,
+                                 class: "w-full rounded-xl border border-neutral-300 bg-white px-2 py-1.5 text-[11px] placeholder-neutral-400 focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900",
+                                 placeholder: "np. 250.00" %>
+            </div>
+
+            <div class="w-40">
+              <%= f.label :status, "Status", class: "block mb-1 text-neutral-600" %>
+              <%= f.select :status,
+                           [["—", ""],
+                            ["Zamówione", "zamówione"],
+                            ["Wybrane", "wybrane"],
+                            ["Propozycja", "propozycja"]],
+                           {},
+                           class: "w-full rounded-xl border border-neutral-300 bg-white px-2 py-1.5 text-[11px] focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900" %>
+            </div>
+
+            <div class="w-40">
+              <%= f.label :discount_label, "Rabat / kod", class: "block mb-1 text-neutral-600" %>
+              <%= f.text_field :discount_label,
+                               class: "w-full rounded-xl border border-neutral-300 bg-white px-2 py-1.5 text-[11px] placeholder-neutral-400 focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900",
+                               placeholder: "-5% (KOD: MAJ24)" %>
+            </div>
+
+            <div class="w-40">
+              <%= f.label :thumbnail_url, "Miniaturka (URL)", class: "block mb-1 text-neutral-600" %>
+              <%= f.text_field :thumbnail_url,
+                               class: "w-full rounded-xl border border-neutral-300 bg-white px-2 py-1.5 text-[11px] placeholder-neutral-400 focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900",
+                               placeholder: "https://..." %>
+            </div>
+
+            <div class="w-32">
+              <%= f.submit "Dodaj pozycję",
+                           class: "mt-4 inline-flex items-center rounded-full bg-neutral-900 px-3 py-1.5 text-[11px] font-medium text-white hover:bg-neutral-800" %>
+            </div>
+          <% end %>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

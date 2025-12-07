@@ -1,0 +1,67 @@
+class ProjectItem < ApplicationRecord
+  belongs_to :project_section
+
+  validates :name, presence: true
+  validates :quantity, numericality: { greater_than: 0 }
+
+  # -------------------------
+  # PRICE HANDLING (GENERIC)
+  # -------------------------
+
+  # getter do formularzy (zł, €, $ – zależnie od waluty)
+  def unit_price
+    return nil unless unit_price_cents
+    unit_price_cents / 100.0
+  end
+
+  # setter z formularza
+  def unit_price=(value)
+    if value.present?
+      normalized = value.to_s.tr(",", ".")
+      self.unit_price_cents = (normalized.to_f * 100).round
+    else
+      self.unit_price_cents = nil
+    end
+  end
+
+  def total_price
+    return nil unless unit_price_cents && quantity
+    (unit_price_cents * quantity) / 100.0
+  end
+
+  # -------------------------
+  # DISPLAY HELPERS
+  # -------------------------
+
+  def formatted_unit_price
+    return "—" unless unit_price
+    format_price(unit_price)
+  end
+
+  def formatted_total_price
+    return "—" unless total_price
+    format_price(total_price)
+  end
+
+  def format_price(amount)
+    unit = currency.presence || "PLN"
+
+    ActionController::Base.helpers.number_to_currency(
+      amount,
+      unit: "#{unit} ",
+      precision: 2
+    )
+  end
+
+  # -------------------------
+  # OTHER
+  # -------------------------
+
+  def project
+    project_section.project
+  end
+
+  def thumbnail
+    thumbnail_url.presence
+  end
+end

@@ -1,0 +1,37 @@
+<div class="max-w-lg">
+  <h1 class="mb-4 text-xl font-semibold tracking-tight text-neutral-900">
+    Nowy projekt
+  </h1>
+
+  <p class="mb-6 text-sm text-neutral-600">
+    Podaj nazwę projektu. Opis możesz dodać później – najważniejsze, żebyś mógł zacząć pracę.
+  </p>
+
+  <%= form_with model: @project,
+              url: projects_path,
+              local: true,
+              data: { turbo: false },
+              class: "space-y-4" do |f| %>
+    <div>
+      <%= f.label :name, "Nazwa projektu", class: "block text-sm font-medium text-neutral-800 mb-1.5" %>
+      <%= f.text_field :name,
+                       autofocus: true,
+                       class: "block w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900" %>
+    </div>
+
+    <div>
+      <%= f.label :description, "Opis (opcjonalnie)", class: "block text-sm font-medium text-neutral-800 mb-1.5" %>
+      <%= f.text_area :description,
+                      rows: 4,
+                      class: "block w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900" %>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <%= f.submit "Zapisz projekt",
+                   class: "inline-flex items-center rounded-full bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800" %>
+      <%= link_to "Anuluj",
+                  projects_path,
+                  class: "text-sm text-neutral-500 hover:text-neutral-800" %>
+    </div>
+  <% end %>
+</div>

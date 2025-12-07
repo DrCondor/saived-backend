@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-  root "pages#home"
   devise_for :users, controllers: {
     sessions: "users/sessions",
     registrations: "users/registrations"
@@ -9,5 +8,16 @@ Rails.application.routes.draw do
   get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
 
-  get "/app", to: "dashboard#index", as: :dashboard
+  root "pages#home"
+
+  scope module: :workspace do
+    get "/app", to: "dashboard#index", as: :dashboard
+    resources :projects do
+      resources :project_sections, path: "sections", only: [ :create, :update ]
+    end
+
+    resources :project_sections, only: [] do
+      resources :project_items, path: "items", only: [ :create, :destroy ]
+    end
+  end
 end
