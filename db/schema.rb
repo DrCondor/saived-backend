@@ -10,9 +10,25 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_12_07_202141) do
+ActiveRecord::Schema[7.2].define(version: 2025_12_07_204756) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "product_capture_samples", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "project_item_id"
+    t.string "url", null: false
+    t.string "domain", null: false
+    t.jsonb "raw_payload", default: {}, null: false
+    t.jsonb "final_payload", default: {}, null: false
+    t.jsonb "context", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "index_product_capture_samples_on_created_at"
+    t.index ["domain"], name: "index_product_capture_samples_on_domain"
+    t.index ["project_item_id"], name: "index_product_capture_samples_on_project_item_id"
+    t.index ["user_id"], name: "index_product_capture_samples_on_user_id"
+  end
 
   create_table "project_items", force: :cascade do |t|
     t.bigint "project_section_id", null: false
@@ -75,6 +91,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_07_202141) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "product_capture_samples", "project_items"
+  add_foreign_key "product_capture_samples", "users"
   add_foreign_key "project_items", "project_sections"
   add_foreign_key "project_memberships", "projects"
   add_foreign_key "project_memberships", "users"

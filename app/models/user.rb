@@ -6,6 +6,8 @@ class User < ApplicationRecord
 
   has_secure_token :api_token
 
+  has_many :product_capture_samples, dependent: :nullify
+
   has_many :owned_projects,
            class_name: "Project",
            foreign_key: :owner_id,

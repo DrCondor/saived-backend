@@ -20,4 +20,13 @@ Rails.application.routes.draw do
       resources :project_items, path: "items", only: [ :create, :destroy ]
     end
   end
+
+  namespace :api do
+    namespace :v1 do
+      resources :projects, only: [ :index, :show ]
+      resources :project_sections, only: [] do
+        resources :project_items, path: "items", only: [ :create ]
+      end
+    end
+  end
 end
