@@ -113,22 +113,41 @@ Note: Role enforcement not fully implemented in controllers yet.
 - `app/controllers/api/v1/` - Extension API controllers
 - `app/models/` - All models
 - `app/views/workspace/` - Dashboard ERB templates
+- `app/views/layouts/workspace.html.erb` - Workspace layout with header & account dropdown
+- `app/javascript/controllers/dropdown_controller.js` - Stimulus dropdown controller
 - `config/routes.rb` - Route definitions
 - `db/schema.rb` - Current database schema
+
+## Route Helpers (Workspace)
+
+All workspace routes use `workspace_` prefix:
+
+| Helper | Path | Purpose |
+|--------|------|---------|
+| `workspace_dashboard_path` | `/workspace` | Dashboard (redirects to projects) |
+| `workspace_projects_path` | `/workspace/projects` | Projects list |
+| `new_workspace_project_path` | `/workspace/projects/new` | New project form |
+| `workspace_project_path(project)` | `/workspace/projects/:id` | Show project |
+| `edit_workspace_project_path(project)` | `/workspace/projects/:id/edit` | Edit project |
+| `workspace_project_sections_path(project)` | `/workspace/projects/:id/sections` | Create section |
+| `workspace_project_section_path(project, section)` | `/workspace/projects/:id/sections/:id` | Update section |
+| `workspace_section_items_path(section)` | `/workspace/sections/:id/items` | Create item |
+| `workspace_section_item_path(section, item)` | `/workspace/sections/:id/items/:id` | Delete item |
 
 ## Current State & Known Issues
 
 **Working**:
 - User registration/login
-- Project CRUD (create, read, update) - missing delete
-- Section creation
-- Item creation from extension
+- Account dropdown with settings, API token copy, logout
+- Account settings page (change email/password)
+- Project CRUD (create, read, update, delete)
+- Section creation and renaming
+- Item creation and deletion (web UI + extension)
 - Product capture sample logging
 
 **Missing/TODO**:
-- Delete project action
-- Account settings page (profile menu, logout in top-right)
-- Full CRUD for sections and items in web UI
+- Full CRUD for sections (delete, reorder)
+- Full CRUD for items (edit in web UI)
 - Role-based authorization enforcement
 - Production deployment configuration
 

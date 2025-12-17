@@ -23,7 +23,7 @@ module Workspace
     end
 
     def show
-      redirect_to projects_path(project_id: @project.id)
+      redirect_to workspace_projects_path(project_id: @project.id)
     end
 
     def new
@@ -42,7 +42,7 @@ module Workspace
         )
       end
 
-      redirect_to projects_path(project_id: @project.id),
+      redirect_to workspace_projects_path(project_id: @project.id),
                   notice: "Projekt został utworzony."
     rescue ActiveRecord::RecordInvalid
       render :new, status: :unprocessable_entity
@@ -53,7 +53,7 @@ module Workspace
 
     def update
       if @project.update(project_params)
-        redirect_to projects_path(project_id: @project.id),
+        redirect_to workspace_projects_path(project_id: @project.id),
                     notice: "Projekt został zaktualizowany."
       else
         render :edit, status: :unprocessable_entity
@@ -62,7 +62,7 @@ module Workspace
 
     def destroy
       @project.destroy
-      redirect_to projects_path, notice: "Projekt został usunięty."
+      redirect_to workspace_projects_path, notice: "Projekt został usunięty."
     end
 
     private

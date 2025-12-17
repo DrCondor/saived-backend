@@ -10,14 +10,14 @@ Rails.application.routes.draw do
 
   root "pages#home"
 
-  scope module: :workspace do
-    get "/app", to: "dashboard#index", as: :dashboard
+  namespace :workspace do
+    get "/", to: "dashboard#index", as: :dashboard
     resources :projects do
-      resources :project_sections, path: "sections", only: [ :create, :update ]
+      resources :sections, controller: "project_sections", only: [ :create, :update ]
     end
 
-    resources :project_sections, only: [] do
-      resources :project_items, path: "items", only: [ :create, :destroy ]
+    resources :sections, controller: "project_sections", only: [] do
+      resources :items, controller: "project_items", only: [ :create, :destroy ]
     end
   end
 

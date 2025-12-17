@@ -1,180 +1,245 @@
 <%# workspace/projects/_section_items.html.erb %>
 <% items = section.items.order(:position, :created_at) %>
 
-<div class="overflow-hidden rounded-3xl border border-neutral-200 bg-white shadow-sm">
-  <table class="min-w-full text-xs">
-    <thead class="bg-neutral-50 text-neutral-500">
-      <tr>
-        <th class="px-4 py-3 text-left font-medium">Produkt</th>
-        <th class="px-4 py-3 text-left font-medium">Wymiary</th>
-        <th class="px-4 py-3 text-left font-medium">Kategoria</th>
-        <th class="px-4 py-3 text-left font-medium">Ilość</th>
-        <th class="px-4 py-3 text-left font-medium">Cena</th>
-        <th class="px-4 py-3 text-left font-medium">Rabat</th>
-        <th class="px-4 py-3 text-left font-medium">Suma</th>
-        <th class="px-4 py-3 text-left font-medium">Status</th>
-        <th class="px-4 py-3 text-left font-medium"></th>
-      </tr>
-    </thead>
-    <tbody class="divide-y divide-neutral-100">
-      <% items.each do |item| %>
-        <tr class="hover:bg-neutral-50/60">
-          <td class="px-4 py-3 align-top">
-            <div class="flex gap-3">
-              <div class="h-10 w-10 rounded-full bg-neutral-100 overflow-hidden">
-                <% if item.thumbnail.present? %>
-                  <%= image_tag item.thumbnail,
-                                class: "h-full w-full object-cover",
-                                alt: item.name %>
-                <% else %>
-                  <div class="h-full w-full flex items-center justify-center text-[10px] text-neutral-300">
-                    img
-                  </div>
-                <% end %>
+<div class="space-y-3">
+  <% items.each do |item| %>
+    <%
+      is_proposal = item.status.to_s.downcase.in?(['propozycja', 'proposal'])
+      card_classes = is_proposal ? 'opacity-60 grayscale-[30%]' : ''
+    %>
+    <div class="group relative rounded-2xl border border-neutral-200 bg-white p-4 hover:shadow-md hover:border-neutral-300 transition-all <%= card_classes %>">
+      <div class="flex gap-4">
+        <%# Thumbnail %>
+        <div class="shrink-0">
+          <div class="h-20 w-20 rounded-xl bg-neutral-100 overflow-hidden">
+            <% if item.thumbnail.present? %>
+              <%= image_tag item.thumbnail,
+                            class: "h-full w-full object-cover",
+                            alt: item.name %>
+            <% else %>
+              <div class="h-full w-full flex items-center justify-center text-xs text-neutral-300">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
               </div>
-              <div class="space-y-0.5">
-                <p class="font-medium text-neutral-900"><%= item.name %></p>
+            <% end %>
+          </div>
+        </div>
 
-                <% if item.note.present? %>
-                  <p class="text-[11px] text-neutral-500">
-                    <%= item.note %>
-                  </p>
+        <%# Product info %>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-start justify-between gap-4">
+            <div class="min-w-0 flex-1">
+              <h4 class="font-medium text-neutral-900 truncate"><%= item.name %></h4>
+              <% if item.note.present? %>
+                <p class="mt-0.5 text-sm text-neutral-500 line-clamp-2"><%= item.note %></p>
+              <% end %>
+              <% if item.external_url.present? %>
+                <%= link_to item.external_url, target: "_blank", rel: "noopener",
+                    class: "inline-flex items-center gap-1 mt-1 text-xs text-neutral-400 hover:text-neutral-600" do %>
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                  link...
                 <% end %>
-
-                <% if item.external_url.present? %>
-                  <p class="text-[11px] text-neutral-400 underline underline-offset-2">
-                    <%= link_to "link…", item.external_url, target: "_blank", rel: "noopener" %>
-                  </p>
-                <% end %>
-              </div>
+              <% end %>
             </div>
-          </td>
 
-          <td class="px-4 py-3 align-top text-neutral-700">
-            <%= item.dimensions.presence || "—" %>
-          </td>
+            <%# Sum + Status (right side) %>
+            <div class="shrink-0 text-right">
+              <div class="inline-flex items-center rounded-lg border border-neutral-200 px-3 py-1.5 bg-neutral-50">
+                <span class="text-[10px] text-neutral-400 uppercase tracking-wide mr-2">Suma</span>
+                <span class="font-semibold text-neutral-900">
+                  <% if item.total_price %>
+                    <%= number_to_currency(item.total_price, unit: "", precision: 2) %> zł
+                  <% else %>
+                    —
+                  <% end %>
+                </span>
+              </div>
 
-          <td class="px-4 py-3 align-top text-neutral-700">
-            <%= item.category.presence || "—" %>
-          </td>
-
-          <td class="px-4 py-3 align-top text-neutral-700">
-            <%= item.quantity %> szt.
-          </td>
-
-          <td class="px-4 py-3 align-top text-neutral-700">
-            <% if item.unit_price %>
-              <%= item.formatted_unit_price %>
-            <% else %>
-              —
-            <% end %>
-          </td>
-
-          <td class="px-4 py-3 align-top text-neutral-700">
-            <%= item.discount_label.presence || "—" %>
-          </td>
-
-          <td class="px-4 py-3 align-top font-medium text-neutral-900">
-            <% if item.total_price %>
-              <%= item.formatted_total_price %>
-            <% else %>
-              —
-            <% end %>
-          </td>
-
-          <td class="px-4 py-3 align-top">
-            <% status_label = item.status.presence || "—" %>
-            <% css = case item.status
+              <div class="mt-2">
+                <%
+                  status_config = case item.status.to_s.downcase
                     when "ordered", "zamówione"
-                      "bg-emerald-100 text-emerald-700"
+                      { bg: "bg-emerald-500", text: "text-white", label: "ZAMÓWIONE" }
                     when "selected", "wybrane"
-                      "bg-violet-100 text-violet-700"
-                    when "proposal", "propozycja"
-                      "bg-neutral-100 text-neutral-700"
+                      { bg: "bg-violet-500", text: "text-white", label: "WYBRANE" }
                     else
-                      "bg-neutral-50 text-neutral-500"
-                    end %>
+                      { bg: "bg-neutral-200", text: "text-neutral-600", label: "PROPOZYCJA" }
+                    end
+                %>
+                <span class="inline-flex items-center rounded-full px-3 py-1 text-[10px] font-semibold tracking-wide <%= status_config[:bg] %> <%= status_config[:text] %>">
+                  <%= status_config[:label] %>
+                </span>
+              </div>
+            </div>
+          </div>
 
-            <span class="inline-flex items-center rounded-full px-3 py-1 text-[11px] font-medium <%= css %>">
-              <%= status_label.upcase %>
-            </span>
-          </td>
+          <%# Details grid %>
+          <div class="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-2 text-xs">
+            <div>
+              <span class="text-neutral-400 uppercase tracking-wide text-[10px]">Wymiary</span>
+              <p class="text-neutral-700 font-medium"><%= item.dimensions.presence || "—" %></p>
+            </div>
+            <div>
+              <span class="text-neutral-400 uppercase tracking-wide text-[10px]">Kategoria</span>
+              <p class="text-neutral-700 font-medium"><%= item.category.presence || "—" %></p>
+            </div>
+            <div>
+              <span class="text-neutral-400 uppercase tracking-wide text-[10px]">Ilość</span>
+              <p class="text-neutral-700 font-medium"><%= item.quantity %> szt.</p>
+            </div>
+            <div>
+              <span class="text-neutral-400 uppercase tracking-wide text-[10px]">Cena</span>
+              <p class="text-neutral-700 font-medium">
+                <% if item.unit_price %>
+                  <%= number_to_currency(item.unit_price, unit: "", precision: 2) %> zł
+                <% else %>
+                  —
+                <% end %>
+              </p>
+            </div>
+            <% if item.discount_label.present? %>
+              <div>
+                <span class="text-neutral-400 uppercase tracking-wide text-[10px]">Rabat</span>
+                <p class="text-emerald-600 font-medium"><%= item.discount_label %></p>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
 
-          <td class="px-4 py-3 align-top text-right">
-            <%= button_to "Usuń",
-                          [section, item],
-                          method: :delete,
-                          data: { turbo: false },
-                          form: { class: "inline" },
-                          class: "text-[11px] text-neutral-400 hover:text-rose-600" %>
-          </td>
-        </tr>
+      <%# Action buttons (visible on hover) %>
+      <div class="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+        <%= button_to workspace_section_item_path(section, item),
+            method: :delete,
+            data: { turbo: false, turbo_confirm: "Usunąć tę pozycję?" },
+            form: { class: "inline" },
+            class: "inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs text-neutral-500 hover:text-red-600 hover:bg-red-50 border border-transparent hover:border-red-200 transition-all",
+            title: "Usuń" do %>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+          Usuń
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <% if items.empty? %>
+    <div class="rounded-2xl border-2 border-dashed border-neutral-200 py-8 text-center">
+      <p class="text-sm text-neutral-400">Brak pozycji w tej sekcji</p>
+    </div>
+  <% end %>
+</div>
+
+<%# Add item form %>
+<div class="mt-4">
+  <details class="group">
+    <summary class="cursor-pointer list-none">
+      <div class="flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-neutral-300 py-3 text-neutral-500 hover:border-neutral-400 hover:text-neutral-600 hover:bg-neutral-50 transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+        <span class="text-sm font-medium">Dodaj pozycję</span>
+        <svg class="w-4 h-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </div>
+    </summary>
+
+    <div class="mt-3 rounded-2xl border border-neutral-200 bg-white p-4">
+      <%= form_with model: ProjectItem.new,
+                    url: workspace_section_items_path(section),
+                    local: true,
+                    data: { turbo: false },
+                    class: "space-y-4" do |f| %>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="sm:col-span-2">
+            <%= f.label :name, "Nazwa produktu", class: "block text-xs font-medium text-neutral-600 mb-1" %>
+            <%= f.text_field :name,
+                             required: true,
+                             class: "w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm placeholder-neutral-400 focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900",
+                             placeholder: "np. Szafka nocna IKEA MALM" %>
+          </div>
+
+          <div>
+            <%= f.label :quantity, "Ilość", class: "block text-xs font-medium text-neutral-600 mb-1" %>
+            <%= f.number_field :quantity,
+                               value: 1,
+                               min: 1,
+                               class: "w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900" %>
+          </div>
+
+          <div>
+            <%= f.label :unit_price, "Cena (zł)", class: "block text-xs font-medium text-neutral-600 mb-1" %>
+            <%= f.number_field :unit_price,
+                               step: 0.01,
+                               class: "w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm placeholder-neutral-400 focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900",
+                               placeholder: "np. 250.00" %>
+          </div>
+
+          <div>
+            <%= f.label :dimensions, "Wymiary", class: "block text-xs font-medium text-neutral-600 mb-1" %>
+            <%= f.text_field :dimensions,
+                             class: "w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm placeholder-neutral-400 focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900",
+                             placeholder: "np. 120x60x40 cm" %>
+          </div>
+
+          <div>
+            <%= f.label :category, "Kategoria", class: "block text-xs font-medium text-neutral-600 mb-1" %>
+            <%= f.text_field :category,
+                             class: "w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm placeholder-neutral-400 focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900",
+                             placeholder: "np. meble, oświetlenie" %>
+          </div>
+
+          <div>
+            <%= f.label :status, "Status", class: "block text-xs font-medium text-neutral-600 mb-1" %>
+            <%= f.select :status,
+                         [["Propozycja", "propozycja"],
+                          ["Wybrane", "wybrane"],
+                          ["Zamówione", "zamówione"]],
+                         { selected: "propozycja" },
+                         class: "w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900" %>
+          </div>
+
+          <div>
+            <%= f.label :discount_label, "Rabat / kod", class: "block text-xs font-medium text-neutral-600 mb-1" %>
+            <%= f.text_field :discount_label,
+                             class: "w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm placeholder-neutral-400 focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900",
+                             placeholder: "-5% (KOD: MAJ24)" %>
+          </div>
+
+          <div class="sm:col-span-2">
+            <%= f.label :thumbnail_url, "Miniaturka (URL)", class: "block text-xs font-medium text-neutral-600 mb-1" %>
+            <%= f.text_field :thumbnail_url,
+                             class: "w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm placeholder-neutral-400 focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900",
+                             placeholder: "https://..." %>
+          </div>
+
+          <div class="sm:col-span-2">
+            <%= f.label :external_url, "Link do produktu", class: "block text-xs font-medium text-neutral-600 mb-1" %>
+            <%= f.text_field :external_url,
+                             class: "w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm placeholder-neutral-400 focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900",
+                             placeholder: "https://..." %>
+          </div>
+
+          <div class="sm:col-span-2">
+            <%= f.label :note, "Notatki", class: "block text-xs font-medium text-neutral-600 mb-1" %>
+            <%= f.text_area :note,
+                            rows: 2,
+                            class: "w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm placeholder-neutral-400 focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900",
+                            placeholder: "Dodatkowe informacje..." %>
+          </div>
+        </div>
+
+        <div class="flex justify-end">
+          <%= f.submit "Dodaj pozycję",
+                       class: "inline-flex items-center rounded-full bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800 cursor-pointer transition-colors" %>
+        </div>
       <% end %>
-
-      <%# Wiersz dodawania nowej pozycji %>
-      <tr class="bg-neutral-50/60">
-        <td colspan="9" class="px-4 py-3">
-          <%= form_with model: [section, ProjectItem.new],
-                        local: true,
-                        data: { turbo: false },
-                        class: "flex flex-wrap items-end gap-3 text-[11px]" do |f| %>
-
-            <div class="flex-1 min-w-[160px]">
-              <%= f.label :name, "Nazwa produktu", class: "block mb-1 text-neutral-600" %>
-              <%= f.text_field :name,
-                               required: true,
-                               class: "w-full rounded-xl border border-neutral-300 bg-white px-2 py-1.5 text-[11px] placeholder-neutral-400 focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900",
-                               placeholder: "np. Szafka nocna" %>
-            </div>
-
-            <div class="w-32">
-              <%= f.label :quantity, "Ilość", class: "block mb-1 text-neutral-600" %>
-              <%= f.number_field :quantity,
-                                 value: 1,
-                                 min: 1,
-                                 class: "w-full rounded-xl border border-neutral-300 bg-white px-2 py-1.5 text-[11px] focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900" %>
-            </div>
-
-            <div class="w-40">
-              <%= f.label :unit_price, "Cena", class: "block mb-1 text-neutral-600" %>
-              <%= f.number_field :unit_price,
-                                 step: 0.01,
-                                 class: "w-full rounded-xl border border-neutral-300 bg-white px-2 py-1.5 text-[11px] placeholder-neutral-400 focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900",
-                                 placeholder: "np. 250.00" %>
-            </div>
-
-            <div class="w-40">
-              <%= f.label :status, "Status", class: "block mb-1 text-neutral-600" %>
-              <%= f.select :status,
-                           [["—", ""],
-                            ["Zamówione", "zamówione"],
-                            ["Wybrane", "wybrane"],
-                            ["Propozycja", "propozycja"]],
-                           {},
-                           class: "w-full rounded-xl border border-neutral-300 bg-white px-2 py-1.5 text-[11px] focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900" %>
-            </div>
-
-            <div class="w-40">
-              <%= f.label :discount_label, "Rabat / kod", class: "block mb-1 text-neutral-600" %>
-              <%= f.text_field :discount_label,
-                               class: "w-full rounded-xl border border-neutral-300 bg-white px-2 py-1.5 text-[11px] placeholder-neutral-400 focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900",
-                               placeholder: "-5% (KOD: MAJ24)" %>
-            </div>
-
-            <div class="w-40">
-              <%= f.label :thumbnail_url, "Miniaturka (URL)", class: "block mb-1 text-neutral-600" %>
-              <%= f.text_field :thumbnail_url,
-                               class: "w-full rounded-xl border border-neutral-300 bg-white px-2 py-1.5 text-[11px] placeholder-neutral-400 focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900",
-                               placeholder: "https://..." %>
-            </div>
-
-            <div class="w-32">
-              <%= f.submit "Dodaj pozycję",
-                           class: "mt-4 inline-flex items-center rounded-full bg-neutral-900 px-3 py-1.5 text-[11px] font-medium text-white hover:bg-neutral-800" %>
-            </div>
-          <% end %>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+    </div>
+  </details>
 </div>

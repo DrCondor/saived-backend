@@ -1,8 +1,13 @@
 class ProjectItem < ApplicationRecord
   belongs_to :project_section
+  has_many :product_capture_samples, dependent: :nullify
 
   validates :name, presence: true
   validates :quantity, numericality: { greater_than: 0 }
+  validates :status, presence: true
+
+  # Default status for new items
+  attribute :status, :string, default: "propozycja"
 
   # -------------------------
   # PRICE HANDLING (GENERIC)

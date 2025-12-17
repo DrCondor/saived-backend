@@ -10,9 +10,9 @@ module Workspace
       @section.position = (@project.sections.maximum(:position) || 0) + 1
 
       if @section.save
-        redirect_to projects_path(project_id: @project.id, section_id: @section.id)
+        redirect_to workspace_projects_path(project_id: @project.id, section_id: @section.id)
       else
-        redirect_to projects_path(project_id: @project.id),
+        redirect_to workspace_projects_path(project_id: @project.id),
                     alert: "Nie udało się utworzyć sekcji."
       end
     end
@@ -21,10 +21,10 @@ module Workspace
       @section = @project.sections.find(params[:id])
 
       if @section.update(section_params)
-        redirect_to projects_path(project_id: @project.id, section_id: @section.id),
+        redirect_to workspace_projects_path(project_id: @project.id, section_id: @section.id),
                     notice: "Nazwa sekcji została zaktualizowana."
       else
-        redirect_to projects_path(project_id: @project.id, section_id: @section.id),
+        redirect_to workspace_projects_path(project_id: @project.id, section_id: @section.id),
                     alert: "Nie udało się zaktualizować sekcji."
       end
     end

@@ -7,13 +7,13 @@ module Workspace
       @item.position = (@section.items.maximum(:position) || 0) + 1
 
       if @item.save
-        redirect_to projects_path(
+        redirect_to workspace_projects_path(
           project_id: @section.project.id,
           section_id: @section.id,
           anchor: "section-#{@section.id}"
         ), notice: "Pozycja została dodana."
       else
-        redirect_to projects_path(
+        redirect_to workspace_projects_path(
           project_id: @section.project.id,
           section_id: @section.id,
           anchor: "section-#{@section.id}"
@@ -25,7 +25,7 @@ module Workspace
       item = @section.items.find(params[:id])
       item.destroy
 
-      redirect_to projects_path(
+      redirect_to workspace_projects_path(
         project_id: @section.project.id,
         section_id: @section.id,
         anchor: "section-#{@section.id}"
@@ -35,7 +35,7 @@ module Workspace
     private
 
     def set_section
-      @section = ProjectSection.find(params[:project_section_id])
+      @section = ProjectSection.find(params[:section_id])
 
       # bezpieczeństwo: user musi mieć dostęp do projektu tej sekcji
       unless current_user.projects.exists?(@section.project_id)
