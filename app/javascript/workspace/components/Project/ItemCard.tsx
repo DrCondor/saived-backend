@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import type { ProjectItem, UpdateItemInput } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
 import EditableField from '../shared/EditableField';
@@ -8,23 +8,19 @@ interface ItemCardProps {
   item: ProjectItem;
   onUpdate?: (itemId: number, input: UpdateItemInput) => void;
   onDelete?: (itemId: number) => void;
-  isUpdating?: boolean;
-  isDeleting?: boolean;
 }
 
-export default function ItemCard({
+// Memoize to prevent re-renders when other items change
+const ItemCard = memo(function ItemCard({
   item,
   onUpdate,
   onDelete,
-  isUpdating,
-  isDeleting,
 }: ItemCardProps) {
   const [isEditingThumbnail, setIsEditingThumbnail] = useState(false);
   const [thumbnailUrl, setThumbnailUrl] = useState(item.thumbnail_url || '');
 
   const isProposal = item.status.toLowerCase() === 'propozycja';
   const cardClasses = isProposal ? 'opacity-70' : '';
-  const isDisabled = isUpdating || isDeleting;
 
   const handleUpdate = (field: keyof UpdateItemInput, value: string) => {
     if (!onUpdate) return;
@@ -63,7 +59,7 @@ export default function ItemCard({
   };
 
   return (
-    <div className={`group flex gap-2 ${isDisabled ? 'pointer-events-none opacity-60' : ''}`}>
+    <div className="group flex gap-2">
       {/* Item card */}
       <div
         className={`flex-1 rounded-2xl border border-neutral-200 bg-white p-4 hover:shadow-md hover:border-neutral-300 transition-all ${cardClasses}`}
@@ -163,7 +159,6 @@ export default function ItemCard({
                     onChange={(v) => handleUpdate('name', v)}
                     placeholder="Nazwa produktu"
                     required
-                    disabled={isDisabled}
                     className="font-medium"
                   />
                 </div>
@@ -175,7 +170,6 @@ export default function ItemCard({
                     onChange={(v) => handleUpdate('note', v)}
                     placeholder="Dodaj notatkę..."
                     emptyText="Dodaj notatkę..."
-                    disabled={isDisabled}
                     className="text-sm"
                   />
                 </div>
@@ -221,7 +215,6 @@ export default function ItemCard({
                   <StatusSelect
                     value={item.status}
                     onChange={(v) => handleUpdate('status', v)}
-                    disabled={isDisabled}
                   />
                 </div>
               </div>
@@ -238,7 +231,6 @@ export default function ItemCard({
                   value={item.dimensions}
                   onChange={(v) => handleUpdate('dimensions', v)}
                   placeholder="np. 120x80x45"
-                  disabled={isDisabled}
                   className="text-neutral-700 font-medium"
                 />
               </div>
@@ -252,7 +244,6 @@ export default function ItemCard({
                   value={item.category}
                   onChange={(v) => handleUpdate('category', v)}
                   placeholder="np. Sofy"
-                  disabled={isDisabled}
                   className="text-neutral-700 font-medium"
                 />
               </div>
@@ -268,7 +259,6 @@ export default function ItemCard({
                     onChange={(v) => handleUpdate('quantity', v)}
                     type="number"
                     placeholder="1"
-                    disabled={isDisabled}
                     className="text-neutral-700 font-medium"
                     inputClassName="w-16"
                   />
@@ -287,7 +277,6 @@ export default function ItemCard({
                     onChange={(v) => handleUpdate('unit_price', v)}
                     type="number"
                     placeholder="0.00"
-                    disabled={isDisabled}
                     className="text-neutral-700 font-medium"
                     inputClassName="w-20"
                   />
@@ -304,7 +293,6 @@ export default function ItemCard({
                   value={item.currency || 'PLN'}
                   onChange={(v) => handleUpdate('currency', v)}
                   placeholder="PLN"
-                  disabled={isDisabled}
                   className="text-neutral-700 font-medium"
                   inputClassName="w-16"
                 />
@@ -319,7 +307,6 @@ export default function ItemCard({
                   value={item.discount_label}
                   onChange={(v) => handleUpdate('discount_label', v)}
                   placeholder="np. -20%"
-                  disabled={isDisabled}
                   className={item.discount_label ? 'text-emerald-600 font-medium' : 'text-neutral-700 font-medium'}
                 />
               </div>
@@ -335,7 +322,6 @@ export default function ItemCard({
                     onChange={(v) => handleUpdate('external_url', v)}
                     type="url"
                     placeholder="https://..."
-                    disabled={isDisabled}
                     className="text-neutral-700 font-medium truncate flex-1 max-w-[200px]"
                   />
                   {item.external_url && (
@@ -380,7 +366,6 @@ export default function ItemCard({
           <button
             type="button"
             onClick={handleDelete}
-            disabled={isDeleting}
             className="p-1.5 rounded text-neutral-300 hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50"
             title="Usuń"
           >
@@ -397,4 +382,6 @@ export default function ItemCard({
       </div>
     </div>
   );
-}
+});
+
+export default ItemCard;

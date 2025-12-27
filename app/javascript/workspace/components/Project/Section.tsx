@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import type { ProjectSection, CreateItemInput, UpdateItemInput } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
 import { useCreateItem, useUpdateItem, useDeleteItem } from '../../hooks/useItems';
@@ -48,17 +48,17 @@ export default function Section({ section, projectId }: SectionProps) {
     }
   };
 
-  const handleAddItem = (data: CreateItemInput) => {
+  const handleAddItem = useCallback((data: CreateItemInput) => {
     createItem.mutate(data);
-  };
+  }, [createItem]);
 
-  const handleUpdateItem = (itemId: number, input: UpdateItemInput) => {
+  const handleUpdateItem = useCallback((itemId: number, input: UpdateItemInput) => {
     updateItem.mutate({ itemId, input });
-  };
+  }, [updateItem]);
 
-  const handleDeleteItem = (itemId: number) => {
+  const handleDeleteItem = useCallback((itemId: number) => {
     deleteItem.mutate(itemId);
-  };
+  }, [deleteItem]);
 
   const items = section.items || [];
   const sectionTotal = section.total_price || items.reduce((sum, item) => sum + (item.total_price || 0), 0);
@@ -152,8 +152,6 @@ export default function Section({ section, projectId }: SectionProps) {
                 item={item}
                 onUpdate={handleUpdateItem}
                 onDelete={handleDeleteItem}
-                isUpdating={updateItem.isPending}
-                isDeleting={deleteItem.isPending}
               />
             ))}
 
