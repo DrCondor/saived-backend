@@ -68,11 +68,11 @@ export default function Header() {
             className="h-9 w-9 object-contain"
           />
           <div className="flex flex-col leading-tight">
-            <span className="font-semibold tracking-tight text-sm sm:text-base">
+            <span className="font-bold tracking-tight text-sm sm:text-base">
               SAIVED
             </span>
-            <span className="text-xs text-neutral-500">
-              Panel projektów i kosztorysów
+            <span className="text-[10px] text-neutral-400 tracking-wide uppercase hidden sm:block">
+              Design More. Manage Less.
             </span>
           </div>
         </a>
