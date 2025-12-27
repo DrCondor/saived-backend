@@ -10,9 +10,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_12_07_204756) do
+ActiveRecord::Schema[7.2].define(version: 2025_12_17_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "domain_selectors", force: :cascade do |t|
+    t.string "domain", null: false
+    t.string "field_name", null: false
+    t.string "selector", null: false
+    t.integer "success_count", default: 0, null: false
+    t.integer "failure_count", default: 0, null: false
+    t.datetime "last_seen_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "discovery_method", default: "heuristic", null: false
+    t.integer "discovery_score"
+    t.index ["discovery_method"], name: "index_domain_selectors_on_discovery_method"
+    t.index ["domain", "field_name", "selector"], name: "idx_domain_selectors_unique", unique: true
+    t.index ["domain", "field_name"], name: "index_domain_selectors_on_domain_and_field_name"
+    t.index ["success_count"], name: "index_domain_selectors_on_success_count"
+  end
 
   create_table "product_capture_samples", force: :cascade do |t|
     t.bigint "user_id", null: false

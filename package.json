@@ -2,16 +2,23 @@
   "name": "app",
   "private": true,
   "devDependencies": {
-    "esbuild": "^0.27.0"
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "esbuild": "^0.27.0",
+    "typescript": "^5.9.3"
   },
   "scripts": {
-    "build": "esbuild app/javascript/*.* --bundle --sourcemap --format=esm --outdir=app/assets/builds --public-path=/assets",
+    "build": "esbuild app/javascript/*.* --bundle --sourcemap --format=esm --outdir=app/assets/builds --public-path=/assets --loader:.tsx=tsx --loader:.ts=ts && esbuild app/javascript/workspace/index.tsx --bundle --sourcemap --format=esm --outfile=app/assets/builds/workspace.js --public-path=/assets --loader:.tsx=tsx --loader:.ts=ts",
     "build:css": "bunx @tailwindcss/cli -i ./app/assets/stylesheets/application.tailwind.css -o ./app/assets/builds/application.css --minify"
   },
   "dependencies": {
     "@hotwired/stimulus": "^3.2.2",
     "@hotwired/turbo-rails": "^8.0.20",
     "@tailwindcss/cli": "^4.1.17",
+    "@tanstack/react-query": "^5.90.12",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "react-router-dom": "6.26.2",
     "tailwindcss": "^4.1.17"
   }
 }

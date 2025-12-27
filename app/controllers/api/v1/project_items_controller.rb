@@ -2,6 +2,7 @@ module Api
   module V1
     class ProjectItemsController < BaseController
       before_action :set_section
+      before_action :set_item, only: [:update, :destroy]
 
       def create
         item = @section.items.new(item_params)
@@ -29,6 +30,21 @@ module Api
         end
       end
 
+      # PATCH /api/v1/project_sections/:section_id/items/:id
+      def update
+        if @item.update(item_params)
+          render json: item_json(@item)
+        else
+          render json: { errors: @item.errors.full_messages }, status: :unprocessable_entity
+        end
+      end
+
+      # DELETE /api/v1/project_sections/:section_id/items/:id
+      def destroy
+        @item.destroy
+        head :no_content
+      end
+
       private
 
       def set_section
@@ -39,6 +55,30 @@ module Api
         end
       rescue ActiveRecord::RecordNotFound
         render json: { error: "Not found" }, status: :not_found
+      end
+
+      def set_item
+        @item = @section.items.find(params[:id])
+      rescue ActiveRecord::RecordNotFound
+        render json: { error: "Not found" }, status: :not_found
+      end
+
+      def item_json(item)
+        {
+          id: item.id,
+          name: item.name,
+          note: item.note,
+          quantity: item.quantity,
+          unit_price: item.unit_price,
+          total_price: item.total_price,
+          currency: item.currency,
+          category: item.category,
+          dimensions: item.dimensions,
+          status: item.status,
+          external_url: item.external_url,
+          discount_label: item.discount_label,
+          thumbnail_url: item.thumbnail_url
+        }
       end
 
       # kontrakt: "product_item": { ... }

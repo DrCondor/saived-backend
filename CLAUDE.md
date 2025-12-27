@@ -9,16 +9,16 @@ SAIVED is a cost estimate management tool for **interior designers** in the Poli
 4. Generate cost estimates (kosztorys) for clients
 
 The backend serves two interfaces:
-- **Web Dashboard** (`/workspace/*`) - Rails views with TailwindCSS
-- **REST API** (`/api/v1/*`) - JSON endpoints for browser extension
+- **Web Dashboard** (`/workspace/*`) - React SPA with TypeScript
+- **REST API** (`/api/v1/*`) - JSON endpoints for browser extension + SPA
 
 ## Tech Stack
 
 - **Framework**: Ruby on Rails 7.2.3, Ruby 3.3.8
 - **Database**: PostgreSQL 16 (Docker, port 5433)
 - **Cache/Jobs**: Redis 7 (Docker, port 6380) - prepared for Sidekiq
-- **Frontend**: TailwindCSS 4, ESBuild, Stimulus, Turbo
-- **Auth**: Devise (sessions) + API tokens (bearer)
+- **Frontend**: React 19, TypeScript, TanStack Query, React Router 6, TailwindCSS 4, ESBuild
+- **Auth**: Devise (sessions for SPA) + API tokens (bearer for extension)
 - **Testing**: Rails test framework, Capybara, Selenium
 
 ## Quick Commands
@@ -31,6 +31,9 @@ make redis-up     # Start Redis only
 make console      # Rails console
 make routes       # Show all routes
 make test         # Run tests
+
+yarn build        # Build React SPA + application.js
+yarn build:css    # Build TailwindCSS
 ```
 
 ## Data Model
@@ -55,19 +58,36 @@ User
                           ├── raw_payload (scraped data)
                           ├── final_payload (user-corrected data)
                           └── context (selectors, domain, engine)
+
+DomainSelector (global learning)
+ ├── domain (e.g., "ikea.pl")
+ ├── field_name (name, price, thumbnail_url)
+ ├── selector (CSS selector)
+ ├── success_count, failure_count
+ └── confidence (calculated Wilson score)
 ```
 
 **Price Storage**: All prices stored as cents (`unit_price_cents`). Use `unit_price` getter/setter for decimal values.
 
-## API Endpoints (for Extension)
+## API Endpoints
 
-All require `Authorization: Bearer {api_token}` header.
+API supports both Bearer token (extension) and session auth (SPA).
 
 | Method | Endpoint | Purpose |
 |--------|----------|---------|
+| GET | `/api/v1/me` | Current user info |
 | GET | `/api/v1/projects` | List user's projects with sections |
 | GET | `/api/v1/projects/:id` | Get project with sections and items |
-| POST | `/api/v1/project_sections/:id/items` | Add item from extension |
+| POST | `/api/v1/projects` | Create project |
+| PATCH | `/api/v1/projects/:id` | Update project |
+| DELETE | `/api/v1/projects/:id` | Delete project |
+| POST | `/api/v1/projects/:id/sections` | Create section |
+| PATCH | `/api/v1/projects/:id/sections/:id` | Update section |
+| DELETE | `/api/v1/projects/:id/sections/:id` | Delete section |
+| POST | `/api/v1/project_sections/:id/items` | Add item |
+| PATCH | `/api/v1/project_sections/:id/items/:id` | Update item |
+| DELETE | `/api/v1/project_sections/:id/items/:id` | Delete item |
+| GET | `/api/v1/selectors?domain=...` | Get learned selectors for domain |
 
 **POST Item Payload**:
 ```json
@@ -93,9 +113,12 @@ All require `Authorization: Bearer {api_token}` header.
 
 ## Authentication
 
-- **Web**: Devise sessions, redirects to `/users/sign_in`
-- **API**: Bearer token in header, returns 401 if invalid
+- **SPA (React)**: Devise sessions with CSRF token, redirects to `/users/sign_in` if not logged in
+- **Extension**: Bearer token in `Authorization` header
+- **API**: Supports both session auth (SPA) and Bearer token (extension)
 - **Token Generation**: Auto-generated via `has_secure_token :api_token`
+
+The `Api::V1::BaseController` tries Bearer token first, falls back to session auth.
 
 ## Project Roles
 
@@ -109,64 +132,162 @@ Note: Role enforcement not fully implemented in controllers yet.
 
 ## Key Files
 
-- `app/controllers/workspace/` - Web dashboard controllers
-- `app/controllers/api/v1/` - Extension API controllers
+### Backend (Rails)
+- `app/controllers/api/v1/` - API controllers (projects, sections, items, users, selectors)
+- `app/controllers/workspace/spa_controller.rb` - Serves React SPA shell
+- `app/views/workspace/spa/index.html.erb` - React SPA HTML template
 - `app/models/` - All models
-- `app/views/workspace/` - Dashboard ERB templates
-- `app/views/layouts/workspace.html.erb` - Workspace layout with header & account dropdown
-- `app/javascript/controllers/dropdown_controller.js` - Stimulus dropdown controller
 - `config/routes.rb` - Route definitions
 - `db/schema.rb` - Current database schema
 
-## Route Helpers (Workspace)
+### Frontend (React SPA)
+```
+app/javascript/workspace/
+├── index.tsx                 # Entry point
+├── App.tsx                   # Router + QueryClientProvider
+├── api/
+│   ├── client.ts            # Fetch wrapper with CSRF + session auth
+│   ├── projects.ts          # Project API functions
+│   ├── sections.ts          # Section API functions
+│   └── items.ts             # Item API functions
+├── hooks/
+│   ├── useProjects.ts       # TanStack Query hooks for projects
+│   ├── useProject.ts        # Single project hook
+│   ├── useSections.ts       # Section mutations
+│   ├── useItems.ts          # Item mutations
+│   └── useCurrentUser.ts    # Current user from window.__INITIAL_DATA__
+├── components/
+│   ├── Layout/
+│   │   ├── Layout.tsx       # Main layout with Header
+│   │   ├── Header.tsx       # Top header with user dropdown
+│   │   └── Sidebar.tsx      # Projects list sidebar
+│   └── Project/
+│       ├── ProjectView.tsx  # Full project view with sections
+│       ├── Section.tsx      # Section with inline name editing
+│       ├── ItemCard.tsx     # Product item card
+│       └── AddItemForm.tsx  # Form for adding items
+├── pages/
+│   ├── WorkspacePage.tsx    # Main workspace page
+│   └── NewProjectPage.tsx   # New project form
+├── types/
+│   └── index.ts             # TypeScript interfaces
+└── utils/
+    └── formatters.ts        # formatCurrency, getStatusLabel, etc.
+```
 
-All workspace routes use `workspace_` prefix:
+## Routes
 
+### React SPA Routes (client-side)
+| Path | Component | Purpose |
+|------|-----------|---------|
+| `/workspace` | `WorkspacePage` | Main workspace (redirects to first project) |
+| `/workspace/projects/new` | `NewProjectPage` | Create new project form |
+| `/workspace/projects/:id` | `WorkspacePage` | View specific project |
+
+### Rails Routes
 | Helper | Path | Purpose |
 |--------|------|---------|
-| `workspace_dashboard_path` | `/workspace` | Dashboard (redirects to projects) |
-| `workspace_projects_path` | `/workspace/projects` | Projects list |
-| `new_workspace_project_path` | `/workspace/projects/new` | New project form |
-| `workspace_project_path(project)` | `/workspace/projects/:id` | Show project |
-| `edit_workspace_project_path(project)` | `/workspace/projects/:id/edit` | Edit project |
-| `workspace_project_sections_path(project)` | `/workspace/projects/:id/sections` | Create section |
-| `workspace_project_section_path(project, section)` | `/workspace/projects/:id/sections/:id` | Update section |
-| `workspace_section_items_path(section)` | `/workspace/sections/:id/items` | Create item |
-| `workspace_section_item_path(section, item)` | `/workspace/sections/:id/items/:id` | Delete item |
+| `workspace_path` | `/workspace` | React SPA entry point |
+| `workspace_path` | `/workspace/*` | Catch-all for SPA client routing |
 
 ## Current State & Known Issues
 
 **Working**:
 - User registration/login
+- React SPA workspace with full CRUD for projects, sections, items
 - Account dropdown with settings, API token copy, logout
 - Account settings page (change email/password)
-- Project CRUD (create, read, update, delete)
-- Section creation and renaming
+- Inline section name editing
 - Item creation and deletion (web UI + extension)
 - Product capture sample logging
+- API supports both session auth (SPA) and Bearer token (extension)
 
 **Missing/TODO**:
-- Full CRUD for sections (delete, reorder)
-- Full CRUD for items (edit in web UI)
+- Drag & drop reordering (sections, items)
+- Item editing in web UI
 - Role-based authorization enforcement
 - Production deployment configuration
+- Bundle size optimization (currently 1.2MB unminified)
 
 **Future Plans**:
-- Migrate frontend to React/TypeScript for better UX
 - Grammarly-style extension auth (auto-token transfer after login)
 - Global learning system (selectors learned from all users per domain)
 - Price update crawlers
 - Sidekiq background jobs for async processing
 - Real-time updates via WebSockets
 
-## Learning System (ProductCaptureSample)
+## Learning System
 
-The `product_capture_samples` table stores:
-- `raw_payload`: What the extension scraped automatically
-- `final_payload`: What the user actually saved (may have corrections)
-- `context`: Domain, URL, CSS selectors used, engine version
+The learning system analyzes user corrections to improve scraping accuracy over time.
 
-**Vision**: Compare raw vs final to learn which selectors work per domain. When many users correct the same field on the same domain, the system learns better selectors. Global learning benefits all users.
+### Data Model
+
+```
+DomainSelector
+ ├── domain (e.g., "ikea.pl")
+ ├── field_name (name, price, thumbnail_url)
+ ├── selector (CSS selector)
+ ├── success_count (times selector worked)
+ ├── failure_count (times user corrected)
+ └── confidence (Wilson score interval)
+
+ProductCaptureSample
+ ├── raw_payload (scraped data from extension)
+ ├── final_payload (user-saved data, may have corrections)
+ └── context (selectors used, domain, engine version)
+```
+
+### How It Works
+
+1. **Data Collection**: When a user saves a product from the extension, both `raw_payload` (what was scraped) and `final_payload` (what user saved) are stored in `ProductCaptureSample`.
+
+2. **Analysis**: `AnalyzeCaptureSampleJob` runs after each sample is created:
+   - Compares raw vs final values for each field
+   - If values match = **success** (selector worked correctly)
+   - If values differ = **failure** (user had to correct it)
+
+3. **Confidence Scoring**: `DomainSelector` uses Wilson score interval for confidence:
+   - Handles small sample sizes well
+   - Selectors need 3+ successes and 70%+ confidence to be "reliable"
+
+4. **Extension Integration**:
+   - Extension fetches `GET /api/v1/selectors?domain=ikea.pl`
+   - Returns best selectors per field: `{ name: "h1.title", price: ".price-box" }`
+   - Extension tries learned selectors first, falls back to heuristics
+
+### Key Files
+
+- `app/models/domain_selector.rb` - Selector storage and confidence scoring
+- `app/jobs/analyze_capture_sample_job.rb` - Background analysis job
+- `app/controllers/api/v1/selectors_controller.rb` - API endpoint for fetching selectors
+
+### API Endpoint
+
+| Method | Endpoint | Purpose |
+|--------|----------|---------|
+| GET | `/api/v1/selectors?domain=ikea.pl` | Get best learned selectors for domain |
+
+**Response**:
+```json
+{
+  "domain": "ikea.pl",
+  "selectors": {
+    "name": "h1.product-title",
+    "price": ".price-value"
+  },
+  "stats": {
+    "total_selectors": 5,
+    "total_samples": 23,
+    "fields": [...]
+  }
+}
+```
+
+### Engine Types
+
+The `context.engine` field tracks how data was scraped:
+- `heuristic-v1` - Used default heuristic selectors (og:tags, largest h1, etc.)
+- `learned-v1` - Used learned selectors from backend
 
 ## Environment Variables
 

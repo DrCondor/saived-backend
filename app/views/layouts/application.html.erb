@@ -36,7 +36,7 @@
             </a>
 
             <% if user_signed_in? %>
-              <%= link_to "Przejdź do panelu", workspace_dashboard_path,
+              <%= link_to "Przejdź do panelu", workspace_path,
                     class: "inline-flex items-center rounded-full bg-emerald-500 px-4 py-1.5 text-sm font-medium text-white shadow-sm hover:bg-emerald-600 transition" %>
             <% else %>
               <%= link_to "Zaloguj",

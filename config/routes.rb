@@ -10,23 +10,29 @@ Rails.application.routes.draw do
 
   root "pages#home"
 
-  namespace :workspace do
-    get "/", to: "dashboard#index", as: :dashboard
-    resources :projects do
-      resources :sections, controller: "project_sections", only: [ :create, :update ]
-    end
-
-    resources :sections, controller: "project_sections", only: [] do
-      resources :items, controller: "project_items", only: [ :create, :destroy ]
-    end
-  end
-
+  # API endpoints
   namespace :api do
     namespace :v1 do
-      resources :projects, only: [ :index, :show ]
-      resources :project_sections, only: [] do
-        resources :project_items, path: "items", only: [ :create ]
+      # User info
+      get "me", to: "users#me"
+
+      # Projects CRUD
+      resources :projects, only: [ :index, :show, :create, :update, :destroy ] do
+        # Sections nested under projects
+        resources :sections, only: [ :create, :update, :destroy ]
       end
+
+      # Items nested under sections
+      resources :project_sections, only: [] do
+        resources :items, controller: "project_items", path: "items", only: [ :create, :update, :destroy ]
+      end
+
+      # Learning system: fetch best selectors for a domain
+      resources :selectors, only: [ :index ]
     end
   end
+
+  # React SPA - catch all workspace routes
+  get "workspace", to: "workspace/spa#index"
+  get "workspace/*path", to: "workspace/spa#index"
 end
