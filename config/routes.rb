@@ -10,6 +10,11 @@ Rails.application.routes.draw do
 
   root "pages#home"
 
+  # Static pages
+  get "features", to: "pages#features", as: :features
+  get "pricing", to: "pages#pricing", as: :pricing
+  get "about", to: "pages#about", as: :about
+
   # API endpoints
   namespace :api do
     namespace :v1 do

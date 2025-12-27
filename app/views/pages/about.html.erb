@@ -1,0 +1,221 @@
+<%# About Page %>
+<section class="py-16 sm:py-24">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="max-w-3xl mx-auto text-center mb-16">
+      <p class="text-xs font-bold tracking-[0.2em] uppercase text-emerald-600 mb-3">O nas</p>
+      <h1 class="text-4xl sm:text-5xl font-bold text-neutral-900 mb-6">
+        Tworzymy narzedzia dla kreatywnych
+      </h1>
+      <p class="text-lg text-neutral-600 leading-relaxed">
+        SAIVED powstal z prostej obserwacji: architekci wnetrz spedzaja zbyt duzo czasu
+        na zarzadzanie produktami i kosztorysami, zamiast na projektowaniu.
+        Postanowilismy to zmienic.
+      </p>
+    </div>
+  </div>
+</section>
+
+<%# Story %>
+<section class="pb-20">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="grid lg:grid-cols-2 gap-12 items-center">
+      <div>
+        <h2 class="text-3xl font-bold text-neutral-900 mb-6">Nasza historia</h2>
+        <div class="space-y-4 text-neutral-600 leading-relaxed">
+          <p>
+            Wszystko zaczelo sie od rozmowy z projektantka wnetrz, ktora pokazala nam
+            swoj "system" - dziesiatlki arkuszy Excel, setki zkladek w przegladarce
+            i godziny spedzone na kopiowaniu danych miedzy nimi.
+          </p>
+          <p>
+            Wiedzielismy, ze musi byc lepszy sposob. W 2024 roku rozpoczelismy prace
+            nad SAIVED - narzedziem, ktore automatyzuje nudne zadania i pozwala
+            projektantom skupic sie na tym, co robia najlepiej: tworzeniu pieknych wnetrz.
+          </p>
+          <p>
+            Dzisiaj SAIVED pomaga setkom architektow wnetrz w calej Polsce oszczedzac
+            czas i prezentowac swoja prace w profesjonalny sposob.
+          </p>
+        </div>
+      </div>
+      <div class="relative">
+        <div class="absolute -inset-4 bg-gradient-to-r from-emerald-100 to-violet-100 rounded-3xl blur-2xl opacity-40"></div>
+        <div class="relative rounded-2xl bg-neutral-900 p-8 text-white">
+          <div class="grid grid-cols-2 gap-8">
+            <div class="text-center">
+              <div class="text-4xl font-bold text-emerald-400 mb-2">500+</div>
+              <div class="text-sm text-neutral-400">Aktywnych uzytkownikow</div>
+            </div>
+            <div class="text-center">
+              <div class="text-4xl font-bold text-emerald-400 mb-2">10k+</div>
+              <div class="text-sm text-neutral-400">Projektow utworzonych</div>
+            </div>
+            <div class="text-center">
+              <div class="text-4xl font-bold text-emerald-400 mb-2">50k+</div>
+              <div class="text-sm text-neutral-400">Produktow zapisanych</div>
+            </div>
+            <div class="text-center">
+              <div class="text-4xl font-bold text-emerald-400 mb-2">98%</div>
+              <div class="text-sm text-neutral-400">Zadowolonych klientow</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%# Values %>
+<section class="py-20 bg-neutral-50">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl font-bold text-neutral-900 mb-4">Nasze wartosci</h2>
+      <p class="text-neutral-600 max-w-2xl mx-auto">
+        Kazda decyzja ktora podejmujemy, kieruje sie tymi zasadami.
+      </p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-6">
+      <% [
+        {
+          icon: "M13 10V3L4 14h7v7l9-11h-7z",
+          title: "Prostota",
+          desc: "Wierzymy, ze najlepsze narzedzia sa te, ktorych nie trzeba sie uczyc. SAIVED jest intuicyjny od pierwszego klikniecia."
+        },
+        {
+          icon: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z",
+          title: "Zaufanie",
+          desc: "Twoje dane sa bezpieczne. Stosujemy najwyzsze standardy bezpieczenstwa i nigdy nie sprzedajemy Twoich informacji."
+        },
+        {
+          icon: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z",
+          title: "Wspolpraca",
+          desc: "Budujemy SAIVED razem z nasza spolecznoscia. Twoj feedback bezposrednio wplywa na rozwoj produktu."
+        }
+      ].each do |value| %>
+        <div class="p-6 rounded-2xl bg-white border border-neutral-200">
+          <div class="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="<%= value[:icon] %>" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-neutral-900 mb-2"><%= value[:title] %></h3>
+          <p class="text-neutral-600 leading-relaxed"><%= value[:desc] %></p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<%# Team %>
+<section class="py-20">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl font-bold text-neutral-900 mb-4">Zespol</h2>
+      <p class="text-neutral-600 max-w-2xl mx-auto">
+        Maly zespol z wielka pasja do tworzenia swietnych produktow.
+      </p>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-4xl mx-auto">
+      <% [
+        { name: "Jan Kowalski", role: "CEO & Founder", initials: "JK" },
+        { name: "Anna Nowak", role: "Head of Product", initials: "AN" },
+        { name: "Piotr Wisniewski", role: "Lead Developer", initials: "PW" },
+        { name: "Maria Dabrowska", role: "Customer Success", initials: "MD" }
+      ].each do |member| %>
+        <div class="text-center">
+          <div class="w-24 h-24 rounded-full bg-gradient-to-br from-emerald-100 to-violet-100 flex items-center justify-center mx-auto mb-4">
+            <span class="text-2xl font-bold text-neutral-600"><%= member[:initials] %></span>
+          </div>
+          <h3 class="font-semibold text-neutral-900"><%= member[:name] %></h3>
+          <p class="text-sm text-neutral-500"><%= member[:role] %></p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<%# Contact %>
+<section class="py-20 bg-neutral-900 text-white">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="grid lg:grid-cols-2 gap-12">
+      <div>
+        <h2 class="text-3xl font-bold mb-4">Skontaktuj sie z nami</h2>
+        <p class="text-neutral-400 mb-8 leading-relaxed">
+          Masz pytania? Chcesz porozmawiac o wspolpracy? Jestesmy tu, zeby pomoc.
+          Odpowiadamy na kazda wiadomosc w ciagu 24 godzin.
+        </p>
+
+        <div class="space-y-4">
+          <div class="flex items-center gap-4">
+            <div class="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
+              <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <div>
+              <p class="text-sm text-neutral-400">Email</p>
+              <p class="font-medium">kontakt@saived.pl</p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-4">
+            <div class="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
+              <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </div>
+            <div>
+              <p class="text-sm text-neutral-400">Adres</p>
+              <p class="font-medium">Warszawa, Polska</p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-4">
+            <div class="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
+              <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div>
+              <p class="text-sm text-neutral-400">Godziny pracy</p>
+              <p class="font-medium">Pon-Pt, 9:00-17:00</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rounded-2xl bg-white/5 border border-white/10 p-6">
+        <form class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-neutral-300 mb-2">Imie i nazwisko</label>
+            <input type="text" class="w-full rounded-xl bg-white/10 border border-white/20 px-4 py-3 text-white placeholder-neutral-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500" placeholder="Jan Kowalski">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-neutral-300 mb-2">Email</label>
+            <input type="email" class="w-full rounded-xl bg-white/10 border border-white/20 px-4 py-3 text-white placeholder-neutral-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500" placeholder="jan@example.com">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-neutral-300 mb-2">Temat</label>
+            <select class="w-full rounded-xl bg-white/10 border border-white/20 px-4 py-3 text-white focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500">
+              <option value="" class="text-neutral-900">Wybierz temat</option>
+              <option value="sales" class="text-neutral-900">Sprzedaz / Demo</option>
+              <option value="support" class="text-neutral-900">Wsparcie techniczne</option>
+              <option value="partnership" class="text-neutral-900">Wspolpraca</option>
+              <option value="other" class="text-neutral-900">Inne</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-neutral-300 mb-2">Wiadomosc</label>
+            <textarea rows="4" class="w-full rounded-xl bg-white/10 border border-white/20 px-4 py-3 text-white placeholder-neutral-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500" placeholder="Jak mozemy Ci pomoc?"></textarea>
+          </div>
+          <button type="submit" class="w-full rounded-full bg-emerald-500 py-3 text-sm font-medium text-white hover:bg-emerald-600 transition-colors">
+            Wyslij wiadomosc
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
