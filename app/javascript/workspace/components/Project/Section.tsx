@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
-import type { ProjectSection, CreateItemInput } from '../../types';
+import type { ProjectSection, CreateItemInput, UpdateItemInput } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
-import { useCreateItem, useDeleteItem } from '../../hooks/useItems';
+import { useCreateItem, useUpdateItem, useDeleteItem } from '../../hooks/useItems';
 import { useUpdateSection, useDeleteSection } from '../../hooks/useSections';
 import ItemCard from './ItemCard';
 import AddItemForm from './AddItemForm';
@@ -20,6 +20,7 @@ export default function Section({ section, projectId }: SectionProps) {
   const updateSection = useUpdateSection(projectId);
   const deleteSection = useDeleteSection(projectId);
   const createItem = useCreateItem(projectId, section.id);
+  const updateItem = useUpdateItem(projectId, section.id);
   const deleteItem = useDeleteItem(projectId, section.id);
 
   useEffect(() => {
@@ -49,6 +50,10 @@ export default function Section({ section, projectId }: SectionProps) {
 
   const handleAddItem = (data: CreateItemInput) => {
     createItem.mutate(data);
+  };
+
+  const handleUpdateItem = (itemId: number, input: UpdateItemInput) => {
+    updateItem.mutate({ itemId, input });
   };
 
   const handleDeleteItem = (itemId: number) => {
@@ -145,7 +150,9 @@ export default function Section({ section, projectId }: SectionProps) {
               <ItemCard
                 key={item.id}
                 item={item}
+                onUpdate={handleUpdateItem}
                 onDelete={handleDeleteItem}
+                isUpdating={updateItem.isPending}
                 isDeleting={deleteItem.isPending}
               />
             ))}

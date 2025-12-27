@@ -1,15 +1,60 @@
-import type { ProjectItem } from '../../types';
-import { formatCurrency, getStatusColor, getStatusLabel } from '../../utils/formatters';
+import { useState } from 'react';
+import type { ProjectItem, UpdateItemInput } from '../../types';
+import { formatCurrency } from '../../utils/formatters';
+import EditableField from '../shared/EditableField';
+import StatusSelect from '../shared/StatusSelect';
 
 interface ItemCardProps {
   item: ProjectItem;
+  onUpdate?: (itemId: number, input: UpdateItemInput) => void;
   onDelete?: (itemId: number) => void;
+  isUpdating?: boolean;
   isDeleting?: boolean;
 }
 
-export default function ItemCard({ item, onDelete, isDeleting }: ItemCardProps) {
+export default function ItemCard({
+  item,
+  onUpdate,
+  onDelete,
+  isUpdating,
+  isDeleting,
+}: ItemCardProps) {
+  const [isEditingThumbnail, setIsEditingThumbnail] = useState(false);
+  const [thumbnailUrl, setThumbnailUrl] = useState(item.thumbnail_url || '');
+
   const isProposal = item.status.toLowerCase() === 'propozycja';
-  const cardClasses = isProposal ? 'opacity-60 grayscale-[30%]' : '';
+  const cardClasses = isProposal ? 'opacity-70' : '';
+  const isDisabled = isUpdating || isDeleting;
+
+  const handleUpdate = (field: keyof UpdateItemInput, value: string) => {
+    if (!onUpdate) return;
+
+    let processedValue: string | number | undefined = value;
+
+    // Convert numeric fields
+    if (field === 'quantity') {
+      const num = parseInt(value, 10);
+      processedValue = isNaN(num) || num < 1 ? 1 : num;
+    } else if (field === 'unit_price') {
+      const num = parseFloat(value.replace(',', '.'));
+      processedValue = isNaN(num) ? undefined : num;
+    }
+
+    // Don't send empty strings for optional fields
+    if (value === '' && field !== 'name') {
+      processedValue = undefined;
+    }
+
+    onUpdate(item.id, { [field]: processedValue });
+  };
+
+  const handleThumbnailSave = () => {
+    const trimmed = thumbnailUrl.trim();
+    if (trimmed !== (item.thumbnail_url || '')) {
+      handleUpdate('thumbnail_url', trimmed);
+    }
+    setIsEditingThumbnail(false);
+  };
 
   const handleDelete = () => {
     if (onDelete && confirm('Usunąć tę pozycję?')) {
@@ -18,58 +63,25 @@ export default function ItemCard({ item, onDelete, isDeleting }: ItemCardProps) 
   };
 
   return (
-    <div
-      className={`group relative rounded-2xl border border-neutral-200 bg-white p-4 hover:shadow-md hover:border-neutral-300 transition-all ${cardClasses}`}
-    >
-      <div className="flex gap-4">
-        {/* Thumbnail */}
-        <div className="shrink-0">
-          <div className="h-20 w-20 rounded-xl bg-neutral-100 overflow-hidden">
-            {item.thumbnail_url ? (
-              <img
-                src={item.thumbnail_url}
-                alt={item.name}
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <div className="h-full w-full flex items-center justify-center text-xs text-neutral-300">
-                <svg
-                  className="w-8 h-8"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Product info */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-4">
-            <div className="min-w-0 flex-1">
-              <h4 className="font-medium text-neutral-900 truncate">{item.name}</h4>
-              {item.note && (
-                <p className="mt-0.5 text-sm text-neutral-500 line-clamp-2">
-                  {item.note}
-                </p>
-              )}
-              {item.external_url && (
-                <a
-                  href={item.external_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 mt-1 text-xs text-neutral-400 hover:text-neutral-600"
-                >
+    <div className={`group flex gap-2 ${isDisabled ? 'pointer-events-none opacity-60' : ''}`}>
+      {/* Item card */}
+      <div
+        className={`flex-1 rounded-2xl border border-neutral-200 bg-white p-4 hover:shadow-md hover:border-neutral-300 transition-all ${cardClasses}`}
+      >
+        <div className="flex gap-4">
+          {/* Thumbnail with edit overlay */}
+          <div className="shrink-0 h-20 w-20 relative group/thumb">
+            <div className="h-full w-full rounded-xl bg-neutral-100 overflow-hidden">
+              {item.thumbnail_url ? (
+                <img
+                  src={item.thumbnail_url}
+                  alt={item.name}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <div className="h-full w-full flex items-center justify-center text-xs text-neutral-300">
                   <svg
-                    className="w-3 h-3"
+                    className="w-8 h-8"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -77,102 +89,302 @@ export default function ItemCard({ item, onDelete, isDeleting }: ItemCardProps) 
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                      strokeWidth={1.5}
+                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                     />
                   </svg>
-                  link...
-                </a>
+                </div>
               )}
             </div>
 
-            {/* Sum + Status (right side) */}
-            <div className="shrink-0 text-right">
-              <div className="inline-flex items-center rounded-lg border border-neutral-200 px-3 py-1.5 bg-neutral-50">
-                <span className="text-[10px] text-neutral-400 uppercase tracking-wide mr-2">
-                  Suma
-                </span>
-                <span className="font-semibold text-neutral-900">
-                  {formatCurrency(item.total_price)}
-                </span>
-              </div>
+            {/* Edit thumbnail button - overlay on hover */}
+            <button
+              type="button"
+              onClick={() => {
+                setThumbnailUrl(item.thumbnail_url || '');
+                setIsEditingThumbnail(true);
+              }}
+              className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover/thumb:opacity-100 transition-opacity rounded-xl"
+              title="Edytuj miniaturkę"
+            >
+              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+              </svg>
+            </button>
 
-              <div className="mt-2">
-                <span
-                  className={`inline-flex items-center rounded-full px-3 py-1 text-[10px] font-semibold tracking-wide ${
-                    item.status === 'zamówione'
-                      ? 'bg-emerald-500 text-white'
-                      : item.status === 'wybrane'
-                      ? 'bg-violet-500 text-white'
-                      : 'bg-neutral-200 text-neutral-600'
-                  }`}
-                >
-                  {getStatusLabel(item.status)}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Details grid */}
-          <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-2 text-xs">
-            <div>
-              <span className="text-neutral-400 uppercase tracking-wide text-[10px]">
-                Wymiary
-              </span>
-              <p className="text-neutral-700 font-medium">
-                {item.dimensions || '—'}
-              </p>
-            </div>
-            <div>
-              <span className="text-neutral-400 uppercase tracking-wide text-[10px]">
-                Kategoria
-              </span>
-              <p className="text-neutral-700 font-medium">
-                {item.category || '—'}
-              </p>
-            </div>
-            <div>
-              <span className="text-neutral-400 uppercase tracking-wide text-[10px]">
-                Ilość
-              </span>
-              <p className="text-neutral-700 font-medium">{item.quantity} szt.</p>
-            </div>
-            <div>
-              <span className="text-neutral-400 uppercase tracking-wide text-[10px]">
-                Cena
-              </span>
-              <p className="text-neutral-700 font-medium">
-                {formatCurrency(item.unit_price)}
-              </p>
-            </div>
-            {item.discount_label && (
-              <div>
-                <span className="text-neutral-400 uppercase tracking-wide text-[10px]">
-                  Rabat
-                </span>
-                <p className="text-emerald-600 font-medium">{item.discount_label}</p>
+            {/* Thumbnail URL edit modal */}
+            {isEditingThumbnail && (
+              <div className="absolute top-0 left-0 z-50 mt-[-8px] ml-[-8px]">
+                <div className="bg-white rounded-xl shadow-xl border border-neutral-200 p-3 w-72">
+                  <label className="text-[10px] text-neutral-500 uppercase tracking-wide block mb-1">
+                    URL miniaturki
+                  </label>
+                  <input
+                    type="url"
+                    value={thumbnailUrl}
+                    onChange={(e) => setThumbnailUrl(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleThumbnailSave();
+                      if (e.key === 'Escape') setIsEditingThumbnail(false);
+                    }}
+                    placeholder="https://..."
+                    className="w-full text-xs bg-neutral-50 border border-neutral-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
+                    autoFocus
+                  />
+                  <div className="flex gap-2 mt-2">
+                    <button
+                      type="button"
+                      onClick={handleThumbnailSave}
+                      className="flex-1 text-xs bg-emerald-500 text-white rounded-lg py-1.5 hover:bg-emerald-600 transition-colors"
+                    >
+                      Zapisz
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setIsEditingThumbnail(false)}
+                      className="flex-1 text-xs bg-neutral-100 text-neutral-600 rounded-lg py-1.5 hover:bg-neutral-200 transition-colors"
+                    >
+                      Anuluj
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
+          </div>
+
+          {/* Product info */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start justify-between gap-4">
+              <div className="min-w-0 flex-1">
+                {/* Name - editable */}
+                <div className="font-medium text-neutral-900">
+                  <EditableField
+                    value={item.name}
+                    onChange={(v) => handleUpdate('name', v)}
+                    placeholder="Nazwa produktu"
+                    required
+                    disabled={isDisabled}
+                    className="font-medium"
+                  />
+                </div>
+
+                {/* Note - editable */}
+                <div className="mt-0.5 text-sm text-neutral-500">
+                  <EditableField
+                    value={item.note}
+                    onChange={(v) => handleUpdate('note', v)}
+                    placeholder="Dodaj notatkę..."
+                    emptyText="Dodaj notatkę..."
+                    disabled={isDisabled}
+                    className="text-sm"
+                  />
+                </div>
+
+                {/* External link */}
+                {item.external_url && (
+                  <a
+                    href={item.external_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 mt-1 text-xs text-emerald-600 hover:text-emerald-700 font-medium"
+                  >
+                    <svg
+                      className="w-3 h-3"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                      />
+                    </svg>
+                    Zobacz produkt
+                  </a>
+                )}
+              </div>
+
+              {/* Sum + Status (right side) */}
+              <div className="shrink-0 text-right space-y-2">
+                <div className="inline-flex items-center rounded-lg border border-neutral-200 px-3 py-1.5 bg-neutral-50">
+                  <span className="text-[10px] text-neutral-400 uppercase tracking-wide mr-2">
+                    Suma
+                  </span>
+                  <span className="font-semibold text-neutral-900">
+                    {formatCurrency(item.total_price)}
+                  </span>
+                </div>
+
+                <div>
+                  <StatusSelect
+                    value={item.status}
+                    onChange={(v) => handleUpdate('status', v)}
+                    disabled={isDisabled}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Details grid - all editable */}
+            <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-3 text-xs">
+              {/* Dimensions */}
+              <div>
+                <span className="text-neutral-400 uppercase tracking-wide text-[10px] block mb-0.5">
+                  Wymiary
+                </span>
+                <EditableField
+                  value={item.dimensions}
+                  onChange={(v) => handleUpdate('dimensions', v)}
+                  placeholder="np. 120x80x45"
+                  disabled={isDisabled}
+                  className="text-neutral-700 font-medium"
+                />
+              </div>
+
+              {/* Category */}
+              <div>
+                <span className="text-neutral-400 uppercase tracking-wide text-[10px] block mb-0.5">
+                  Kategoria
+                </span>
+                <EditableField
+                  value={item.category}
+                  onChange={(v) => handleUpdate('category', v)}
+                  placeholder="np. Sofy"
+                  disabled={isDisabled}
+                  className="text-neutral-700 font-medium"
+                />
+              </div>
+
+              {/* Quantity */}
+              <div>
+                <span className="text-neutral-400 uppercase tracking-wide text-[10px] block mb-0.5">
+                  Ilość
+                </span>
+                <div className="flex items-center gap-1">
+                  <EditableField
+                    value={item.quantity}
+                    onChange={(v) => handleUpdate('quantity', v)}
+                    type="number"
+                    placeholder="1"
+                    disabled={isDisabled}
+                    className="text-neutral-700 font-medium"
+                    inputClassName="w-16"
+                  />
+                  <span className="text-neutral-500">szt.</span>
+                </div>
+              </div>
+
+              {/* Unit price */}
+              <div>
+                <span className="text-neutral-400 uppercase tracking-wide text-[10px] block mb-0.5">
+                  Cena jedn.
+                </span>
+                <div className="flex items-center gap-1">
+                  <EditableField
+                    value={item.unit_price}
+                    onChange={(v) => handleUpdate('unit_price', v)}
+                    type="number"
+                    placeholder="0.00"
+                    disabled={isDisabled}
+                    className="text-neutral-700 font-medium"
+                    inputClassName="w-20"
+                  />
+                  <span className="text-neutral-500">zł</span>
+                </div>
+              </div>
+
+              {/* Currency */}
+              <div>
+                <span className="text-neutral-400 uppercase tracking-wide text-[10px] block mb-0.5">
+                  Waluta
+                </span>
+                <EditableField
+                  value={item.currency || 'PLN'}
+                  onChange={(v) => handleUpdate('currency', v)}
+                  placeholder="PLN"
+                  disabled={isDisabled}
+                  className="text-neutral-700 font-medium"
+                  inputClassName="w-16"
+                />
+              </div>
+
+              {/* Discount label */}
+              <div>
+                <span className="text-neutral-400 uppercase tracking-wide text-[10px] block mb-0.5">
+                  Rabat
+                </span>
+                <EditableField
+                  value={item.discount_label}
+                  onChange={(v) => handleUpdate('discount_label', v)}
+                  placeholder="np. -20%"
+                  disabled={isDisabled}
+                  className={item.discount_label ? 'text-emerald-600 font-medium' : 'text-neutral-700 font-medium'}
+                />
+              </div>
+
+              {/* External URL */}
+              <div className="sm:col-span-2">
+                <span className="text-neutral-400 uppercase tracking-wide text-[10px] block mb-0.5">
+                  Link do produktu
+                </span>
+                <div className="flex items-center gap-2">
+                  <EditableField
+                    value={item.external_url}
+                    onChange={(v) => handleUpdate('external_url', v)}
+                    type="url"
+                    placeholder="https://..."
+                    disabled={isDisabled}
+                    className="text-neutral-700 font-medium truncate flex-1 max-w-[200px]"
+                  />
+                  {item.external_url && (
+                    <a
+                      href={item.external_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="shrink-0 p-1 rounded hover:bg-emerald-50 text-emerald-600"
+                      title="Otwórz link"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                        />
+                      </svg>
+                    </a>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Action buttons (visible on hover) */}
-      {onDelete && (
-        <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+      {/* Right actions panel - visible on hover */}
+      <div className="w-8 shrink-0 flex flex-col items-center gap-1 pt-4 opacity-0 group-hover:opacity-100 transition-opacity">
+        {/* Drag handle (placeholder for future DnD) */}
+        <div
+          className="p-1.5 rounded text-neutral-300 cursor-grab"
+          title="Przeciągnij"
+        >
+          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M8 6a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM8 12a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM6 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM14 6a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM14 18a2 2 0 1 1-4 0 2 2 0 0 1 4 0z" />
+          </svg>
+        </div>
+
+        {/* Delete button */}
+        {onDelete && (
           <button
             type="button"
             onClick={handleDelete}
             disabled={isDeleting}
-            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs text-neutral-500 hover:text-red-600 hover:bg-red-50 border border-transparent hover:border-red-200 transition-all disabled:opacity-50"
+            className="p-1.5 rounded text-neutral-300 hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50"
             title="Usuń"
           >
-            <svg
-              className="w-3.5 h-3.5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -180,10 +392,9 @@ export default function ItemCard({ item, onDelete, isDeleting }: ItemCardProps) 
                 d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
               />
             </svg>
-            {isDeleting ? 'Usuwanie...' : 'Usuń'}
           </button>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
