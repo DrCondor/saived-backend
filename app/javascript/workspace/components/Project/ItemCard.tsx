@@ -8,6 +8,8 @@ interface ItemCardProps {
   item: ProjectItem;
   onUpdate?: (itemId: number, input: UpdateItemInput) => void;
   onDelete?: (itemId: number) => void;
+  dragHandleProps?: React.HTMLAttributes<HTMLDivElement>;
+  isDragging?: boolean;
 }
 
 // Memoize to prevent re-renders when other items change
@@ -15,12 +17,17 @@ const ItemCard = memo(function ItemCard({
   item,
   onUpdate,
   onDelete,
+  dragHandleProps,
+  isDragging,
 }: ItemCardProps) {
   const [isEditingThumbnail, setIsEditingThumbnail] = useState(false);
   const [thumbnailUrl, setThumbnailUrl] = useState(item.thumbnail_url || '');
 
   const isProposal = item.status.toLowerCase() === 'propozycja';
-  const cardClasses = isProposal ? 'opacity-70' : '';
+  const cardClasses = [
+    isProposal ? 'opacity-70' : '',
+    isDragging ? 'ring-2 ring-emerald-500 shadow-lg' : '',
+  ].filter(Boolean).join(' ');
 
   const handleUpdate = (field: keyof UpdateItemInput, value: string) => {
     if (!onUpdate) return;
@@ -349,11 +356,14 @@ const ItemCard = memo(function ItemCard({
         </div>
       </div>
 
-      {/* Right actions panel - visible on hover */}
-      <div className="w-8 shrink-0 flex flex-col items-center gap-1 pt-4 opacity-0 group-hover:opacity-100 transition-opacity">
-        {/* Drag handle (placeholder for future DnD) */}
+      {/* Right actions panel - visible on hover or while dragging */}
+      <div className={`w-8 shrink-0 flex flex-col items-center gap-1 pt-4 transition-opacity ${
+        isDragging ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+      }`}>
+        {/* Drag handle */}
         <div
-          className="p-1.5 rounded text-neutral-300 cursor-grab"
+          {...dragHandleProps}
+          className="p-1.5 rounded text-neutral-300 hover:text-neutral-500 cursor-grab active:cursor-grabbing touch-none"
           title="Przeciągnij"
         >
           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">

@@ -20,6 +20,7 @@ export interface ProjectItem {
   external_url: string | null;
   discount_label: string | null;
   thumbnail_url: string | null;
+  position: number;
 }
 
 export interface ProjectSection {
@@ -81,6 +82,18 @@ export interface CreateItemInput {
 }
 
 export interface UpdateItemInput extends Partial<CreateItemInput> {}
+
+// Reorder types
+export interface ItemMove {
+  item_id: number;
+  section_id: number;
+  position: number;
+}
+
+export interface ReorderInput {
+  item_moves?: ItemMove[];
+  section_order?: number[];
+}
 
 // Initial data from Rails
 declare global {

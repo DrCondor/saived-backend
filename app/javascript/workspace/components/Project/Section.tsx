@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { useDroppable } from '@dnd-kit/core';
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import type { ProjectSection, CreateItemInput, UpdateItemInput } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
 import { useCreateItem, useUpdateItem, useDeleteItem } from '../../hooks/useItems';
 import { useUpdateSection, useDeleteSection } from '../../hooks/useSections';
-import ItemCard from './ItemCard';
+import SortableItemCard from './SortableItemCard';
 import AddItemForm from './AddItemForm';
 
 interface SectionProps {
@@ -22,6 +24,15 @@ export default function Section({ section, projectId }: SectionProps) {
   const createItem = useCreateItem(projectId, section.id);
   const updateItem = useUpdateItem(projectId, section.id);
   const deleteItem = useDeleteItem(projectId, section.id);
+
+  // Droppable zone for cross-section item moves
+  const { setNodeRef, isOver } = useDroppable({
+    id: `section-${section.id}`,
+    data: {
+      type: 'section',
+      sectionId: section.id,
+    },
+  });
 
   useEffect(() => {
     if (isEditing && inputRef.current) {
@@ -144,18 +155,28 @@ export default function Section({ section, projectId }: SectionProps) {
       {/* Section content */}
       {!isCollapsed && (
         <>
-          {/* Items list */}
-          <div className="space-y-3">
-            {items.map((item) => (
-              <ItemCard
-                key={item.id}
-                item={item}
-                onUpdate={handleUpdateItem}
-                onDelete={handleDeleteItem}
-              />
-            ))}
+          {/* Items list - droppable zone */}
+          <div
+            ref={setNodeRef}
+            className={`space-y-3 min-h-[60px] rounded-xl transition-colors ${
+              isOver && items.length === 0 ? 'bg-emerald-50 ring-2 ring-emerald-300 ring-dashed' : ''
+            }`}
+          >
+            <SortableContext
+              items={items.map((item) => item.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              {items.map((item) => (
+                <SortableItemCard
+                  key={item.id}
+                  item={item}
+                  onUpdate={handleUpdateItem}
+                  onDelete={handleDeleteItem}
+                />
+              ))}
+            </SortableContext>
 
-            {items.length === 0 && (
+            {items.length === 0 && !isOver && (
               <div className="rounded-2xl border-2 border-dashed border-neutral-200 py-8 text-center">
                 <p className="text-sm text-neutral-400">Brak pozycji w tej sekcji</p>
               </div>

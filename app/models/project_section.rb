@@ -2,8 +2,11 @@ class ProjectSection < ApplicationRecord
   belongs_to :project
 
   has_many :items,
+           -> { order(position: :asc) },
            class_name: "ProjectItem",
            dependent: :destroy
+
+  default_scope { order(position: :asc) }
 
   validates :name, presence: true
 

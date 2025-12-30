@@ -4,6 +4,7 @@ import type {
   ProjectListItem,
   CreateProjectInput,
   UpdateProjectInput,
+  ReorderInput,
 } from '../types';
 
 interface ProjectsResponse {
@@ -40,4 +41,14 @@ export async function updateProject(
 
 export async function deleteProject(id: number): Promise<void> {
   await apiClient(`/projects/${id}`, { method: 'DELETE' });
+}
+
+export async function reorderProject(
+  id: number,
+  input: ReorderInput
+): Promise<Project> {
+  return apiClient<Project>(`/projects/${id}/reorder`, {
+    method: 'POST',
+    json: input,
+  });
 }

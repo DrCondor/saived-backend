@@ -69,6 +69,48 @@ module Api
         render json: { error: "Not found" }, status: :not_found
       end
 
+      # POST /api/v1/projects/:id/reorder
+      # Handles item reordering within sections and moving between sections
+      # Also handles section reordering
+      def reorder
+        project = current_user.projects.find(params[:id])
+
+        ActiveRecord::Base.transaction do
+          # Handle item moves
+          if params[:item_moves].present?
+            params[:item_moves].each do |move|
+              item = ProjectItem.joins(:project_section)
+                                .where(project_sections: { project_id: project.id })
+                                .find(move[:item_id])
+
+              target_section = project.sections.find(move[:section_id])
+
+              # Move item to new section if different
+              if item.project_section_id != target_section.id
+                item.project_section_id = target_section.id
+              end
+
+              item.position = move[:position]
+              item.save!
+            end
+          end
+
+          # Handle section reordering
+          if params[:section_order].present?
+            params[:section_order].each_with_index do |section_id, index|
+              section = project.sections.find(section_id)
+              section.update!(position: index)
+            end
+          end
+        end
+
+        render json: project_json(project.reload)
+      rescue ActiveRecord::RecordNotFound
+        render json: { error: "Not found" }, status: :not_found
+      rescue ActiveRecord::RecordInvalid => e
+        render json: { errors: e.record.errors.full_messages }, status: :unprocessable_entity
+      end
+
       private
 
       def project_params
@@ -101,7 +143,8 @@ module Api
                   status: item.status,
                   external_url: item.external_url,
                   discount_label: item.discount_label,
-                  thumbnail_url: item.thumbnail_url
+                  thumbnail_url: item.thumbnail_url,
+                  position: item.position
                 }
               }
             }
