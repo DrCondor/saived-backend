@@ -6,19 +6,18 @@ require "prawn/table"
 class ProjectPdfGenerator
   include Prawn::View
 
-  # Brand colors (RGB)
-  BRAND_PRIMARY = "171717"    # neutral-900
-  BRAND_SECONDARY = "737373"  # neutral-500
-  BRAND_ACCENT = "10B981"     # emerald-500
-  BRAND_LIGHT = "F5F5F5"      # neutral-100
-  BRAND_BORDER = "E5E5E5"     # neutral-200
+  # Monochromatic palette - professional document style
+  BRAND_PRIMARY = "1a1a1a"    # Near black
+  BRAND_SECONDARY = "666666"  # Gray for secondary text
+  BRAND_LIGHT = "f5f5f5"      # Light gray (table headers only)
+  BRAND_BORDER = "cccccc"     # Lines
 
-  # Document settings
-  PAGE_MARGIN_TOP = 40
-  PAGE_MARGIN_BOTTOM = 60     # Extra space for footer
-  PAGE_MARGIN_SIDES = 40
-  CONTENT_WIDTH = 515         # A4 width minus margins
-  FOOTER_Y_POSITION = 35      # Fixed Y position for footer
+  # Compact document settings
+  PAGE_MARGIN_TOP = 25
+  PAGE_MARGIN_BOTTOM = 35
+  PAGE_MARGIN_SIDES = 30
+  CONTENT_WIDTH = 535         # A4 width minus smaller margins
+  FOOTER_Y_POSITION = 20
 
   def initialize(project, user)
     @project = project
@@ -57,13 +56,12 @@ class ProjectPdfGenerator
 
   def filename
     sanitized_name = @project.name.gsub(/[^a-zA-Z0-9ąćęłńóśźżĄĆĘŁŃÓŚŹŻ\s-]/i, "").gsub(/\s+/, "_")
-    "kosztorys_#{sanitized_name}_#{@document_number}.pdf"
+    "kosztorys_#{sanitized_name}_#{@document_number.gsub('/', '-')}.pdf"
   end
 
   private
 
   def setup_fonts
-    # Use Inter font for full UTF-8/Polish character support
     fonts_path = Rails.root.join("app", "assets", "fonts")
 
     font_families.update(
@@ -100,94 +98,86 @@ class ProjectPdfGenerator
     @user.full_name || @user.email
   end
 
+  def logo_path
+    Rails.root.join("app", "assets", "images", "saived-logo-small.jpg").to_s
+  end
+
   # === HEADER ===
   def render_header
-    # Top accent line
-    stroke_color BRAND_ACCENT
-    line_width 3
-    stroke_horizontal_line 0, CONTENT_WIDTH, at: cursor
+    # Left side: Logo + company name
+    bounding_box([0, cursor], width: 250, height: 40) do
+      # Logo image
+      if File.exist?(logo_path)
+        image logo_path, width: 20, at: [0, cursor]
+      end
 
-    move_down 20
-
-    # Logo and company info (left side)
-    bounding_box([0, cursor], width: 300, height: 60) do
-      render_logo
+      # Company name next to logo
+      bounding_box([26, cursor], width: 220, height: 40) do
+        fill_color BRAND_PRIMARY
+        font_size 11
+        text "SAIVED", style: :bold
+        move_down 1
+        font_size 7
+        fill_color BRAND_SECONDARY
+        text "Wyceny wnętrz"
+      end
     end
 
-    # Document info (right side)
-    bounding_box([320, cursor + 60], width: 195, height: 60) do
-      font_size 9
-      fill_color BRAND_SECONDARY
-      text "KOSZTORYS", align: :right, style: :bold
-      move_down 3
+    # Right side: Document title and number
+    bounding_box([350, cursor + 40], width: 185, height: 40) do
       fill_color BRAND_PRIMARY
-      font_size 11
-      text "Nr #{@document_number}", align: :right, style: :bold
-      move_down 3
+      font_size 14
+      text "KOSZTORYS", align: :right, style: :bold
+      move_down 2
       font_size 9
       fill_color BRAND_SECONDARY
+      text "Nr #{@document_number}", align: :right
+      move_down 1
+      font_size 8
       text format_date(@generated_at), align: :right
     end
 
-    move_down 10
+    move_down 8
 
-    # Divider line
+    # Thin separator line
     stroke_color BRAND_BORDER
     line_width 0.5
     stroke_horizontal_line 0, CONTENT_WIDTH, at: cursor
 
-    move_down 20
-  end
-
-  def render_logo
-    # Text-based logo (can be replaced with actual logo image)
-    fill_color BRAND_PRIMARY
-    font_size 24
-    text "SAIVED", style: :bold
-
-    move_down 2
-    font_size 8
-    fill_color BRAND_SECONDARY
-    text "Narzędzie do wyceny wnętrz"
+    move_down 12
   end
 
   # === PROJECT INFO ===
   def render_project_info
-    # Project name box
-    fill_color BRAND_LIGHT
-    fill_rounded_rectangle [0, cursor], CONTENT_WIDTH, 70, 8
+    # Project name - simple text, no box
+    font_size 10
+    fill_color BRAND_PRIMARY
+    text "Projekt: #{@project.name}", style: :bold
 
-    bounding_box([15, cursor - 12], width: CONTENT_WIDTH - 30, height: 50) do
+    if @project.description.present?
+      move_down 2
       font_size 8
       fill_color BRAND_SECONDARY
-      text "PROJEKT"
-
-      move_down 4
-      font_size 16
-      fill_color BRAND_PRIMARY
-      text @project.name, style: :bold
-
-      if @project.description.present?
-        move_down 4
-        font_size 9
-        fill_color BRAND_SECONDARY
-        text @project.description, leading: 2
-      end
+      text @project.description
     end
 
-    move_down 80
+    move_down 4
 
-    # Prepared by info
-    font_size 9
+    # Prepared by - simple text
+    font_size 8
     fill_color BRAND_SECONDARY
     prepared_by = user_display_name
     prepared_by += " (#{@user.email})" if @user.full_name.present?
-    text_box "Przygotował/a: #{prepared_by}",
-             at: [0, cursor],
-             width: CONTENT_WIDTH,
-             height: 15
+    text "Przygotował/a: #{prepared_by}"
 
-    move_down 25
+    move_down 6
+
+    # Separator line
+    stroke_color BRAND_BORDER
+    line_width 0.5
+    stroke_horizontal_line 0, CONTENT_WIDTH, at: cursor
+
+    move_down 15
   end
 
   # === SECTIONS ===
@@ -202,10 +192,10 @@ class ProjectPdfGenerator
   def render_section(section, section_number)
     items = section.items.order(:position, :created_at)
 
-    # Check if we need a new page (minimum 100pt for section header + some content)
-    start_new_page if cursor < 150
+    # Check if we need a new page
+    start_new_page if cursor < 100
 
-    # Section header
+    # Section header - simple text with number
     render_section_header(section, section_number)
 
     # Items table
@@ -218,32 +208,23 @@ class ProjectPdfGenerator
     # Section subtotal
     render_section_subtotal(section)
 
-    move_down 25
+    move_down 15
   end
 
   def render_section_header(section, section_number)
-    # Section number badge
+    # Simple text header: "1. Salon"
     fill_color BRAND_PRIMARY
-    fill_rounded_rectangle [0, cursor], 24, 18, 4
-
-    # Badge text
-    fill_color "FFFFFF"
     font_size 9
-    draw_text section_number.to_s, at: [8, cursor - 13], style: :bold
+    text "#{section_number}. #{section.name}", style: :bold
 
-    # Section name
-    fill_color BRAND_PRIMARY
-    font_size 12
-    draw_text section.name, at: [32, cursor - 13], style: :bold
+    move_down 4
 
-    move_down 28
-
-    # Subtle line under header
+    # Thin line under header
     stroke_color BRAND_BORDER
     line_width 0.5
     stroke_horizontal_line 0, CONTENT_WIDTH, at: cursor
 
-    move_down 10
+    move_down 6
   end
 
   def render_items_table(items)
@@ -254,40 +235,47 @@ class ProjectPdfGenerator
       { content: "#", font_style: :bold },
       { content: "Nazwa produktu", font_style: :bold },
       { content: "Ilość", font_style: :bold },
-      { content: "Cena jedn.", font_style: :bold },
+      { content: "Cena", font_style: :bold },
       { content: "Suma", font_style: :bold }
     ]
 
     # Item rows
     items.each_with_index do |item, index|
       status_indicator = item.status.downcase == "propozycja" ? " *" : ""
+      item_name = item.name + status_indicator
+
+      # Add note on new line if present
+      if item.note.present?
+        item_name += "\n#{item.note}"
+      end
 
       table_data << [
         { content: (index + 1).to_s },
-        { content: build_item_name_cell(item) + status_indicator },
+        { content: item_name },
         { content: "#{item.quantity} szt." },
         { content: format_currency(item.unit_price) },
         { content: format_currency(item.total_price), font_style: :bold }
       ]
     end
 
-    # Render table
-    table(table_data, width: CONTENT_WIDTH, cell_style: { size: 9, padding: [8, 10] }) do |t|
+    # Compact table
+    table(table_data, width: CONTENT_WIDTH, cell_style: { size: 7.5, padding: [3, 5] }) do |t|
       # Header styling
       t.row(0).background_color = BRAND_LIGHT
       t.row(0).text_color = BRAND_PRIMARY
+      t.row(0).size = 7
 
-      # All rows
+      # All cells - thin borders
       t.cells.borders = [:bottom]
       t.cells.border_color = BRAND_BORDER
-      t.cells.border_width = 0.5
+      t.cells.border_width = 0.25
 
-      # Column widths
-      t.column(0).width = 30
-      t.column(1).width = 230
-      t.column(2).width = 60
-      t.column(3).width = 90
-      t.column(4).width = 105
+      # Column widths - optimized for compact layout
+      t.column(0).width = 25
+      t.column(1).width = 270
+      t.column(2).width = 55
+      t.column(3).width = 85
+      t.column(4).width = 100
 
       # Alignments
       t.column(0).align = :center
@@ -295,109 +283,105 @@ class ProjectPdfGenerator
       t.column(3).align = :right
       t.column(4).align = :right
 
+      # Notes in item column - smaller/lighter
+      t.columns(1).rows(1..-1).each do |cell|
+        if cell.content.include?("\n")
+          # Style note part differently would need inline formatting
+          # For now, just keep it as is
+        end
+      end
+
       # Last row no bottom border
       t.row(-1).borders = []
     end
 
-    move_down 5
-  end
-
-  def build_item_name_cell(item)
-    name = item.name
-    if item.note.present?
-      name += "\n"
-      # Note will be added as smaller text
-    end
-    name
+    move_down 4
   end
 
   def render_empty_section_message
-    font_size 9
+    font_size 7.5
     fill_color BRAND_SECONDARY
     text "Brak pozycji w tej sekcji.", style: :italic
-    move_down 10
+    move_down 6
   end
 
   def render_section_subtotal(section)
     subtotal = section.total_price
 
-    # Right-aligned subtotal box
-    bounding_box([CONTENT_WIDTH - 200, cursor], width: 200, height: 30) do
-      fill_color BRAND_LIGHT
-      fill_rounded_rectangle [0, cursor], 200, 28, 4
+    # Simple right-aligned text, no box
+    font_size 8
+    fill_color BRAND_SECONDARY
 
-      bounding_box([10, cursor - 6], width: 180, height: 20) do
-        font_size 9
-        fill_color BRAND_SECONDARY
-        text_box "Suma sekcji:",
-                 at: [0, cursor],
-                 width: 80,
-                 height: 15
+    text_box "Razem:",
+             at: [CONTENT_WIDTH - 150, cursor],
+             width: 50,
+             height: 12,
+             align: :right
 
-        fill_color BRAND_PRIMARY
-        font_size 10
-        text_box format_currency(subtotal),
-                 at: [80, cursor],
-                 width: 100,
-                 height: 15,
-                 align: :right,
-                 style: :bold
-      end
-    end
+    fill_color BRAND_PRIMARY
+    text_box format_currency(subtotal),
+             at: [CONTENT_WIDTH - 95, cursor],
+             width: 95,
+             height: 12,
+             align: :right,
+             style: :bold
 
-    move_down 35
+    move_down 15
   end
 
   # === GRAND TOTAL ===
   def render_grand_total
-    # Ensure we have enough space for grand total section (need ~120pt)
-    start_new_page if cursor < 120
+    # Ensure space for grand total
+    start_new_page if cursor < 80
 
-    move_down 10
+    move_down 5
 
-    # Divider
+    # Double line separator
     stroke_color BRAND_PRIMARY
-    line_width 1
+    line_width 0.75
     stroke_horizontal_line 0, CONTENT_WIDTH, at: cursor
+    stroke_horizontal_line 0, CONTENT_WIDTH, at: cursor - 2
+
+    move_down 12
+
+    # Grand total - simple text, right aligned, no box
+    font_size 9
+    fill_color BRAND_SECONDARY
+    text_box "SUMA CAŁKOWITA:",
+             at: [CONTENT_WIDTH - 250, cursor],
+             width: 120,
+             height: 15,
+             align: :right
+
+    font_size 12
+    fill_color BRAND_PRIMARY
+    text_box format_currency(@project.total_price),
+             at: [CONTENT_WIDTH - 125, cursor],
+             width: 125,
+             height: 15,
+             align: :right,
+             style: :bold
+
+    move_down 20
+
+    # Double line after total
+    stroke_color BRAND_PRIMARY
+    line_width 0.75
+    stroke_horizontal_line 0, CONTENT_WIDTH, at: cursor
+    stroke_horizontal_line 0, CONTENT_WIDTH, at: cursor - 2
 
     move_down 15
 
-    # Total box
-    fill_color BRAND_PRIMARY
-    fill_rounded_rectangle [CONTENT_WIDTH - 250, cursor], 250, 50, 8
-
-    bounding_box([CONTENT_WIDTH - 240, cursor - 10], width: 230, height: 35) do
-      font_size 10
-      fill_color "FFFFFF"
-      text_box "SUMA CAŁKOWITA",
-               at: [0, cursor],
-               width: 100,
-               height: 15
-
-      move_down 5
-      font_size 18
-      text_box format_currency(@project.total_price),
-               at: [0, cursor],
-               width: 230,
-               height: 25,
-               align: :right,
-               style: :bold
-    end
-
-    move_down 60
-
-    # Notes about proposals
-    if has_proposals?
-      font_size 8
-      fill_color BRAND_SECONDARY
-      text "* Pozycje oznaczone gwiazdką są propozycjami i mogą ulec zmianie."
-      move_down 10
-    end
-
-    # Validity note
-    font_size 8
+    # Notes
+    font_size 6.5
     fill_color BRAND_SECONDARY
-    text "Niniejszy kosztorys jest ważny przez 30 dni od daty wystawienia."
+
+    if has_proposals?
+      text "* Pozycje oznaczone gwiazdką są propozycjami."
+      move_down 3
+    end
+
+    text "Kosztorys ważny 30 dni od daty wystawienia."
   end
 
   def has_proposals?
@@ -407,31 +391,29 @@ class ProjectPdfGenerator
   # === FOOTER ===
   def render_footer_on_all_pages
     repeat(:all) do
-      # Use canvas to draw at absolute page positions
       canvas do
-        # Footer positioned at fixed Y from bottom
-        bounding_box([PAGE_MARGIN_SIDES, FOOTER_Y_POSITION + 15], width: CONTENT_WIDTH, height: 20) do
-          # Divider line
+        bounding_box([PAGE_MARGIN_SIDES, FOOTER_Y_POSITION + 12], width: CONTENT_WIDTH, height: 15) do
+          # Thin separator line
           stroke_color BRAND_BORDER
           line_width 0.5
           stroke_horizontal_line 0, CONTENT_WIDTH, at: cursor
 
-          move_down 8
+          move_down 5
 
-          font_size 7
+          font_size 6.5
           fill_color BRAND_SECONDARY
 
           # Left side - branding
-          text_box "Wygenerowano przez SAIVED | www.saived.com",
+          text_box "SAIVED | www.saived.com",
                    at: [0, cursor],
-                   width: 300,
-                   height: 12
+                   width: 200,
+                   height: 10
 
           # Right side - page number
-          text_box "Strona #{page_number} z #{page_count}",
-                   at: [CONTENT_WIDTH - 100, cursor],
-                   width: 100,
-                   height: 12,
+          text_box "Strona #{page_number} / #{page_count}",
+                   at: [CONTENT_WIDTH - 80, cursor],
+                   width: 80,
+                   height: 10,
                    align: :right
         end
       end
