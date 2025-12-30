@@ -426,14 +426,14 @@ export default function ProjectView({ project }: ProjectViewProps) {
   return (
     <div>
       {/* Project header */}
-      <header className="mb-8">
+      <header className="mb-4">
         {/* Top row: Project name + Toolbar */}
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div className="min-w-0">
             <p className="text-xs font-bold tracking-[0.15em] uppercase text-neutral-400 mb-1">
               Projekt
             </p>
-            <h1 className="text-2xl font-bold tracking-tight text-neutral-900">{project.name}</h1>
+            <h1 className="text-xl font-bold tracking-tight text-neutral-900">{project.name}</h1>
           </div>
 
           {/* Toolbar with search, sort, filter */}
@@ -534,12 +534,12 @@ export default function ProjectView({ project }: ProjectViewProps) {
       </DndContext>
 
       {/* Add section button */}
-      <div className="mt-8 mb-16">
+      <div className="mt-4 mb-8">
         <button
           type="button"
           onClick={handleAddSection}
           disabled={createSection.isPending}
-          className="flex items-center justify-center gap-2 w-full rounded-2xl border-2 border-dashed border-neutral-300 py-6 text-neutral-500 hover:border-neutral-400 hover:text-neutral-600 hover:bg-neutral-50 transition-colors disabled:opacity-50"
+          className="flex items-center justify-center gap-2 w-full rounded-xl border-2 border-dashed border-neutral-300 py-4 text-neutral-500 hover:border-neutral-400 hover:text-neutral-600 hover:bg-neutral-50 transition-colors disabled:opacity-50"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path

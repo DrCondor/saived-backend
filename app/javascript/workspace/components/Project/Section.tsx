@@ -75,9 +75,9 @@ export default function Section({ section, projectId }: SectionProps) {
   const sectionTotal = section.total_price || items.reduce((sum, item) => sum + (item.total_price || 0), 0);
 
   return (
-    <div id={`section-${section.id}`} className="mb-10 scroll-mt-6">
+    <div id={`section-${section.id}`} className="mb-6 scroll-mt-4">
       {/* Section header */}
-      <div className="flex items-center justify-between mb-4 pb-3 border-b border-neutral-200">
+      <div className="flex items-center justify-between mb-3 pb-2 border-b border-neutral-200">
         <div className="flex items-center gap-3 flex-1">
           <button
             type="button"
@@ -158,7 +158,7 @@ export default function Section({ section, projectId }: SectionProps) {
           {/* Items list - droppable zone */}
           <div
             ref={setNodeRef}
-            className={`space-y-3 min-h-[60px] rounded-xl transition-colors ${
+            className={`space-y-2 min-h-[40px] rounded-xl transition-colors ${
               isOver && items.length === 0 ? 'bg-emerald-50 ring-2 ring-emerald-300 ring-dashed' : ''
             }`}
           >

@@ -69,12 +69,12 @@ const ItemCard = memo(function ItemCard({
     <div className="group flex gap-2">
       {/* Item card */}
       <div
-        className={`flex-1 rounded-2xl border border-neutral-200 bg-white p-4 hover:shadow-md hover:border-neutral-300 transition-all ${cardClasses}`}
+        className={`flex-1 rounded-xl border border-neutral-200 bg-white p-3 hover:shadow-md hover:border-neutral-300 transition-all ${cardClasses}`}
       >
-        <div className="flex gap-4">
+        <div className="flex gap-3">
           {/* Thumbnail with edit overlay */}
-          <div className="shrink-0 h-20 w-20 relative group/thumb">
-            <div className="h-full w-full rounded-xl bg-neutral-100 overflow-hidden">
+          <div className="shrink-0 h-14 w-14 relative group/thumb">
+            <div className="h-full w-full rounded-lg bg-neutral-100 overflow-hidden">
               {item.thumbnail_url ? (
                 <img
                   src={item.thumbnail_url}
@@ -84,7 +84,7 @@ const ItemCard = memo(function ItemCard({
               ) : (
                 <div className="h-full w-full flex items-center justify-center text-xs text-neutral-300">
                   <svg
-                    className="w-8 h-8"
+                    className="w-6 h-6"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -107,7 +107,7 @@ const ItemCard = memo(function ItemCard({
                 setThumbnailUrl(item.thumbnail_url || '');
                 setIsEditingThumbnail(true);
               }}
-              className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover/thumb:opacity-100 transition-opacity rounded-xl"
+              className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover/thumb:opacity-100 transition-opacity rounded-lg"
               title="Edytuj miniaturkę"
             >
               <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -228,7 +228,7 @@ const ItemCard = memo(function ItemCard({
             </div>
 
             {/* Details grid - all editable */}
-            <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-3 text-xs">
+            <div className="mt-2 grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-1.5 text-xs">
               {/* Dimensions */}
               <div>
                 <span className="text-neutral-400 uppercase tracking-wide text-[10px] block mb-0.5">
@@ -357,7 +357,7 @@ const ItemCard = memo(function ItemCard({
       </div>
 
       {/* Right actions panel - visible on hover or while dragging */}
-      <div className={`w-8 shrink-0 flex flex-col items-center gap-1 pt-4 transition-opacity ${
+      <div className={`w-7 shrink-0 flex flex-col items-center gap-0.5 pt-3 transition-opacity ${
         isDragging ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
       }`}>
         {/* Drag handle */}
