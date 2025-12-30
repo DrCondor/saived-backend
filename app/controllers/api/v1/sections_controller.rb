@@ -43,7 +43,8 @@ module Api
       end
 
       def section_params
-        params.require(:section).permit(:name, :position)
+        # Use fetch instead of require to handle empty section hash
+        params.fetch(:section, {}).permit(:name, :position)
       end
 
       def section_json(section)
@@ -51,7 +52,27 @@ module Api
           id: section.id,
           name: section.name,
           position: section.position,
-          total_price: section.total_price
+          total_price: section.total_price,
+          items: section.items.order(:position, :created_at).map { |item| item_json(item) }
+        }
+      end
+
+      def item_json(item)
+        {
+          id: item.id,
+          name: item.name,
+          note: item.note,
+          quantity: item.quantity,
+          unit_price: item.unit_price,
+          total_price: item.total_price,
+          currency: item.currency,
+          category: item.category,
+          dimensions: item.dimensions,
+          status: item.status,
+          external_url: item.external_url,
+          discount_label: item.discount_label,
+          thumbnail_url: item.thumbnail_url,
+          position: item.position
         }
       end
     end
