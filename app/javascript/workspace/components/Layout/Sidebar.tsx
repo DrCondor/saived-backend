@@ -398,7 +398,7 @@ export default function Sidebar({
               </div>
             </div>
 
-            {/* Drag overlay - matches the sidebar item appearance */}
+            {/* Drag overlay - matches the sidebar item appearance 1:1 */}
             <DragOverlay
               dropAnimation={{
                 duration: 200,
@@ -407,43 +407,57 @@ export default function Sidebar({
             >
               {activeProject ? (
                 <div className="rounded-xl bg-white shadow-2xl border border-neutral-200 rotate-2 scale-105 w-64">
-                  <div className="flex items-center gap-2 px-3 py-2.5">
-                    {/* Favorite star */}
-                    {activeProject.favorite && (
-                      <svg
-                        className="w-3.5 h-3.5 text-amber-400 shrink-0"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  <div className="flex items-center gap-1 px-1 py-2.5">
+                    {/* Drag handle */}
+                    <div className="shrink-0 p-1.5 rounded-lg text-neutral-400 cursor-grabbing">
+                      <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="currentColor">
+                        <circle cx="4" cy="3" r="1.5" />
+                        <circle cx="4" cy="8" r="1.5" />
+                        <circle cx="4" cy="13" r="1.5" />
+                        <circle cx="10" cy="3" r="1.5" />
+                        <circle cx="10" cy="8" r="1.5" />
+                        <circle cx="10" cy="13" r="1.5" />
                       </svg>
-                    )}
+                    </div>
 
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-sm font-medium text-neutral-900 truncate">
-                          {activeProject.name || 'Bez nazwy'}
+                    <div className="flex items-center gap-2 flex-1 min-w-0 px-2">
+                      {/* Favorite star */}
+                      {activeProject.favorite && (
+                        <svg
+                          className="w-3.5 h-3.5 text-amber-400 shrink-0"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                      )}
+
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-sm font-medium text-neutral-900 truncate">
+                            {activeProject.name || 'Bez nazwy'}
+                          </span>
+                          {/* Show chevron if this is the active project */}
+                          {activeProject.id === currentProjectId && (
+                            <svg
+                              className="w-4 h-4 text-neutral-400 shrink-0"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M19 9l-7 7-7-7"
+                              />
+                            </svg>
+                          )}
+                        </div>
+                        <span className="text-[11px] text-neutral-400">
+                          {formatCurrency(activeProject.total_price)}
                         </span>
-                        {/* Show chevron if this is the active project */}
-                        {activeProject.id === currentProjectId && (
-                          <svg
-                            className="w-4 h-4 text-neutral-400 shrink-0"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M19 9l-7 7-7-7"
-                            />
-                          </svg>
-                        )}
                       </div>
-                      <span className="text-[11px] text-neutral-400">
-                        {formatCurrency(activeProject.total_price)}
-                      </span>
                     </div>
                   </div>
 
