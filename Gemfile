@@ -13,6 +13,10 @@ gem "tzinfo-data", platforms: %i[ windows jruby ]
 gem "bootsnap", require: false
 gem "devise"
 
+# PDF generation
+gem "prawn", "~> 2.5"
+gem "prawn-table", "~> 0.2"
+
 group :development, :test do
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
   gem "brakeman", require: false

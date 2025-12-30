@@ -1,0 +1,49 @@
+import { apiClient } from './client';
+import type { User, UpdateProfileInput, UpdatePasswordInput } from '../types';
+
+export async function fetchCurrentUser(): Promise<User> {
+  return apiClient<User>('/me');
+}
+
+export async function updateProfile(input: UpdateProfileInput): Promise<User> {
+  return apiClient<User>('/me', {
+    method: 'PATCH',
+    json: { user: input },
+  });
+}
+
+export async function updatePassword(input: UpdatePasswordInput): Promise<{ message: string }> {
+  return apiClient<{ message: string }>('/me/password', {
+    method: 'PATCH',
+    json: input,
+  });
+}
+
+export async function uploadAvatar(file: File): Promise<{ avatar_url: string }> {
+  const formData = new FormData();
+  formData.append('avatar', file);
+
+  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+  const response = await fetch('/api/v1/me/avatar', {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'X-CSRF-Token': csrfToken || '',
+    },
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.errors?.[0] || 'Upload failed');
+  }
+
+  return response.json();
+}
+
+export async function deleteAvatar(): Promise<{ message: string }> {
+  return apiClient<{ message: string }>('/me/avatar', {
+    method: 'DELETE',
+  });
+}

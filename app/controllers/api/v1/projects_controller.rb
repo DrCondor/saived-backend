@@ -2,14 +2,17 @@ module Api
   module V1
     class ProjectsController < BaseController
       def index
-        projects = current_user.projects.includes(:sections)
+        projects = current_user.projects
+                               .includes(:sections)
+                               .order(:position, :created_at)
 
         render json: {
           projects: projects.map { |project|
             {
               id: project.id,
               name: project.name,
-              created_at: project.created_at,
+              favorite: project.favorite,
+              position: project.position,
               total_price: project.total_price,
               sections: project.sections.order(:position, :created_at).map { |section|
                 {
@@ -69,6 +72,61 @@ module Api
         render json: { error: "Not found" }, status: :not_found
       end
 
+      # POST /api/v1/projects/:id/toggle_favorite
+      def toggle_favorite
+        project = current_user.projects.find(params[:id])
+        project.update!(favorite: !project.favorite)
+        render json: { id: project.id, favorite: project.favorite }
+      rescue ActiveRecord::RecordNotFound
+        render json: { error: "Not found" }, status: :not_found
+      end
+
+      # POST /api/v1/projects/reorder_all
+      # Reorders user's projects
+      def reorder_all
+        ActiveRecord::Base.transaction do
+          params[:project_order].each_with_index do |project_id, index|
+            project = current_user.projects.find(project_id)
+            project.update!(position: index)
+          end
+        end
+
+        projects = current_user.projects.order(:position, :created_at)
+        render json: {
+          projects: projects.map { |project|
+            {
+              id: project.id,
+              name: project.name,
+              favorite: project.favorite,
+              position: project.position,
+              total_price: project.total_price
+            }
+          }
+        }
+      rescue ActiveRecord::RecordNotFound
+        render json: { error: "Not found" }, status: :not_found
+      rescue ActiveRecord::RecordInvalid => e
+        render json: { errors: e.record.errors.full_messages }, status: :unprocessable_entity
+      end
+
+      # GET /api/v1/projects/:id/pdf
+      # Generates and returns a PDF cost estimate for the project
+      def pdf
+        project = current_user.projects
+                              .includes(sections: :items)
+                              .find(params[:id])
+
+        generator = ProjectPdfGenerator.new(project, current_user)
+        generator.generate
+
+        send_data generator.to_pdf,
+                  filename: generator.filename,
+                  type: "application/pdf",
+                  disposition: "inline"
+      rescue ActiveRecord::RecordNotFound
+        render json: { error: "Not found" }, status: :not_found
+      end
+
       # POST /api/v1/projects/:id/reorder
       # Handles item reordering within sections and moving between sections
       # Also handles section reordering
@@ -114,7 +172,7 @@ module Api
       private
 
       def project_params
-        params.require(:project).permit(:name, :description)
+        params.require(:project).permit(:name, :description, :favorite, :position)
       end
 
       def project_json(project)
@@ -122,6 +180,8 @@ module Api
           id: project.id,
           name: project.name,
           description: project.description,
+          favorite: project.favorite,
+          position: project.position,
           total_price: project.total_price,
           sections: project.sections.order(:position, :created_at).map { |section|
             {

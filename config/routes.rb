@@ -18,17 +18,28 @@ Rails.application.routes.draw do
   # API endpoints
   namespace :api do
     namespace :v1 do
-      # User info
+      # User profile
       get "me", to: "users#me"
+      patch "me", to: "users#update"
+      patch "me/password", to: "users#update_password"
+      post "me/avatar", to: "users#upload_avatar"
+      delete "me/avatar", to: "users#destroy_avatar"
 
       # Projects CRUD
       resources :projects, only: [ :index, :show, :create, :update, :destroy ] do
         # Sections nested under projects
         resources :sections, only: [ :create, :update, :destroy ]
 
-        # Reordering
+        # Reordering items within project
         post :reorder, on: :member
+        # Toggle favorite
+        post :toggle_favorite, on: :member
+        # PDF generation
+        get :pdf, on: :member
       end
+
+      # Reorder all projects
+      post "projects/reorder", to: "projects#reorder_all"
 
       # Items nested under sections
       resources :project_sections, only: [] do

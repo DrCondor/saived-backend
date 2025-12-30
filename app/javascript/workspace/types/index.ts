@@ -2,7 +2,30 @@
 export interface User {
   id: number;
   email: string;
-  apiToken: string;
+  first_name: string | null;
+  last_name: string | null;
+  full_name: string | null;
+  display_name: string;
+  initials: string;
+  company_name: string | null;
+  phone: string | null;
+  title: string | null;
+  avatar_url: string | null;
+  api_token: string;
+}
+
+export interface UpdateProfileInput {
+  first_name?: string;
+  last_name?: string;
+  company_name?: string;
+  phone?: string;
+  title?: string;
+}
+
+export interface UpdatePasswordInput {
+  current_password: string;
+  password: string;
+  password_confirmation: string;
 }
 
 // Project types
@@ -35,6 +58,8 @@ export interface Project {
   id: number;
   name: string;
   description?: string;
+  favorite: boolean;
+  position: number;
   total_price: number;
   sections: ProjectSection[];
 }
@@ -42,7 +67,8 @@ export interface Project {
 export interface ProjectListItem {
   id: number;
   name: string;
-  created_at: string;
+  favorite: boolean;
+  position: number;
   total_price: number;
   sections: Array<{ id: number; name: string; position: number }>;
 }
@@ -93,6 +119,27 @@ export interface ItemMove {
 export interface ReorderInput {
   item_moves?: ItemMove[];
   section_order?: number[];
+}
+
+// Sort and filter types
+export type SortOption =
+  | 'default'
+  | 'name-asc'
+  | 'name-desc'
+  | 'price-asc'
+  | 'price-desc'
+  | 'status-approved'
+  | 'status-proposal';
+
+export interface FilterState {
+  statuses: string[];
+  categories: string[];
+}
+
+export interface ToolbarState {
+  searchQuery: string;
+  sortBy: SortOption;
+  filters: FilterState;
 }
 
 // Initial data from Rails

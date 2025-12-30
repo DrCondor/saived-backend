@@ -52,3 +52,21 @@ export async function reorderProject(
     json: input,
   });
 }
+
+export async function toggleFavorite(
+  id: number
+): Promise<{ id: number; favorite: boolean }> {
+  return apiClient<{ id: number; favorite: boolean }>(
+    `/projects/${id}/toggle_favorite`,
+    { method: 'POST' }
+  );
+}
+
+export async function reorderProjects(
+  projectOrder: number[]
+): Promise<{ projects: ProjectListItem[] }> {
+  return apiClient<{ projects: ProjectListItem[] }>('/projects/reorder', {
+    method: 'POST',
+    json: { project_order: projectOrder },
+  });
+}

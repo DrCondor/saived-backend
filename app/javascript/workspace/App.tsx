@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Layout from './components/Layout/Layout';
 import WorkspacePage from './pages/WorkspacePage';
 import NewProjectPage from './pages/NewProjectPage';
+import SettingsPage from './pages/SettingsPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -22,6 +23,7 @@ export default function App() {
             <Route index element={<WorkspacePage />} />
             <Route path="projects/new" element={<NewProjectPage />} />
             <Route path="projects/:projectId" element={<WorkspacePage />} />
+            <Route path="settings" element={<SettingsPage />} />
           </Route>
           {/* Redirect /workspace to main workspace page */}
           <Route path="*" element={<Navigate to="/workspace" replace />} />

@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { flushSync } from 'react-dom';
 import {
   DndContext,
@@ -15,12 +15,13 @@ import {
   type CollisionDetection,
 } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
-import type { Project, ProjectItem, ProjectSection, ItemMove } from '../../types';
+import type { Project, ProjectItem, ProjectSection, ItemMove, SortOption, FilterState } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
 import { useCreateSection } from '../../hooks/useSections';
 import { useReorderProject } from '../../hooks/useReorderProject';
 import Section from './Section';
 import ItemCard from './ItemCard';
+import ProjectToolbar from './ProjectToolbar';
 
 interface ProjectViewProps {
   project: Project;
@@ -72,6 +73,11 @@ export default function ProjectView({ project }: ProjectViewProps) {
   const [activeItem, setActiveItem] = useState<ProjectItem | null>(null);
   const [activeItemId, setActiveItemId] = useState<number | null>(null);
 
+  // Toolbar state: search, sort, filter
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState<SortOption>('default');
+  const [filters, setFilters] = useState<FilterState>({ statuses: [], categories: [] });
+
   // Track the original section of the dragged item (for API call)
   const dragStartSectionRef = useRef<number | null>(null);
 
@@ -82,11 +88,129 @@ export default function ProjectView({ project }: ProjectViewProps) {
     }
   }, [project.sections, activeItemId]);
 
+  // Reset toolbar state when project changes
+  useEffect(() => {
+    setSearchQuery('');
+    setSortBy('default');
+    setFilters({ statuses: [], categories: [] });
+  }, [project.id]);
+
+  // Compute available statuses and categories from all items
+  const { availableStatuses, availableCategories, totalItemCount } = useMemo(() => {
+    const statuses = new Set<string>();
+    const categories = new Set<string>();
+    let count = 0;
+
+    localSections.forEach((section) => {
+      section.items?.forEach((item) => {
+        count++;
+        if (item.status) statuses.add(item.status);
+        if (item.category) categories.add(item.category);
+      });
+    });
+
+    return {
+      availableStatuses: Array.from(statuses).sort(),
+      availableCategories: Array.from(categories).filter(Boolean).sort(),
+      totalItemCount: count,
+    };
+  }, [localSections]);
+
+  // Apply search, filters, and sorting to sections
+  const { processedSections, matchCount, filteredTotal } = useMemo(() => {
+    let matchedItems = 0;
+    let totalPrice = 0;
+
+    const processed = localSections
+      .map((section) => {
+        let items = section.items || [];
+
+        // Apply search filter
+        if (searchQuery.trim()) {
+          const query = searchQuery.toLowerCase();
+          items = items.filter((item) => {
+            const nameMatch = item.name?.toLowerCase().includes(query);
+            const noteMatch = item.note?.toLowerCase().includes(query);
+            const categoryMatch = item.category?.toLowerCase().includes(query);
+            // Extract domain from URL for searching (safely handle invalid URLs)
+            let domain = '';
+            if (item.external_url) {
+              try {
+                domain = new URL(item.external_url).hostname.replace('www.', '');
+              } catch {
+                domain = item.external_url;
+              }
+            }
+            const urlMatch = domain.toLowerCase().includes(query);
+            return nameMatch || noteMatch || categoryMatch || urlMatch;
+          });
+        }
+
+        // Apply status filter
+        if (filters.statuses.length > 0) {
+          items = items.filter((item) => filters.statuses.includes(item.status));
+        }
+
+        // Apply category filter
+        if (filters.categories.length > 0) {
+          items = items.filter((item) => item.category && filters.categories.includes(item.category));
+        }
+
+        matchedItems += items.length;
+        items.forEach((item) => {
+          totalPrice += item.total_price || 0;
+        });
+
+        // Apply sorting
+        if (sortBy !== 'default') {
+          items = [...items].sort((a, b) => {
+            switch (sortBy) {
+              case 'name-asc':
+                return (a.name || '').localeCompare(b.name || '', 'pl');
+              case 'name-desc':
+                return (b.name || '').localeCompare(a.name || '', 'pl');
+              case 'price-asc':
+                return (a.total_price || 0) - (b.total_price || 0);
+              case 'price-desc':
+                return (b.total_price || 0) - (a.total_price || 0);
+              case 'status-approved':
+                // wybrane, zamowione first, propozycja last
+                const approvedOrder: Record<string, number> = { wybrane: 0, zamowione: 1, propozycja: 2 };
+                return (approvedOrder[a.status] ?? 99) - (approvedOrder[b.status] ?? 99);
+              case 'status-proposal':
+                // propozycja first
+                const proposalOrder: Record<string, number> = { propozycja: 0, wybrane: 1, zamowione: 2 };
+                return (proposalOrder[a.status] ?? 99) - (proposalOrder[b.status] ?? 99);
+              default:
+                return 0;
+            }
+          });
+        }
+
+        return { ...section, items };
+      })
+      // Hide empty sections when filtering/searching
+      .filter((section) => {
+        const hasFiltersActive = searchQuery.trim() || filters.statuses.length > 0 || filters.categories.length > 0;
+        return !hasFiltersActive || (section.items && section.items.length > 0);
+      });
+
+    return { processedSections: processed, matchCount: matchedItems, filteredTotal: totalPrice };
+  }, [localSections, searchQuery, filters, sortBy]);
+
+  const hasActiveFilters =
+    searchQuery.trim() !== '' ||
+    sortBy !== 'default' ||
+    filters.statuses.length > 0 ||
+    filters.categories.length > 0;
+
   // DnD sensors with activation constraint to prevent accidental drags
+  // Disable DnD when filters/search are active (reordering filtered results is confusing)
+  const isDnDEnabled = !hasActiveFilters;
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8, // 8px movement before drag starts
+        distance: isDnDEnabled ? 8 : 10000, // Effectively disable when filters active
       },
     }),
     useSensor(KeyboardSensor)
@@ -303,67 +427,51 @@ export default function ProjectView({ project }: ProjectViewProps) {
     <div>
       {/* Project header */}
       <header className="mb-8">
-        <div className="flex items-start justify-between gap-4">
-          <div>
+        {/* Top row: Project name + Toolbar */}
+        <div className="flex items-start justify-between gap-4 flex-wrap">
+          <div className="min-w-0">
             <p className="text-xs font-bold tracking-[0.15em] uppercase text-neutral-400 mb-1">
               Projekt
             </p>
             <h1 className="text-2xl font-bold tracking-tight text-neutral-900">{project.name}</h1>
-            <p className="mt-2 flex items-center gap-2">
-              <span className="text-sm text-neutral-500">Suma projektu:</span>
-              <span className="inline-flex items-center rounded-full bg-neutral-900 px-4 py-1.5 text-sm font-bold text-white">
-                {formatCurrency(project.total_price)}
-              </span>
-            </p>
           </div>
 
-          {/* Action buttons */}
-          <div className="flex items-center gap-2">
-            <button className="inline-flex items-center gap-1.5 rounded-full border border-neutral-300 bg-white px-4 py-2 text-xs font-medium text-neutral-700 hover:bg-neutral-50 transition-colors">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-                />
-              </svg>
-              Podglad PDF
-            </button>
-            <button className="inline-flex items-center gap-1.5 rounded-full border border-neutral-300 bg-white px-4 py-2 text-xs font-medium text-neutral-700 hover:bg-neutral-50 transition-colors">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-              Znajdz
-            </button>
-            <button className="inline-flex items-center gap-1.5 rounded-full border border-neutral-300 bg-white px-4 py-2 text-xs font-medium text-neutral-700 hover:bg-neutral-50 transition-colors">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"
-                />
-              </svg>
-              Sortuj
-            </button>
-            <button className="inline-flex items-center gap-1.5 rounded-full border border-neutral-300 bg-white px-4 py-2 text-xs font-medium text-neutral-700 hover:bg-neutral-50 transition-colors">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
-                />
-              </svg>
-              Filtr
-            </button>
-          </div>
+          {/* Toolbar with search, sort, filter */}
+          <ProjectToolbar
+            projectId={project.id}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            sortBy={sortBy}
+            onSortChange={setSortBy}
+            filters={filters}
+            onFilterChange={setFilters}
+            availableCategories={availableCategories}
+            availableStatuses={availableStatuses}
+            matchCount={matchCount}
+            totalCount={totalItemCount}
+            hasActiveFilters={hasActiveFilters}
+          />
+        </div>
+
+        {/* Sum row - separate to avoid layout conflicts */}
+        <div className="mt-3 flex items-center gap-2">
+          <span className="text-sm text-neutral-500">
+            {hasActiveFilters ? 'Suma wynikow:' : 'Suma projektu:'}
+          </span>
+          <span
+            className={`inline-flex items-center rounded-full px-4 py-1.5 text-sm font-bold whitespace-nowrap ${
+              hasActiveFilters
+                ? 'bg-emerald-500 text-white'
+                : 'bg-neutral-900 text-white'
+            }`}
+          >
+            {formatCurrency(hasActiveFilters ? filteredTotal : project.total_price)}
+          </span>
+          {hasActiveFilters && (
+            <span className="text-xs text-neutral-400 whitespace-nowrap">
+              ({matchCount} z {totalItemCount} produktow)
+            </span>
+          )}
         </div>
       </header>
 
@@ -375,7 +483,38 @@ export default function ProjectView({ project }: ProjectViewProps) {
         onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
       >
-        {localSections.map((section) => (
+        {/* No results message */}
+        {hasActiveFilters && processedSections.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <div className="w-12 h-12 rounded-full bg-neutral-100 flex items-center justify-center mb-4">
+              <svg className="w-6 h-6 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </div>
+            <p className="text-neutral-600 font-medium mb-1">Brak wynikow</p>
+            <p className="text-sm text-neutral-400 mb-4">
+              Nie znaleziono produktow pasujacych do kryteriow
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                setSearchQuery('');
+                setSortBy('default');
+                setFilters({ statuses: [], categories: [] });
+              }}
+              className="text-sm text-emerald-600 hover:text-emerald-700 font-medium"
+            >
+              Wyczysc filtry
+            </button>
+          </div>
+        )}
+
+        {processedSections.map((section) => (
           <Section key={section.id} section={section} projectId={project.id} />
         ))}
 

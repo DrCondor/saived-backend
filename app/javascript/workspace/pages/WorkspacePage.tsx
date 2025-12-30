@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useProjects } from '../hooks/useProjects';
 import { useProject } from '../hooks/useProject';
@@ -13,10 +14,14 @@ export default function WorkspacePage() {
   const { data: currentProject, isLoading: projectLoading } = useProject(currentProjectId);
 
   // If no project selected and we have projects, redirect to the first one
-  if (!currentProjectId && projects.length > 0 && !projectsLoading) {
-    navigate(`/workspace/projects/${projects[0].id}`, { replace: true });
-    return null;
-  }
+  useEffect(() => {
+    if (!currentProjectId && projects.length > 0 && !projectsLoading) {
+      navigate(`/workspace/projects/${projects[0].id}`, { replace: true });
+    }
+  }, [currentProjectId, projects, projectsLoading, navigate]);
+
+  // Show loading state when projects are loading on /workspace route
+  const isRedirecting = !currentProjectId && projects.length > 0 && !projectsLoading;
 
   return (
     <div className="flex gap-6">
@@ -29,6 +34,21 @@ export default function WorkspacePage() {
 
       {/* Main content */}
       <section className="flex-1 min-w-0">
+        {/* Loading projects on /workspace route */}
+        {!currentProjectId && projectsLoading && (
+          <div className="flex items-center justify-center py-20">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500" />
+          </div>
+        )}
+
+        {/* Redirecting to first project */}
+        {isRedirecting && (
+          <div className="flex items-center justify-center py-20">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500" />
+          </div>
+        )}
+
+        {/* Loading specific project */}
         {projectLoading && currentProjectId && (
           <div className="flex items-center justify-center py-20">
             <div className="text-neutral-500">Ladowanie projektu...</div>
