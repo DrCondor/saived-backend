@@ -71,49 +71,66 @@ function SortableProjectItem({
       } transition-all`}
       onContextMenu={(e) => onContextMenu(e, project.id)}
     >
-      <Link
-        to={`/workspace/projects/${project.id}`}
-        className="flex items-center gap-2 px-3 py-2.5"
-        {...attributes}
-        {...listeners}
-      >
-        {/* Favorite star */}
-        {project.favorite && (
-          <svg
-            className="w-3.5 h-3.5 text-amber-400 shrink-0"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
-            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+      <div className="flex items-center gap-1 px-1 py-2.5">
+        {/* Drag handle */}
+        <button
+          type="button"
+          className="shrink-0 p-1.5 rounded-lg text-neutral-300 opacity-0 group-hover:opacity-100 hover:text-neutral-500 hover:bg-neutral-200/50 transition-all cursor-grab active:cursor-grabbing"
+          {...attributes}
+          {...listeners}
+        >
+          <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="currentColor">
+            <circle cx="4" cy="3" r="1.5" />
+            <circle cx="4" cy="8" r="1.5" />
+            <circle cx="4" cy="13" r="1.5" />
+            <circle cx="10" cy="3" r="1.5" />
+            <circle cx="10" cy="8" r="1.5" />
+            <circle cx="10" cy="13" r="1.5" />
           </svg>
-        )}
+        </button>
 
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between gap-2">
-            <span className="text-sm font-medium text-neutral-900 truncate">
-              {project.name || 'Bez nazwy'}
+        <Link
+          to={`/workspace/projects/${project.id}`}
+          className="flex items-center gap-2 flex-1 min-w-0 px-2"
+        >
+          {/* Favorite star */}
+          {project.favorite && (
+            <svg
+              className="w-3.5 h-3.5 text-amber-400 shrink-0"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            </svg>
+          )}
+
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-sm font-medium text-neutral-900 truncate">
+                {project.name || 'Bez nazwy'}
+              </span>
+              {isActive && (
+                <svg
+                  className="w-4 h-4 text-neutral-400 shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              )}
+            </div>
+            <span className="text-[11px] text-neutral-400">
+              {formatCurrency(project.total_price)}
             </span>
-            {isActive && (
-              <svg
-                className="w-4 h-4 text-neutral-400 shrink-0"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            )}
           </div>
-          <span className="text-[11px] text-neutral-400">
-            {formatCurrency(project.total_price)}
-          </span>
-        </div>
-      </Link>
+        </Link>
+      </div>
 
       {/* Nested sections for active project */}
       {isActive && currentProject && currentProject.sections.length > 0 && (
@@ -381,11 +398,17 @@ export default function Sidebar({
               </div>
             </div>
 
-            {/* Drag overlay */}
-            <DragOverlay>
+            {/* Drag overlay - matches the sidebar item appearance */}
+            <DragOverlay
+              dropAnimation={{
+                duration: 200,
+                easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
+              }}
+            >
               {activeProject ? (
-                <div className="rounded-xl bg-white shadow-xl border border-neutral-200 px-3 py-2.5 rotate-2 scale-105">
-                  <div className="flex items-center gap-2">
+                <div className="rounded-xl bg-white shadow-2xl border border-neutral-200 rotate-2 scale-105 w-64">
+                  <div className="flex items-center gap-2 px-3 py-2.5">
+                    {/* Favorite star */}
                     {activeProject.favorite && (
                       <svg
                         className="w-3.5 h-3.5 text-amber-400 shrink-0"
@@ -395,10 +418,49 @@ export default function Sidebar({
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                       </svg>
                     )}
-                    <span className="text-sm font-medium text-neutral-900 truncate">
-                      {activeProject.name || 'Bez nazwy'}
-                    </span>
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-sm font-medium text-neutral-900 truncate">
+                          {activeProject.name || 'Bez nazwy'}
+                        </span>
+                        {/* Show chevron if this is the active project */}
+                        {activeProject.id === currentProjectId && (
+                          <svg
+                            className="w-4 h-4 text-neutral-400 shrink-0"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 9l-7 7-7-7"
+                            />
+                          </svg>
+                        )}
+                      </div>
+                      <span className="text-[11px] text-neutral-400">
+                        {formatCurrency(activeProject.total_price)}
+                      </span>
+                    </div>
                   </div>
+
+                  {/* Show sections if this is the active project */}
+                  {activeProject.id === currentProjectId && currentProject && currentProject.sections.length > 0 && (
+                    <div className="px-3 pb-2.5 space-y-0.5">
+                      {currentProject.sections.map((section) => (
+                        <div
+                          key={section.id}
+                          className="flex items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs text-neutral-600"
+                        >
+                          <span className="w-1.5 h-1.5 rounded-full bg-neutral-300" />
+                          <span className="truncate">{section.name}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ) : null}
             </DragOverlay>
