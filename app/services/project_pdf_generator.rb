@@ -29,12 +29,12 @@ class ProjectPdfGenerator
   def document
     @document ||= Prawn::Document.new(
       page_size: "A4",
-      margin: [PAGE_MARGIN_TOP, PAGE_MARGIN_SIDES, PAGE_MARGIN_BOTTOM, PAGE_MARGIN_SIDES],
+      margin: [ PAGE_MARGIN_TOP, PAGE_MARGIN_SIDES, PAGE_MARGIN_BOTTOM, PAGE_MARGIN_SIDES ],
       info: {
         Title: "Kosztorys - #{@project.name}",
         Author: user_display_name,
         Creator: "SAIVED",
-        Producer: "SAIVED - Narzędzie do wyceny wnętrz",
+        Producer: "SAIVED - Design More. Manage Less.",
         CreationDate: @generated_at
       }
     )
@@ -99,52 +99,52 @@ class ProjectPdfGenerator
   end
 
   def logo_path
-    Rails.root.join("app", "assets", "images", "saived-logo-small.jpg").to_s
+    # Use cropped version to remove edge artifacts/shadows
+    Rails.root.join("app", "assets", "images", "saived-logo-cropped.jpg").to_s
   end
 
   # === HEADER ===
   def render_header
-    # Left side: Logo + company name
-    bounding_box([0, cursor], width: 250, height: 40) do
-      # Logo image
-      if File.exist?(logo_path)
-        image logo_path, width: 20, at: [0, cursor]
-      end
+    header_start_y = cursor
+    logo_size = 24
 
-      # Company name next to logo
-      bounding_box([26, cursor], width: 220, height: 40) do
-        fill_color BRAND_PRIMARY
-        font_size 11
-        text "SAIVED", style: :bold
-        move_down 1
-        font_size 7
-        fill_color BRAND_SECONDARY
-        text "Wyceny wnętrz"
-      end
+    # Left side: Logo + Company name + slogan
+    # Logo positioned to vertically center with text block
+    if File.exist?(logo_path)
+      image logo_path, at: [ 0, header_start_y + 4 ], width: logo_size, height: logo_size
     end
+
+    text_x = logo_size + 6
+
+    fill_color BRAND_PRIMARY
+    font_size 12
+    draw_text "SAIVED", at: [ text_x, header_start_y - 8 ], style: :bold
+
+    fill_color BRAND_SECONDARY
+    font_size 6
+    draw_text "DESIGN MORE. MANAGE LESS.", at: [ text_x, header_start_y - 18 ]
 
     # Right side: Document title and number
-    bounding_box([350, cursor + 40], width: 185, height: 40) do
-      fill_color BRAND_PRIMARY
-      font_size 14
-      text "KOSZTORYS", align: :right, style: :bold
-      move_down 2
-      font_size 9
-      fill_color BRAND_SECONDARY
-      text "Nr #{@document_number}", align: :right
-      move_down 1
-      font_size 8
-      text format_date(@generated_at), align: :right
-    end
+    fill_color BRAND_PRIMARY
+    font_size 14
+    draw_text "KOSZTORYS", at: [ CONTENT_WIDTH - 85, header_start_y - 10 ], style: :bold
 
-    move_down 8
+    fill_color BRAND_SECONDARY
+    font_size 9
+    draw_text "Nr #{@document_number}", at: [ CONTENT_WIDTH - 85, header_start_y - 22 ]
+
+    font_size 8
+    draw_text format_date(@generated_at), at: [ CONTENT_WIDTH - 85, header_start_y - 32 ]
+
+    # Move cursor down past the header
+    move_down 45
 
     # Thin separator line
     stroke_color BRAND_BORDER
     line_width 0.5
     stroke_horizontal_line 0, CONTENT_WIDTH, at: cursor
 
-    move_down 12
+    move_down 15
   end
 
   # === PROJECT INFO ===
@@ -170,7 +170,7 @@ class ProjectPdfGenerator
     prepared_by += " (#{@user.email})" if @user.full_name.present?
     text "Przygotował/a: #{prepared_by}"
 
-    move_down 6
+    move_down 8
 
     # Separator line
     stroke_color BRAND_BORDER
@@ -192,8 +192,8 @@ class ProjectPdfGenerator
   def render_section(section, section_number)
     items = section.items.order(:position, :created_at)
 
-    # Check if we need a new page
-    start_new_page if cursor < 100
+    # Check if we need a new page (minimum space for header + at least one row)
+    start_new_page if cursor < 80
 
     # Section header - simple text with number
     render_section_header(section, section_number)
@@ -208,7 +208,7 @@ class ProjectPdfGenerator
     # Section subtotal
     render_section_subtotal(section)
 
-    move_down 15
+    move_down 12
   end
 
   def render_section_header(section, section_number)
@@ -259,14 +259,14 @@ class ProjectPdfGenerator
     end
 
     # Compact table
-    table(table_data, width: CONTENT_WIDTH, cell_style: { size: 7.5, padding: [3, 5] }) do |t|
+    table(table_data, width: CONTENT_WIDTH, cell_style: { size: 7.5, padding: [ 3, 5 ] }) do |t|
       # Header styling
       t.row(0).background_color = BRAND_LIGHT
       t.row(0).text_color = BRAND_PRIMARY
       t.row(0).size = 7
 
       # All cells - thin borders
-      t.cells.borders = [:bottom]
+      t.cells.borders = [ :bottom ]
       t.cells.border_color = BRAND_BORDER
       t.cells.border_width = 0.25
 
@@ -282,14 +282,6 @@ class ProjectPdfGenerator
       t.column(2).align = :center
       t.column(3).align = :right
       t.column(4).align = :right
-
-      # Notes in item column - smaller/lighter
-      t.columns(1).rows(1..-1).each do |cell|
-        if cell.content.include?("\n")
-          # Style note part differently would need inline formatting
-          # For now, just keep it as is
-        end
-      end
 
       # Last row no bottom border
       t.row(-1).borders = []
@@ -313,14 +305,14 @@ class ProjectPdfGenerator
     fill_color BRAND_SECONDARY
 
     text_box "Razem:",
-             at: [CONTENT_WIDTH - 150, cursor],
+             at: [ CONTENT_WIDTH - 150, cursor ],
              width: 50,
              height: 12,
              align: :right
 
     fill_color BRAND_PRIMARY
     text_box format_currency(subtotal),
-             at: [CONTENT_WIDTH - 95, cursor],
+             at: [ CONTENT_WIDTH - 95, cursor ],
              width: 95,
              height: 12,
              align: :right,
@@ -348,7 +340,7 @@ class ProjectPdfGenerator
     font_size 9
     fill_color BRAND_SECONDARY
     text_box "SUMA CAŁKOWITA:",
-             at: [CONTENT_WIDTH - 250, cursor],
+             at: [ CONTENT_WIDTH - 250, cursor ],
              width: 120,
              height: 15,
              align: :right
@@ -356,7 +348,7 @@ class ProjectPdfGenerator
     font_size 12
     fill_color BRAND_PRIMARY
     text_box format_currency(@project.total_price),
-             at: [CONTENT_WIDTH - 125, cursor],
+             at: [ CONTENT_WIDTH - 125, cursor ],
              width: 125,
              height: 15,
              align: :right,
@@ -392,7 +384,7 @@ class ProjectPdfGenerator
   def render_footer_on_all_pages
     repeat(:all) do
       canvas do
-        bounding_box([PAGE_MARGIN_SIDES, FOOTER_Y_POSITION + 12], width: CONTENT_WIDTH, height: 15) do
+        bounding_box([ PAGE_MARGIN_SIDES, FOOTER_Y_POSITION + 12 ], width: CONTENT_WIDTH, height: 15) do
           # Thin separator line
           stroke_color BRAND_BORDER
           line_width 0.5
@@ -405,13 +397,13 @@ class ProjectPdfGenerator
 
           # Left side - branding
           text_box "SAIVED | www.saived.com",
-                   at: [0, cursor],
+                   at: [ 0, cursor ],
                    width: 200,
                    height: 10
 
           # Right side - page number
           text_box "Strona #{page_number} / #{page_count}",
-                   at: [CONTENT_WIDTH - 80, cursor],
+                   at: [ CONTENT_WIDTH - 80, cursor ],
                    width: 80,
                    height: 10,
                    align: :right
