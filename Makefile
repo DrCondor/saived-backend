@@ -10,12 +10,13 @@ REDIS_URL ?= redis://127.0.0.1:6380/0
 RAILS_ENV ?= development
 
 .PHONY: help db-up db-down db-restart db-logs db-psql db-wipe db-status \
-        dev dev-db dev-down prepare console routes redis-up redis-down redis-logs
+        dev dev-db dev-down prepare console routes redis-up redis-down redis-logs test
 
 help:
 	@echo "Targets:"
 	@echo "  make dev         - start PG+Redis+Rails (Ctrl+C = sprząta)"
 	@echo "  make prepare     - rails db:prepare (po odpaleniu DB)"
+	@echo "  make test        - run Rails tests"
 	@echo "  make db-up/down  - Postgres (compose)"
 	@echo "  make redis-up/down - Redis (compose)"
 	@echo "  make console/routes - rails c / routes"
@@ -72,3 +73,6 @@ console:
 
 routes:
 	PGHOST=$(PGHOST) PGPORT=$(PGPORT) PGUSER=$(PGUSER) PGPASSWORD=$(PGPASSWORD) bin/rails routes
+
+test:
+	PGHOST=$(PGHOST) PGPORT=$(PGPORT) PGUSER=$(PGUSER) PGPASSWORD=$(PGPASSWORD) bin/rails test
