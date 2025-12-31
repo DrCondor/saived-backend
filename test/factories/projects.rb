@@ -1,0 +1,36 @@
+FactoryBot.define do
+  factory :project do
+    association :owner, factory: :user
+    sequence(:name) { |n| "Project #{n}" }
+    description { Faker::Lorem.sentence(word_count: 10) }
+    favorite { false }
+    position { nil }
+
+    trait :favorite do
+      favorite { true }
+    end
+
+    trait :with_sections do
+      transient do
+        sections_count { 2 }
+      end
+
+      after(:create) do |project, evaluator|
+        create_list(:project_section, evaluator.sections_count, project: project)
+      end
+    end
+
+    trait :with_items do
+      transient do
+        sections_count { 2 }
+        items_per_section { 3 }
+      end
+
+      after(:create) do |project, evaluator|
+        create_list(:project_section, evaluator.sections_count, :with_items,
+                    project: project,
+                    items_count: evaluator.items_per_section)
+      end
+    end
+  end
+end

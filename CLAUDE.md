@@ -19,7 +19,7 @@ The backend serves two interfaces:
 - **Cache/Jobs**: Redis 7 (Docker, port 6380) - prepared for Sidekiq
 - **Frontend**: React 19, TypeScript, TanStack Query, React Router 6, TailwindCSS 4, ESBuild
 - **Auth**: Devise (sessions for SPA) + API tokens (bearer for extension)
-- **Testing**: Rails test framework, Capybara, Selenium
+- **Testing**: Minitest + FactoryBot (Rails), Vitest + React Testing Library (React), Jest (Extension)
 
 ## Quick Commands
 
@@ -30,10 +30,12 @@ make db-up        # Start PostgreSQL only
 make redis-up     # Start Redis only
 make console      # Rails console
 make routes       # Show all routes
-make test         # Run tests
+make test         # Run Rails tests
 
 yarn build        # Build React SPA + application.js
 yarn build:css    # Build TailwindCSS
+yarn test         # Run React tests (watch mode)
+yarn test:run     # Run React tests (single run)
 ```
 
 ## Data Model
@@ -299,6 +301,123 @@ PGPASSWORD=postgres
 REDIS_URL=redis://127.0.0.1:6380/0
 RAILS_ENV=development
 ```
+
+## Testing
+
+### Running Tests
+
+```bash
+# Backend (Rails) - requires PostgreSQL running
+make test
+# or manually:
+PGHOST=127.0.0.1 PGPORT=5433 PGUSER=postgres PGPASSWORD=postgres bin/rails test
+
+# React SPA (Vitest)
+yarn test          # Watch mode - re-runs on file changes
+yarn test:run      # Single run - for CI
+
+# Extension (Jest) - run from saived-extension directory
+cd ../saived-extension
+npm test           # Watch mode
+npm run test:coverage  # With coverage
+```
+
+### Test Structure
+
+```
+test/
+├── factories/           # FactoryBot factories
+│   ├── users.rb
+│   ├── projects.rb
+│   ├── project_sections.rb
+│   ├── project_items.rb
+│   ├── domain_selectors.rb
+│   └── product_capture_samples.rb
+├── models/              # Model unit tests
+│   ├── domain_selector_test.rb    # Wilson score, confidence
+│   ├── project_item_test.rb       # Price conversion
+│   ├── user_test.rb               # Profile helpers
+│   └── ...
+├── controllers/
+│   └── api/v1/          # API integration tests
+│       ├── projects_controller_test.rb
+│       ├── sections_controller_test.rb
+│       ├── project_items_controller_test.rb
+│       ├── selectors_controller_test.rb
+│       └── users_controller_test.rb
+└── fixtures/files/      # Test files (avatars, etc.)
+
+app/javascript/workspace/
+├── tests/
+│   ├── setup.ts         # Vitest setup, mocks
+│   └── test-utils.tsx   # Render wrapper with providers
+├── utils/
+│   └── formatters.test.ts
+├── components/shared/
+│   └── StatusSelect.test.tsx
+└── hooks/
+    └── useProjects.test.tsx
+```
+
+### Test Counts
+
+| Suite | Tests | Coverage |
+|-------|-------|----------|
+| Rails Models | 106 | ~20% |
+| Rails API | 80 | ~20% |
+| React Components | 12 | - |
+| React Hooks | 5 | - |
+| React Utils | 17 | - |
+| **Total** | **220** | - |
+
+### Writing Tests
+
+**Rails (Minitest)**:
+```ruby
+# Use factories instead of fixtures
+test "creates project" do
+  user = create(:user)
+  project = create(:project, owner: user)
+  assert_equal user, project.owner
+end
+
+# API tests with auth
+test "returns 401 without auth" do
+  get api_v1_projects_path
+  assert_response :unauthorized
+end
+
+test "lists projects with auth" do
+  get api_v1_projects_path, headers: auth_headers(@user)
+  assert_response :success
+end
+```
+
+**React (Vitest)**:
+```tsx
+import { render, screen, fireEvent } from '../tests/test-utils';
+import { describe, it, expect, vi } from 'vitest';
+
+describe('MyComponent', () => {
+  it('renders correctly', () => {
+    render(<MyComponent />);
+    expect(screen.getByText('Hello')).toBeInTheDocument();
+  });
+});
+```
+
+### CI/CD
+
+Both repos have GitHub Actions CI:
+
+**Backend** (`.github/workflows/ci.yml`):
+- Brakeman security scan
+- Rubocop linting
+- Minitest with PostgreSQL service
+
+**Extension** (`saived-extension/.github/workflows/ci.yml`):
+- Jest tests with coverage
+- Syntax validation
 
 ## Polish Language
 

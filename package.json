@@ -2,14 +2,24 @@
   "name": "app",
   "private": true,
   "devDependencies": {
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^4.5.1",
     "esbuild": "^0.27.0",
-    "typescript": "^5.9.3"
+    "jsdom": "^24.1.3",
+    "typescript": "^5.9.3",
+    "vitest": "^2.1.8"
   },
   "scripts": {
     "build": "esbuild app/javascript/*.* --bundle --sourcemap --format=esm --outdir=app/assets/builds --public-path=/assets --loader:.tsx=tsx --loader:.ts=ts && esbuild app/javascript/workspace/index.tsx --bundle --sourcemap --format=esm --outfile=app/assets/builds/workspace.js --public-path=/assets --loader:.tsx=tsx --loader:.ts=ts",
-    "build:css": "bunx @tailwindcss/cli -i ./app/assets/stylesheets/application.tailwind.css -o ./app/assets/builds/application.css --minify"
+    "build:css": "bunx @tailwindcss/cli -i ./app/assets/stylesheets/application.tailwind.css -o ./app/assets/builds/application.css --minify",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
