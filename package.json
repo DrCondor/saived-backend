@@ -16,7 +16,7 @@
   },
   "scripts": {
     "build": "esbuild app/javascript/*.* --bundle --sourcemap --format=esm --outdir=app/assets/builds --public-path=/assets --loader:.tsx=tsx --loader:.ts=ts && esbuild app/javascript/workspace/index.tsx --bundle --sourcemap --format=esm --outfile=app/assets/builds/workspace.js --public-path=/assets --loader:.tsx=tsx --loader:.ts=ts",
-    "build:css": "bunx @tailwindcss/cli -i ./app/assets/stylesheets/application.tailwind.css -o ./app/assets/builds/application.css --minify",
+    "build:css": "npx @tailwindcss/cli -i ./app/assets/stylesheets/application.tailwind.css -o ./app/assets/builds/application.css --minify",
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage"

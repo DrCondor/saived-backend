@@ -2,7 +2,7 @@ module Api
   module V1
     class ProjectItemsController < BaseController
       before_action :set_section
-      before_action :set_item, only: [:update, :destroy]
+      before_action :set_item, only: [ :update, :destroy ]
 
       def create
         item = @section.items.new(item_params)

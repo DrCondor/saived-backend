@@ -51,7 +51,7 @@ class Api::V1::ProjectItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create with full extension payload" do
-    assert_difference ["ProjectItem.count", "ProductCaptureSample.count"], 1 do
+    assert_difference [ "ProjectItem.count", "ProductCaptureSample.count" ], 1 do
       post api_v1_project_section_items_path(@section),
            params: {
              product_item: {

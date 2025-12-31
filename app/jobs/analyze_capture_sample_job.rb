@@ -44,11 +44,11 @@ class AnalyzeCaptureSampleJob < ApplicationJob
 
       # Map field keys to DomainSelector field names
       field_name = case field_key.to_s
-                   when "price" then "price"
-                   when "name" then "name"
-                   when "thumbnail_url", "thumbnail" then "thumbnail_url"
-                   else next
-                   end
+      when "price" then "price"
+      when "name" then "name"
+      when "thumbnail_url", "thumbnail" then "thumbnail_url"
+      else next
+      end
 
       # Record the best discovered selector
       best_candidate = candidates.first
@@ -77,9 +77,9 @@ class AnalyzeCaptureSampleJob < ApplicationJob
 
     # Determine the raw key (extension uses different names)
     raw_key = case final_key
-              when "unit_price_cents" then "unit_price"
-              else final_key
-              end
+    when "unit_price_cents" then "unit_price"
+    else final_key
+    end
 
     raw_value = raw[raw_key] || raw[raw_key.to_sym]
     final_value = final[final_key] || final[final_key.to_sym]
@@ -91,10 +91,10 @@ class AnalyzeCaptureSampleJob < ApplicationJob
 
     # Map selector_key to DomainSelector field_name
     field_name = case selector_key.to_s
-                 when "price" then "price"
-                 when "thumbnail" then "thumbnail_url"
-                 else "name"
-                 end
+    when "price" then "price"
+    when "thumbnail" then "thumbnail_url"
+    else "name"
+    end
 
     if values_match?(raw_value, final_value, field_name)
       DomainSelector.record_success(

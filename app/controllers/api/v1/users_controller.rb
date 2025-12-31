@@ -18,17 +18,17 @@ module Api
       # PATCH /api/v1/me/password
       def update_password
         if params[:current_password].blank?
-          render json: { errors: ["Aktualne hasło jest wymagane"] }, status: :unprocessable_entity
+          render json: { errors: [ "Aktualne hasło jest wymagane" ] }, status: :unprocessable_entity
           return
         end
 
         unless current_user.valid_password?(params[:current_password])
-          render json: { errors: ["Aktualne hasło jest nieprawidłowe"] }, status: :unprocessable_entity
+          render json: { errors: [ "Aktualne hasło jest nieprawidłowe" ] }, status: :unprocessable_entity
           return
         end
 
         if params[:password] != params[:password_confirmation]
-          render json: { errors: ["Hasła nie są zgodne"] }, status: :unprocessable_entity
+          render json: { errors: [ "Hasła nie są zgodne" ] }, status: :unprocessable_entity
           return
         end
 
@@ -44,7 +44,7 @@ module Api
       # POST /api/v1/me/avatar
       def upload_avatar
         unless params[:avatar].present?
-          render json: { errors: ["Plik jest wymagany"] }, status: :unprocessable_entity
+          render json: { errors: [ "Plik jest wymagany" ] }, status: :unprocessable_entity
           return
         end
 
@@ -53,7 +53,7 @@ module Api
         if current_user.avatar.attached?
           render json: { avatar_url: avatar_url(current_user) }
         else
-          render json: { errors: ["Nie udało się przesłać pliku"] }, status: :unprocessable_entity
+          render json: { errors: [ "Nie udało się przesłać pliku" ] }, status: :unprocessable_entity
         end
       end
 

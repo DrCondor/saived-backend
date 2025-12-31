@@ -226,7 +226,7 @@ class Api::V1::ProjectsControllerTest < ActionDispatch::IntegrationTest
     project3.project_memberships.create!(user: @user, role: "owner")
 
     post api_v1_projects_reorder_path,
-         params: { project_order: [project3.id, @project.id, project2.id] },
+         params: { project_order: [ project3.id, @project.id, project2.id ] },
          headers: auth_headers(@user)
 
     assert_response :success
@@ -245,7 +245,7 @@ class Api::V1::ProjectsControllerTest < ActionDispatch::IntegrationTest
     section3 = create(:project_section, project: @project, position: 2)
 
     post reorder_api_v1_project_path(@project),
-         params: { section_order: [section3.id, section1.id, section2.id] },
+         params: { section_order: [ section3.id, section1.id, section2.id ] },
          headers: auth_headers(@user)
 
     assert_response :success

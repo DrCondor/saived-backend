@@ -22,7 +22,7 @@ class User < ApplicationRecord
 
   # Profile helpers
   def full_name
-    [first_name, last_name].compact_blank.join(" ").presence
+    [ first_name, last_name ].compact_blank.join(" ").presence
   end
 
   def display_name

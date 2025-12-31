@@ -4,7 +4,7 @@ class DomainSelector < ApplicationRecord
 
   validates :domain, :field_name, :selector, presence: true
   validates :field_name, inclusion: { in: TRACKABLE_FIELDS }
-  validates :selector, uniqueness: { scope: [:domain, :field_name] }
+  validates :selector, uniqueness: { scope: [ :domain, :field_name ] }
   validates :discovery_method, inclusion: { in: DISCOVERY_METHODS }
 
   before_validation :normalize_domain
@@ -12,15 +12,15 @@ class DomainSelector < ApplicationRecord
   # Match both "domain.com" and "www.domain.com"
   scope :for_domain, ->(domain) {
     normalized = normalize_domain_string(domain)
-    where(domain: [normalized, "www.#{normalized}"])
+    where(domain: [ normalized, "www.#{normalized}" ])
   }
 
   def self.normalize_domain_string(domain)
     domain.to_s.strip.downcase.sub(/^www\./, "")
   end
   scope :for_field, ->(field) { where(field_name: field) }
-  scope :discovered, -> { where(discovery_method: 'discovered') }
-  scope :heuristic, -> { where(discovery_method: 'heuristic') }
+  scope :discovered, -> { where(discovery_method: "discovered") }
+  scope :heuristic, -> { where(discovery_method: "heuristic") }
   # Note: confidence is calculated in Ruby, so we filter in memory after loading
   scope :with_minimum_samples, ->(min = 3) { where("success_count >= ?", min) }
 
@@ -54,7 +54,7 @@ class DomainSelector < ApplicationRecord
   end
 
   # Find or create selector and record success
-  def self.record_success(domain:, field_name:, selector:, discovery_method: 'heuristic', discovery_score: nil)
+  def self.record_success(domain:, field_name:, selector:, discovery_method: "heuristic", discovery_score: nil)
     normalized_domain = normalize_domain_string(domain)
     record = find_or_initialize_by(domain: normalized_domain, field_name: field_name, selector: selector)
 
@@ -62,9 +62,9 @@ class DomainSelector < ApplicationRecord
     if record.new_record?
       record.discovery_method = discovery_method
       record.discovery_score = discovery_score
-    elsif discovery_method == 'discovered' && record.discovery_method == 'heuristic'
+    elsif discovery_method == "discovered" && record.discovery_method == "heuristic"
       # Upgrade from heuristic to discovered if we now have evidence it's correct
-      record.discovery_method = 'discovered'
+      record.discovery_method = "discovered"
       record.discovery_score = discovery_score if discovery_score
     end
 
@@ -74,7 +74,7 @@ class DomainSelector < ApplicationRecord
   end
 
   # Find or create selector and record failure
-  def self.record_failure(domain:, field_name:, selector:, discovery_method: 'heuristic', discovery_score: nil)
+  def self.record_failure(domain:, field_name:, selector:, discovery_method: "heuristic", discovery_score: nil)
     normalized_domain = normalize_domain_string(domain)
     record = find_or_initialize_by(domain: normalized_domain, field_name: field_name, selector: selector)
 
@@ -93,7 +93,7 @@ class DomainSelector < ApplicationRecord
     normalized_domain = normalize_domain_string(domain)
     record = find_or_initialize_by(domain: normalized_domain, field_name: field_name, selector: selector)
 
-    record.discovery_method = 'discovered'
+    record.discovery_method = "discovered"
     record.discovery_score = score
 
     # Discovered selectors start with 1 success (the correction that discovered them)
@@ -121,10 +121,10 @@ class DomainSelector < ApplicationRecord
 
       # First priority: discovered selectors with good confidence
       discovered_candidates = all_candidates
-        .select { |ds| ds.discovery_method == 'discovered' }
+        .select { |ds| ds.discovery_method == "discovered" }
         .select { |ds| ds.total_samples >= 1 && ds.confidence >= 0.4 }
 
-      best = discovered_candidates.max_by { |ds| [ds.confidence, ds.discovery_score || 0] }
+      best = discovered_candidates.max_by { |ds| [ ds.confidence, ds.discovery_score || 0 ] }
 
       # Second priority: any selector with enough samples and high confidence
       if best.nil?

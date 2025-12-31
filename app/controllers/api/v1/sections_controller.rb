@@ -2,7 +2,7 @@ module Api
   module V1
     class SectionsController < BaseController
       before_action :set_project
-      before_action :set_section, only: [:update, :destroy]
+      before_action :set_section, only: [ :update, :destroy ]
 
       # POST /api/v1/projects/:project_id/sections
       def create
