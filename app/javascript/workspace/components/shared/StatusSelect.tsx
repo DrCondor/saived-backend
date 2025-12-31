@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 
 const STATUS_OPTIONS = [
   { value: 'propozycja', label: 'PROPOZYCJA', bgColor: 'bg-neutral-200', textColor: 'text-neutral-600' },
@@ -10,17 +11,39 @@ interface StatusSelectProps {
   value: string;
   onChange: (value: string) => void;
   disabled?: boolean;
+  compact?: boolean;
 }
 
-export default function StatusSelect({ value, onChange, disabled = false }: StatusSelectProps) {
+export default function StatusSelect({ value, onChange, disabled = false, compact = false }: StatusSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, right: 0 });
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const currentOption = STATUS_OPTIONS.find((opt) => opt.value === value) || STATUS_OPTIONS[0];
 
+  const buttonSizeClasses = compact
+    ? 'px-2 py-0.5 text-[9px]'
+    : 'px-3 py-1 text-[10px]';
+
+  // Calculate dropdown position when opening
+  useEffect(() => {
+    if (isOpen && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      setDropdownPosition({
+        top: rect.bottom + 4,
+        right: window.innerWidth - rect.right,
+      });
+    }
+  }, [isOpen]);
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      if (
+        buttonRef.current && !buttonRef.current.contains(target) &&
+        dropdownRef.current && !dropdownRef.current.contains(target)
+      ) {
         setIsOpen(false);
       }
     }
@@ -42,19 +65,20 @@ export default function StatusSelect({ value, onChange, disabled = false }: Stat
   };
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative">
       <button
+        ref={buttonRef}
         type="button"
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
-        className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-semibold tracking-wide transition-all ${
+        className={`inline-flex items-center gap-1 rounded-full ${buttonSizeClasses} font-semibold tracking-wide transition-all ${
           currentOption.bgColor
         } ${currentOption.textColor} ${!disabled ? 'hover:opacity-80 cursor-pointer' : 'cursor-default'}`}
       >
         {currentOption.label}
         {!disabled && (
           <svg
-            className={`w-3 h-3 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+            className={`${compact ? 'w-2.5 h-2.5' : 'w-3 h-3'} transition-transform ${isOpen ? 'rotate-180' : ''}`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -64,8 +88,16 @@ export default function StatusSelect({ value, onChange, disabled = false }: Stat
         )}
       </button>
 
-      {isOpen && (
-        <div className="absolute right-0 mt-1 z-50 bg-white rounded-lg shadow-lg border border-neutral-200 py-1 min-w-[140px]">
+      {isOpen && createPortal(
+        <div
+          ref={dropdownRef}
+          className="fixed bg-white rounded-lg shadow-lg border border-neutral-200 py-1 min-w-[140px]"
+          style={{
+            top: dropdownPosition.top,
+            right: dropdownPosition.right,
+            zIndex: 9999,
+          }}
+        >
           {STATUS_OPTIONS.map((option) => (
             <button
               key={option.value}
@@ -81,7 +113,8 @@ export default function StatusSelect({ value, onChange, disabled = false }: Stat
               {option.label}
             </button>
           ))}
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

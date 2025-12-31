@@ -1,19 +1,21 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import type { ProjectSection, CreateItemInput, UpdateItemInput } from '../../types';
+import type { ProjectSection, CreateItemInput, UpdateItemInput, ViewMode } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
 import { useCreateItem, useUpdateItem, useDeleteItem } from '../../hooks/useItems';
 import { useUpdateSection, useDeleteSection } from '../../hooks/useSections';
 import SortableItemCard from './SortableItemCard';
+import SortableItemCardCompact from './SortableItemCardCompact';
 import AddItemForm from './AddItemForm';
 
 interface SectionProps {
   section: ProjectSection;
   projectId: number;
+  viewMode: ViewMode;
 }
 
-export default function Section({ section, projectId }: SectionProps) {
+export default function Section({ section, projectId, viewMode }: SectionProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(section.name);
@@ -166,14 +168,23 @@ export default function Section({ section, projectId }: SectionProps) {
               items={items.map((item) => item.id)}
               strategy={verticalListSortingStrategy}
             >
-              {items.map((item) => (
-                <SortableItemCard
-                  key={item.id}
-                  item={item}
-                  onUpdate={handleUpdateItem}
-                  onDelete={handleDeleteItem}
-                />
-              ))}
+              {items.map((item) =>
+                viewMode === 'list' ? (
+                  <SortableItemCardCompact
+                    key={item.id}
+                    item={item}
+                    onUpdate={handleUpdateItem}
+                    onDelete={handleDeleteItem}
+                  />
+                ) : (
+                  <SortableItemCard
+                    key={item.id}
+                    item={item}
+                    onUpdate={handleUpdateItem}
+                    onDelete={handleDeleteItem}
+                  />
+                )
+              )}
             </SortableContext>
 
             {items.length === 0 && !isOver && (

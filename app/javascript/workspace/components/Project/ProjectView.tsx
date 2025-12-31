@@ -15,12 +15,13 @@ import {
   type CollisionDetection,
 } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
-import type { Project, ProjectItem, ProjectSection, ItemMove, SortOption, FilterState } from '../../types';
+import type { Project, ProjectItem, ProjectSection, ItemMove, SortOption, FilterState, ViewMode } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
 import { useCreateSection } from '../../hooks/useSections';
 import { useReorderProject } from '../../hooks/useReorderProject';
 import Section from './Section';
 import ItemCard from './ItemCard';
+import ItemCardCompact from './ItemCardCompact';
 import ProjectToolbar from './ProjectToolbar';
 
 interface ProjectViewProps {
@@ -73,10 +74,11 @@ export default function ProjectView({ project }: ProjectViewProps) {
   const [activeItem, setActiveItem] = useState<ProjectItem | null>(null);
   const [activeItemId, setActiveItemId] = useState<number | null>(null);
 
-  // Toolbar state: search, sort, filter
+  // Toolbar state: search, sort, filter, view mode
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('default');
   const [filters, setFilters] = useState<FilterState>({ statuses: [], categories: [] });
+  const [viewMode, setViewMode] = useState<ViewMode>('grid');
 
   // Track the original section of the dragged item (for API call)
   const dragStartSectionRef = useRef<number | null>(null);
@@ -450,6 +452,8 @@ export default function ProjectView({ project }: ProjectViewProps) {
             matchCount={matchCount}
             totalCount={totalItemCount}
             hasActiveFilters={hasActiveFilters}
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
           />
         </div>
 
@@ -515,7 +519,7 @@ export default function ProjectView({ project }: ProjectViewProps) {
         )}
 
         {processedSections.map((section) => (
-          <Section key={section.id} section={section} projectId={project.id} />
+          <Section key={section.id} section={section} projectId={project.id} viewMode={viewMode} />
         ))}
 
         {/* Drag overlay - shows the item being dragged */}
@@ -527,7 +531,11 @@ export default function ProjectView({ project }: ProjectViewProps) {
         >
           {activeItem ? (
             <div className="rotate-2 scale-105 shadow-2xl">
-              <ItemCard item={activeItem} />
+              {viewMode === 'list' ? (
+                <ItemCardCompact item={activeItem} />
+              ) : (
+                <ItemCard item={activeItem} />
+              )}
             </div>
           ) : null}
         </DragOverlay>

@@ -121,6 +121,9 @@ export interface ReorderInput {
   section_order?: number[];
 }
 
+// View mode type
+export type ViewMode = 'grid' | 'list';
+
 // Sort and filter types
 export type SortOption =
   | 'default'

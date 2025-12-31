@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import type { SortOption, FilterState, ProjectItem } from '../../types';
+import type { SortOption, FilterState, ViewMode } from '../../types';
 
 interface ProjectToolbarProps {
   projectId: number;
@@ -14,6 +14,8 @@ interface ProjectToolbarProps {
   matchCount: number;
   totalCount: number;
   hasActiveFilters: boolean;
+  viewMode: ViewMode;
+  onViewModeChange: (mode: ViewMode) => void;
 }
 
 const SORT_OPTIONS: { value: SortOption; label: string }[] = [
@@ -45,6 +47,8 @@ export default function ProjectToolbar({
   matchCount,
   totalCount,
   hasActiveFilters,
+  viewMode,
+  onViewModeChange,
 }: ProjectToolbarProps) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isSortOpen, setIsSortOpen] = useState(false);
@@ -125,6 +129,38 @@ export default function ProjectToolbar({
 
   return (
     <div className="flex items-center gap-2 flex-shrink-0">
+      {/* View mode toggle */}
+      <div className="inline-flex rounded-full border border-neutral-300 overflow-hidden flex-shrink-0">
+        <button
+          type="button"
+          onClick={() => onViewModeChange('grid')}
+          className={`p-2 transition-colors ${
+            viewMode === 'grid'
+              ? 'bg-neutral-900 text-white'
+              : 'bg-white text-neutral-500 hover:bg-neutral-50'
+          }`}
+          title="Widok kart"
+        >
+          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5v-3zm8 0A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5v-3zm-8 8A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5v-3zm8 0A1.5 1.5 0 0 1 10.5 9h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 13.5v-3z"/>
+          </svg>
+        </button>
+        <button
+          type="button"
+          onClick={() => onViewModeChange('list')}
+          className={`p-2 transition-colors ${
+            viewMode === 'list'
+              ? 'bg-neutral-900 text-white'
+              : 'bg-white text-neutral-500 hover:bg-neutral-50'
+          }`}
+          title="Widok listy"
+        >
+          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">
+            <path fillRule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
+          </svg>
+        </button>
+      </div>
+
       {/* PDF Preview */}
       <a
         href={`/api/v1/projects/${projectId}/pdf`}
