@@ -116,6 +116,8 @@ GEM
       responders
       warden (~> 1.2.3)
     docile (1.4.1)
+    dockerfile-rails (1.7.10)
+      rails (>= 3.0.0)
     drb (2.2.3)
     erb (6.0.0)
     erubi (1.13.1)
@@ -374,6 +376,7 @@ DEPENDENCIES
   cssbundling-rails
   debug
   devise
+  dockerfile-rails (~> 1.7)
   factory_bot_rails
   faker
   jbuilder
