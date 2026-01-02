@@ -117,9 +117,9 @@
             <% end %>
           </ul>
 
-          <%= link_to plan[:name] == "Team" ? about_path : new_user_registration_path,
+          <%= link_to about_path,
               class: "block w-full text-center rounded-full py-3 text-sm font-medium transition-all #{plan[:highlight] ? 'bg-neutral-900 text-white hover:bg-neutral-800' : 'border border-neutral-300 text-neutral-700 hover:bg-neutral-50'}" do %>
-            <%= plan[:cta] %>
+            Skontaktuj sie
           <% end %>
         </div>
       <% end %>

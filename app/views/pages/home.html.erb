@@ -7,7 +7,7 @@
       <div>
         <div class="inline-flex items-center gap-2 rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-700 mb-6">
           <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-          Wczesny dostep dostepny
+          Narzedzie dla profesjonalistow
         </div>
 
         <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-neutral-900 mb-6">
@@ -30,8 +30,8 @@
               </svg>
             <% end %>
           <% else %>
-            <%= link_to new_user_registration_path, class: "inline-flex items-center gap-2 rounded-full bg-neutral-900 px-6 py-3 text-sm font-medium text-white shadow-lg hover:bg-neutral-800 transition-all hover:shadow-xl hover:-translate-y-0.5" do %>
-              Zacznij za darmo
+            <%= link_to new_user_session_path, class: "inline-flex items-center gap-2 rounded-full bg-neutral-900 px-6 py-3 text-sm font-medium text-white shadow-lg hover:bg-neutral-800 transition-all hover:shadow-xl hover:-translate-y-0.5" do %>
+              Zaloguj sie
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
@@ -52,13 +52,13 @@
             <svg class="w-4 h-4 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
             </svg>
-            Bez karty kredytowej
+            Rozszerzenie Chrome
           </div>
           <div class="flex items-center gap-2">
             <svg class="w-4 h-4 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
             </svg>
-            14 dni za darmo
+            Eksport do PDF
           </div>
         </div>
       </div>
@@ -320,9 +320,9 @@
             <% end %>
           </ul>
 
-          <%= link_to plan[:highlight] ? new_user_registration_path : pricing_path,
+          <%= link_to pricing_path,
               class: "block w-full text-center rounded-full py-2.5 text-sm font-medium transition-all #{plan[:highlight] ? 'bg-neutral-900 text-white hover:bg-neutral-800' : 'border border-neutral-300 text-neutral-700 hover:bg-neutral-50'}" do %>
-            <%= plan[:highlight] ? 'Zacznij teraz' : 'Wybierz plan' %>
+            Zobacz szczegoly
           <% end %>
         </div>
       <% end %>
@@ -350,8 +350,8 @@
           Gotowy na sprawniejsze projekty?
         </h2>
         <p class="text-neutral-400 max-w-xl mx-auto mb-8">
-          Dolacz do setek architektow wnetrz, ktorzy juz uzywajaJa SAIVED.
-          14 dni za darmo, bez zobowiazan.
+          Dolacz do setek architektow wnetrz, ktorzy juz uzywaja SAIVED.
+          Skontaktuj sie, aby uzyskac dostep.
         </p>
 
         <div class="flex flex-wrap items-center justify-center gap-4">
@@ -363,8 +363,8 @@
               </svg>
             <% end %>
           <% else %>
-            <%= link_to new_user_registration_path, class: "inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-neutral-900 hover:bg-neutral-100 transition-all" do %>
-              Utworz darmowe konto
+            <%= link_to about_path, class: "inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-neutral-900 hover:bg-neutral-100 transition-all" do %>
+              Skontaktuj sie z nami
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>

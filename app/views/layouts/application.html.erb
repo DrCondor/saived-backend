@@ -53,10 +53,8 @@
                   <span class="hidden sm:inline">Panel</span>
                 <% end %>
               <% else %>
-                <%= link_to "Zaloguj", new_user_session_path,
-                    class: "hidden sm:inline-flex text-sm font-medium text-neutral-600 hover:text-neutral-900 px-3 py-2" %>
-                <%= link_to new_user_registration_path, class: "inline-flex items-center gap-2 rounded-full bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800 transition-colors" do %>
-                  Zacznij za darmo
+                <%= link_to new_user_session_path, class: "inline-flex items-center gap-2 rounded-full bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800 transition-colors" do %>
+                  Zaloguj sie
                 <% end %>
               <% end %>
 

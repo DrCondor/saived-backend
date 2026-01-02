@@ -2,7 +2,15 @@ Rails.application.routes.draw do
   devise_for :users, controllers: {
     sessions: "users/sessions",
     registrations: "users/registrations"
-  }
+  }, skip: [ :registrations ]
+
+  # Only allow edit/update/destroy for existing users (no new registrations)
+  devise_scope :user do
+    get "users/edit", to: "users/registrations#edit", as: :edit_user_registration
+    put "users", to: "users/registrations#update", as: :user_registration
+    patch "users", to: "users/registrations#update"
+    delete "users", to: "users/registrations#destroy"
+  end
 
   get "up" => "rails/health#show", as: :rails_health_check
   get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
