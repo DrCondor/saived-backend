@@ -4,11 +4,11 @@
     <div class="text-center mb-16">
       <p class="text-xs font-bold tracking-[0.2em] uppercase text-emerald-600 mb-3">Funkcje</p>
       <h1 class="text-4xl sm:text-5xl font-bold text-neutral-900 mb-6">
-        Wszystko czego potrzebujesz<br>do zarzadzania projektami
+        Wszystko czego potrzebujesz<br>do zarządzania projektami
       </h1>
       <p class="text-lg text-neutral-600 max-w-2xl mx-auto">
-        SAIVED to kompletne narzedzie stworzone specjalnie dla architektow wnetrz
-        i projektantow. Poznaj wszystkie funkcje.
+        SAIVED to kompletne narzędzie stworzone specjalnie dla architektów wnętrz
+        i projektantów. Poznaj wszystkie funkcje.
       </p>
     </div>
   </div>
@@ -25,15 +25,15 @@
             Rozszerzenie Chrome
           </div>
           <h2 class="text-3xl font-bold text-neutral-900 mb-4">
-            Zbieraj produkty jednym kliknieciem
+            Zbieraj produkty jednym kliknięciem
           </h2>
           <p class="text-neutral-600 mb-6 leading-relaxed">
             Nasze rozszerzenie do Chrome automatycznie wykrywa informacje o produkcie
-            na stronach sklepow internetowych. Cena, nazwa, zdjecie i link - wszystko
-            zostaje zapisane w Twoim projekcie bez recznego przepisywania.
+            na stronach sklepów internetowych. Cena, nazwa, zdjęcie i link - wszystko
+            zostaje zapisane w Twoim projekcie bez ręcznego przepisywania.
           </p>
           <ul class="space-y-3">
-            <% ["Obsluga 500+ sklepow internetowych", "Automatyczne wykrywanie cen i promocji", "Inteligentne rozpoznawanie zdjec produktu", "Zapisywanie bezposrednio do wybranego projektu"].each do |item| %>
+            <% ["Działa z dowolnym sklepem internetowym", "Automatyczne wykrywanie cen i zdjęć", "Inteligentne rozpoznawanie danych produktu", "Zapisywanie bezpośrednio do wybranego projektu"].each do |item| %>
               <li class="flex items-center gap-3 text-neutral-700">
                 <svg class="w-5 h-5 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
@@ -64,9 +64,9 @@
                   </svg>
                 </div>
                 <div class="flex-1">
-                  <p class="text-xs text-emerald-600 font-medium mb-1">SAIVED wykryl produkt</p>
+                  <p class="text-xs text-emerald-600 font-medium mb-1">SAIVED wykrył produkt</p>
                   <p class="font-semibold text-neutral-900">KIVIK Sofa 3-osobowa</p>
-                  <p class="text-sm text-neutral-500 mt-1">4 299,00 zl</p>
+                  <p class="text-sm text-neutral-500 mt-1">4 299,00 zł</p>
                   <button class="mt-3 inline-flex items-center gap-2 rounded-full bg-emerald-500 px-4 py-1.5 text-xs font-medium text-white">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -89,13 +89,13 @@
               <div class="flex items-center justify-between mb-4">
                 <div>
                   <p class="text-[10px] font-bold tracking-[0.2em] uppercase text-neutral-400">Projekt</p>
-                  <p class="font-semibold text-neutral-900">Apartament Zoliborz</p>
+                  <p class="font-semibold text-neutral-900">Apartament Żoliborz</p>
                 </div>
-                <span class="rounded-full bg-violet-500 px-3 py-1 text-xs font-bold text-white">28 450 zl</span>
+                <span class="rounded-full bg-violet-500 px-3 py-1 text-xs font-bold text-white">28 450 zł</span>
               </div>
 
               <div class="space-y-2">
-                <% ["Salon", "Sypialnia", "Kuchnia", "Lazienka"].each_with_index do |section, i| %>
+                <% ["Salon", "Sypialnia", "Kuchnia", "Łazienka"].each_with_index do |section, i| %>
                   <div class="flex items-center justify-between p-3 rounded-xl bg-neutral-50 border border-neutral-100">
                     <div class="flex items-center gap-3">
                       <div class="w-8 h-8 rounded-lg bg-<%= ['emerald', 'violet', 'amber', 'cyan'][i] %>-100 flex items-center justify-center">
@@ -103,7 +103,7 @@
                       </div>
                       <span class="text-sm font-medium text-neutral-900"><%= section %></span>
                     </div>
-                    <span class="text-xs text-neutral-500"><%= [8500, 6200, 9800, 3950][i] %> zl</span>
+                    <span class="text-xs text-neutral-500"><%= [8500, 6200, 9800, 3950][i] %> zł</span>
                   </div>
                 <% end %>
               </div>
@@ -115,15 +115,15 @@
             Organizacja
           </div>
           <h2 class="text-3xl font-bold text-neutral-900 mb-4">
-            Projekty i sekcje dla porzadku
+            Projekty i sekcje dla porządku
           </h2>
           <p class="text-neutral-600 mb-6 leading-relaxed">
-            Organizuj produkty w logiczne projekty i sekcje. Kazde pomieszczenie,
-            kazdy klient - wszystko ma swoje miejsce. Przejrzyste zestawienia
-            z automatycznym sumowaniem kosztow.
+            Organizuj produkty w logiczne projekty i sekcje. Każde pomieszczenie,
+            każdy klient - wszystko ma swoje miejsce. Przejrzyste zestawienia
+            z automatycznym sumowaniem kosztów.
           </p>
           <ul class="space-y-3">
-            <% ["Nieograniczona liczba projektow", "Sekcje dla kazdego pomieszczenia", "Automatyczne sumowanie kosztow", "Statusy produktow: propozycja, wybrane, zamowione"].each do |item| %>
+            <% ["Nieograniczona liczba projektów", "Sekcje dla każdego pomieszczenia", "Automatyczne sumowanie kosztów", "Statusy produktów: propozycja, wybrane, zamówione"].each do |item| %>
               <li class="flex items-center gap-3 text-neutral-700">
                 <svg class="w-5 h-5 text-violet-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
@@ -135,22 +135,21 @@
         </div>
       </div>
 
-      <%# Feature 3 - Price Tracking %>
+      <%# Feature 3 - Drag & Drop %>
       <div class="grid lg:grid-cols-2 gap-12 items-center">
         <div>
           <div class="inline-flex items-center gap-2 rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-700 mb-4">
-            Sledzenie cen
+            Drag & Drop
           </div>
           <h2 class="text-3xl font-bold text-neutral-900 mb-4">
-            Automatyczne aktualizacje cen
+            Przesuwaj produkty między sekcjami
           </h2>
           <p class="text-neutral-600 mb-6 leading-relaxed">
-            Ceny produktow zmieniaja sie. SAIVED automatycznie sprawdza aktualne ceny
-            i powiadamia Cie o zmianach. Zawsze aktualne kosztorysy bez recznego
-            sprawdzania kazdego produktu.
+            Intuicyjny interfejs pozwala na szybkie przesuwanie produktów między sekcjami
+            i zmianę ich kolejności. Zmieniasz koncepcję? Wystarczy przeciągnąć i upuścić.
           </p>
           <ul class="space-y-3">
-            <% ["Codzienne sprawdzanie cen", "Powiadomienia o spadkach i wzrostach", "Historia zmian cen", "Alerty promocyjne"].each do |item| %>
+            <% ["Przeciąganie produktów między sekcjami", "Zmiana kolejności jednym ruchem", "Reorganizacja całych sekcji", "Szybka praca bez zbędnych kliknięć"].each do |item| %>
               <li class="flex items-center gap-3 text-neutral-700">
                 <svg class="w-5 h-5 text-amber-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
@@ -163,34 +162,43 @@
         <div class="relative">
           <div class="absolute -inset-4 bg-gradient-to-r from-amber-100 to-orange-100 rounded-3xl blur-2xl opacity-40"></div>
           <div class="relative rounded-2xl border border-neutral-200 bg-white shadow-xl p-6">
-            <div class="flex items-center gap-3 mb-4">
-              <div class="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
-                <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
-                </svg>
-              </div>
-              <div>
-                <p class="font-semibold text-neutral-900">Zmiany cen dzisiaj</p>
-                <p class="text-xs text-neutral-500">3 produkty zaktualizowane</p>
-              </div>
-            </div>
-
+            <%# Drag & Drop mockup %>
             <div class="space-y-3">
-              <% [
-                { name: "Fotel STRANDMON", old: "1 499", new: "1 299", change: "-200 zl", positive: true },
-                { name: "Dywan VINDUM", old: "599", new: "649", change: "+50 zl", positive: false },
-                { name: "Lampa RANARP", old: "249", new: "199", change: "-50 zl", positive: true }
-              ].each do |item| %>
-                <div class="flex items-center justify-between p-3 rounded-xl bg-neutral-50 border border-neutral-100">
-                  <div>
-                    <p class="text-sm font-medium text-neutral-900"><%= item[:name] %></p>
-                    <p class="text-xs text-neutral-500"><%= item[:old] %> zl → <%= item[:new] %> zl</p>
-                  </div>
-                  <span class="text-xs font-semibold <%= item[:positive] ? 'text-emerald-600' : 'text-red-500' %>">
-                    <%= item[:change] %>
-                  </span>
+              <div class="flex items-center gap-2 mb-2">
+                <div class="w-1 h-4 rounded-full bg-emerald-500"></div>
+                <span class="text-xs font-semibold text-neutral-700">Salon</span>
+              </div>
+
+              <div class="p-3 rounded-xl bg-neutral-50 border border-neutral-100">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-emerald-100"></div>
+                  <span class="text-sm text-neutral-700">Sofa narożna</span>
                 </div>
-              <% end %>
+              </div>
+
+              <%# Item being dragged %>
+              <div class="relative">
+                <div class="absolute inset-0 border-2 border-dashed border-amber-300 rounded-xl bg-amber-50/50"></div>
+                <div class="p-3 rounded-xl bg-white border-2 border-amber-400 shadow-lg transform rotate-2 translate-x-2">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center">
+                      <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                      </svg>
+                    </div>
+                    <span class="text-sm font-medium text-neutral-900">Stolik kawowy</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2 mt-4 mb-2">
+                <div class="w-1 h-4 rounded-full bg-violet-500"></div>
+                <span class="text-xs font-semibold text-neutral-700">Sypialnia</span>
+              </div>
+
+              <div class="p-3 rounded-xl border-2 border-dashed border-violet-300 bg-violet-50/50 flex items-center justify-center">
+                <span class="text-xs text-violet-500">Upuść tutaj</span>
+              </div>
             </div>
           </div>
         </div>
@@ -244,15 +252,15 @@
             Eksport PDF
           </div>
           <h2 class="text-3xl font-bold text-neutral-900 mb-4">
-            Profesjonalne kosztorysy dla klientow
+            Profesjonalne kosztorysy dla klientów
           </h2>
           <p class="text-neutral-600 mb-6 leading-relaxed">
-            Generuj piekne, profesjonalne dokumenty PDF jednym kliknieciem.
-            Twoje logo, Twoje kolory - kosztorysy ktore robia wrazenie
-            i buduja zaufanie klientow.
+            Generuj piękne, profesjonalne dokumenty PDF jednym kliknięciem.
+            Twoje logo, Twoje kolory - kosztorysy które robią wrażenie
+            i budują zaufanie klientów.
           </p>
           <ul class="space-y-3">
-            <% ["Wlasny branding i logo", "Moodboardy i zestawienia", "Szczegolowe specyfikacje", "Udostepnianie przez link"].each do |item| %>
+            <% ["Własny branding i logo", "Profesjonalne zestawienia produktów", "Szczegółowe specyfikacje z cenami", "Udostępnianie przez link lub email"].each do |item| %>
               <li class="flex items-center gap-3 text-neutral-700">
                 <svg class="w-5 h-5 text-cyan-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
@@ -263,6 +271,158 @@
           </ul>
         </div>
       </div>
+
+      <%# Feature 5 - Filtering & Search %>
+      <div class="grid lg:grid-cols-2 gap-12 items-center">
+        <div>
+          <div class="inline-flex items-center gap-2 rounded-full bg-pink-100 px-3 py-1 text-xs font-medium text-pink-700 mb-4">
+            Wyszukiwanie
+          </div>
+          <h2 class="text-3xl font-bold text-neutral-900 mb-4">
+            Znajdź to czego szukasz
+          </h2>
+          <p class="text-neutral-600 mb-6 leading-relaxed">
+            Gdy projekty rosną, potrzebujesz sposobu na szybkie znajdowanie produktów.
+            Filtruj po statusie, kategorii lub cenie. Wyszukuj po nazwie lub sklepie.
+          </p>
+          <ul class="space-y-3">
+            <% ["Wyszukiwanie pełnotekstowe", "Filtrowanie po statusie produktu", "Sortowanie po cenie lub dacie", "Grupowanie po kategoriach"].each do |item| %>
+              <li class="flex items-center gap-3 text-neutral-700">
+                <svg class="w-5 h-5 text-pink-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                <%= item %>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+        <div class="relative">
+          <div class="absolute -inset-4 bg-gradient-to-r from-pink-100 to-rose-100 rounded-3xl blur-2xl opacity-40"></div>
+          <div class="relative rounded-2xl border border-neutral-200 bg-white shadow-xl p-6">
+            <%# Search/Filter mockup %>
+            <div class="flex items-center gap-2 mb-4">
+              <div class="flex-1 flex items-center gap-2 px-3 py-2 rounded-lg bg-neutral-50 border border-neutral-200">
+                <svg class="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <span class="text-sm text-neutral-400">Szukaj produktów...</span>
+              </div>
+              <button class="p-2 rounded-lg bg-neutral-50 border border-neutral-200">
+                <svg class="w-4 h-4 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                </svg>
+              </button>
+            </div>
+
+            <div class="flex flex-wrap gap-2 mb-4">
+              <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-emerald-100 text-xs font-medium text-emerald-700">
+                Zamówione
+                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+              </span>
+              <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-violet-100 text-xs font-medium text-violet-700">
+                Wybrane
+                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+              </span>
+              <span class="px-2 py-1 rounded-full bg-neutral-100 text-xs text-neutral-600">+ Dodaj filtr</span>
+            </div>
+
+            <div class="space-y-2">
+              <% [
+                { name: "Sofa KIVIK szara", status: "zamówione", price: "4 299" },
+                { name: "Fotel STRANDMON", status: "wybrane", price: "1 499" }
+              ].each do |item| %>
+                <div class="flex items-center justify-between p-3 rounded-xl bg-neutral-50 border border-neutral-100">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-neutral-200"></div>
+                    <span class="text-sm text-neutral-900"><%= item[:name] %></span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs text-neutral-500"><%= item[:price] %> zł</span>
+                    <span class="rounded-full px-2 py-0.5 text-[10px] font-semibold <%= item[:status] == 'zamówione' ? 'bg-emerald-500 text-white' : 'bg-violet-500 text-white' %>">
+                      <%= item[:status].upcase %>
+                    </span>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%# Coming Soon Section %>
+<section class="py-20 bg-gradient-to-b from-violet-50/50 to-white">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="text-center mb-16">
+      <p class="text-xs font-bold tracking-[0.2em] uppercase text-violet-600 mb-3">Wkrótce</p>
+      <h2 class="text-3xl sm:text-4xl font-bold text-neutral-900 mb-4">
+        Nad czym pracujemy
+      </h2>
+      <p class="text-neutral-600 max-w-2xl mx-auto">
+        Nieustannie rozwijamy SAIVED. Oto funkcje, które wkrótce do nas dołączą.
+      </p>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+      <%# Price Tracking %>
+      <div class="relative p-8 rounded-3xl border-2 border-violet-200 bg-white">
+        <div class="absolute -top-3 left-6">
+          <span class="rounded-full bg-violet-500 px-3 py-1 text-xs font-semibold text-white">Q1 2026</span>
+        </div>
+        <div class="w-14 h-14 rounded-2xl bg-violet-100 flex items-center justify-center mb-5">
+          <svg class="w-7 h-7 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold text-neutral-900 mb-3">Automatyczne śledzenie cen</h3>
+        <p class="text-neutral-600 mb-4 leading-relaxed">
+          Nasze crawlery będą codziennie sprawdzać ceny produktów w Twoich projektach.
+          Otrzymasz powiadomienie gdy cena spadnie lub produkt zniknie ze sklepu.
+        </p>
+        <ul class="space-y-2">
+          <% ['Nocne aktualizacje cen', 'Alerty o zmianach', 'Historia cen produktu', 'Powiadomienia o promocjach'].each do |item| %>
+            <li class="flex items-center gap-2 text-sm text-neutral-600">
+              <svg class="w-4 h-4 text-violet-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+              </svg>
+              <%= item %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+
+      <%# Moodboards %>
+      <div class="relative p-8 rounded-3xl border-2 border-violet-200 bg-white">
+        <div class="absolute -top-3 left-6">
+          <span class="rounded-full bg-violet-500 px-3 py-1 text-xs font-semibold text-white">Q2 2026</span>
+        </div>
+        <div class="w-14 h-14 rounded-2xl bg-violet-100 flex items-center justify-center mb-5">
+          <svg class="w-7 h-7 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold text-neutral-900 mb-3">Moodboardy</h3>
+        <p class="text-neutral-600 mb-4 leading-relaxed">
+          Tworzenie wizualnych tablic inspiracji z produktów w projekcie.
+          Idealne do prezentacji koncepcji klientom.
+        </p>
+        <ul class="space-y-2">
+          <% ['Drag & drop układ', 'Różne szablony', 'Eksport do PDF/PNG', 'Udostępnianie klientom'].each do |item| %>
+            <li class="flex items-center gap-2 text-sm text-neutral-600">
+              <svg class="w-4 h-4 text-violet-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+              </svg>
+              <%= item %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
     </div>
   </div>
 </section>
@@ -271,18 +431,18 @@
 <section class="py-20 bg-neutral-50">
   <div class="max-w-6xl mx-auto px-4 sm:px-6">
     <div class="text-center mb-12">
-      <h2 class="text-2xl font-bold text-neutral-900 mb-4">I wiele wiecej...</h2>
-      <p class="text-neutral-600">Dodatkowe funkcje ktore ulatwia Twoja prace</p>
+      <h2 class="text-2xl font-bold text-neutral-900 mb-4">I wiele więcej...</h2>
+      <p class="text-neutral-600">Dodatkowe funkcje które ułatwią Twoją pracę</p>
     </div>
 
     <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
       <% [
-        { icon: "M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z", title: "Wspolpraca", desc: "Zapraszaj zespol i klientow" },
+        { icon: "M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z", title: "Współpraca", desc: "Zapraszaj zespół i klientów" },
         { icon: "M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z", title: "Wsparcie", desc: "Pomoc gdy jej potrzebujesz" },
-        { icon: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z", title: "Bezpieczenstwo", desc: "Dane bezpiecznie zaszyfrowane" },
-        { icon: "M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z", title: "Mobile", desc: "Dostep z kazdego urzadzenia" },
+        { icon: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z", title: "Bezpieczeństwo", desc: "Dane bezpiecznie zaszyfrowane" },
+        { icon: "M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z", title: "Mobile", desc: "Dostęp z każdego urządzenia" },
         { icon: "M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01", title: "Personalizacja", desc: "Dopasuj do swoich potrzeb" },
-        { icon: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z", title: "Historia", desc: "Pelna historia zmian" },
+        { icon: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z", title: "Historia", desc: "Pełna historia zmian" },
         { icon: "M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12", title: "Import", desc: "Importuj z Excela" },
         { icon: "M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z", title: "API", desc: "Integracje i automatyzacje" }
       ].each do |feature| %>
@@ -302,14 +462,15 @@
 <section class="py-20">
   <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center">
     <h2 class="text-3xl font-bold text-neutral-900 mb-4">
-      Gotowy zaczac?
+      Gotowy zacząć?
     </h2>
-    <p class="text-neutral-600 mb-8">
-      Dolacz do setek architektow wnetrz ktorzy juz uzywaja SAIVED.
+    <p class="text-neutral-600 mb-8 max-w-xl mx-auto">
+      Wypróbuj SAIVED przez 14 dni za darmo. Bez karty kredytowej,
+      bez zobowiązań - anuluj kiedy chcesz.
     </p>
     <div class="flex flex-wrap justify-center gap-4">
       <%= link_to about_path, class: "inline-flex items-center gap-2 rounded-full bg-neutral-900 px-6 py-3 text-sm font-medium text-white hover:bg-neutral-800 transition-all" do %>
-        Skontaktuj sie z nami
+        Wypróbuj 14 dni za darmo
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
         </svg>

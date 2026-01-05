@@ -7,31 +7,31 @@
       <div>
         <div class="inline-flex items-center gap-2 rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-700 mb-6">
           <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-          Narzedzie dla profesjonalistow
+          Dla architektów wnętrz
         </div>
 
         <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-neutral-900 mb-6">
-          Kosztorysy i produkty
-          <span class="block text-emerald-600">w jednym miejscu.</span>
+          Koniec z chaosem
+          <span class="block text-emerald-600">w Excelu.</span>
         </h1>
 
         <p class="text-lg text-neutral-600 max-w-xl mb-8 leading-relaxed">
-          SAIVED pomaga architektom wnetrz zbierac produkty z roznych sklepow,
-          sledzic ceny i tworzyc profesjonalne zestawienia dla klientow -
-          bez Excela i recznego przepisywania.
+          Zbieraj produkty z dowolnego sklepu jednym kliknięciem,
+          organizuj je w projekty i generuj profesjonalne kosztorysy -
+          bez ręcznego przepisywania i arkuszy kalkulacyjnych.
         </p>
 
         <div class="flex flex-wrap items-center gap-4 mb-8">
           <% if user_signed_in? %>
             <%= link_to workspace_path, class: "inline-flex items-center gap-2 rounded-full bg-neutral-900 px-6 py-3 text-sm font-medium text-white shadow-lg hover:bg-neutral-800 transition-all hover:shadow-xl hover:-translate-y-0.5" do %>
-              Przejdz do panelu
+              Przejdź do panelu
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
             <% end %>
           <% else %>
-            <%= link_to new_user_session_path, class: "inline-flex items-center gap-2 rounded-full bg-neutral-900 px-6 py-3 text-sm font-medium text-white shadow-lg hover:bg-neutral-800 transition-all hover:shadow-xl hover:-translate-y-0.5" do %>
-              Zaloguj sie
+            <%= link_to about_path, class: "inline-flex items-center gap-2 rounded-full bg-neutral-900 px-6 py-3 text-sm font-medium text-white shadow-lg hover:bg-neutral-800 transition-all hover:shadow-xl hover:-translate-y-0.5" do %>
+              Wypróbuj 14 dni za darmo
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
@@ -52,71 +52,104 @@
             <svg class="w-4 h-4 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
             </svg>
-            Rozszerzenie Chrome
+            Bez karty kredytowej
           </div>
           <div class="flex items-center gap-2">
             <svg class="w-4 h-4 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
             </svg>
-            Eksport do PDF
+            Anuluj kiedy chcesz
           </div>
         </div>
       </div>
 
-      <%# Hero Preview Card %>
+      <%# Hero Preview Card - Project Mockup %>
       <div class="relative">
         <div class="absolute -inset-4 bg-gradient-to-r from-emerald-100 to-violet-100 rounded-[2rem] blur-2xl opacity-40"></div>
-        <div class="relative rounded-3xl border border-neutral-200 bg-white shadow-2xl p-6">
-          <div class="flex items-center justify-between mb-5">
-            <div>
-              <p class="text-[10px] font-bold tracking-[0.2em] uppercase text-neutral-400 mb-1">Projekt</p>
-              <p class="text-base font-semibold text-neutral-900">Apartament Mokotow</p>
+        <div class="relative rounded-2xl sm:rounded-3xl border border-neutral-200 bg-white shadow-2xl overflow-hidden">
+          <%# Header bar - ukryty na małych ekranach %>
+          <div class="hidden sm:flex items-center gap-2 px-4 py-3 bg-neutral-50 border-b border-neutral-200">
+            <div class="flex gap-1.5">
+              <div class="w-3 h-3 rounded-full bg-red-400"></div>
+              <div class="w-3 h-3 rounded-full bg-amber-400"></div>
+              <div class="w-3 h-3 rounded-full bg-emerald-400"></div>
             </div>
-            <div class="flex items-center gap-2">
-              <span class="rounded-full bg-emerald-500 px-3 py-1.5 text-xs font-bold text-white">
-                42 850 zl
-              </span>
+            <div class="flex-1 text-center">
+              <span class="text-xs text-neutral-400">saived.ai/workspace</span>
             </div>
           </div>
 
-          <div class="space-y-3 mb-5">
-            <% [
-              { name: "Sofa narozna IKEA KIVIK", price: "4 299", status: "zamowione", img: "emerald" },
-              { name: "Stolik kawowy dab", price: "1 890", status: "wybrane", img: "amber" },
-              { name: "Lampa wiszaca brass", price: "890", status: "propozycja", img: "violet" },
-            ].each do |item| %>
-              <div class="flex items-center gap-3 p-3 rounded-xl border border-neutral-100 bg-neutral-50/50">
-                <div class="w-12 h-12 rounded-lg bg-<%= item[:img] %>-100 flex items-center justify-center">
-                  <svg class="w-6 h-6 text-<%= item[:img] %>-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="p-4 sm:p-5">
+            <div class="flex items-center justify-between mb-4 sm:mb-5">
+              <div class="min-w-0">
+                <p class="text-[10px] font-bold tracking-[0.2em] uppercase text-neutral-400 mb-0.5 sm:mb-1">Projekt</p>
+                <p class="text-sm sm:text-base font-semibold text-neutral-900 truncate">Apartament Mokotów</p>
+              </div>
+              <span class="rounded-full bg-emerald-500 px-2.5 sm:px-3 py-1 sm:py-1.5 text-xs font-bold text-white shrink-0 ml-2">
+                42 850 zł
+              </span>
+            </div>
+
+            <%# Section header %>
+            <div class="flex items-center gap-2 mb-2 sm:mb-3">
+              <div class="w-1 h-4 rounded-full bg-emerald-500"></div>
+              <span class="text-xs font-semibold text-neutral-700">Salon</span>
+              <span class="text-[10px] text-neutral-400">3 produkty</span>
+            </div>
+
+            <div class="space-y-1.5 sm:space-y-2 mb-3 sm:mb-4">
+              <% [
+                { name: "Sofa narożna IKEA KIVIK", price: "4 299", status: "zamówione", color: "emerald" },
+                { name: "Stolik kawowy dąb", price: "1 890", status: "wybrane", color: "violet" },
+              ].each do |item| %>
+                <div class="flex items-center gap-2 sm:gap-3 p-2 sm:p-2.5 rounded-lg sm:rounded-xl border border-neutral-100 bg-neutral-50/50">
+                  <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-<%= item[:color] %>-100 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-4 h-4 sm:w-5 sm:h-5 text-<%= item[:color] %>-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                    </svg>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-xs sm:text-sm font-medium text-neutral-900 truncate"><%= item[:name] %></p>
+                    <p class="text-[10px] sm:text-xs text-neutral-500"><%= item[:price] %> zł</p>
+                  </div>
+                  <span class="shrink-0 rounded-full px-1.5 sm:px-2 py-0.5 text-[9px] sm:text-[10px] font-semibold <%=
+                    case item[:status]
+                    when 'zamówione' then 'bg-emerald-500 text-white'
+                    when 'wybrane' then 'bg-violet-500 text-white'
+                    else 'bg-neutral-200 text-neutral-600'
+                    end
+                  %>">
+                    <%= item[:status].upcase %>
+                  </span>
+                </div>
+              <% end %>
+              <%# Trzeci element tylko na większych ekranach %>
+              <div class="hidden sm:flex items-center gap-3 p-2.5 rounded-xl border border-neutral-100 bg-neutral-50/50">
+                <div class="w-10 h-10 rounded-lg bg-neutral-100 flex items-center justify-center flex-shrink-0">
+                  <svg class="w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                   </svg>
                 </div>
                 <div class="flex-1 min-w-0">
-                  <p class="text-sm font-medium text-neutral-900 truncate"><%= item[:name] %></p>
-                  <p class="text-xs text-neutral-500"><%= item[:price] %> zl</p>
+                  <p class="text-sm font-medium text-neutral-900 truncate">Lampa wisząca brass</p>
+                  <p class="text-xs text-neutral-500">890 zł</p>
                 </div>
-                <span class="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold <%=
-                  case item[:status]
-                  when 'zamowione' then 'bg-emerald-500 text-white'
-                  when 'wybrane' then 'bg-violet-500 text-white'
-                  else 'bg-neutral-200 text-neutral-600'
-                  end
-                %>">
-                  <%= item[:status].upcase %>
+                <span class="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold bg-neutral-200 text-neutral-600">
+                  PROPOZYCJA
                 </span>
               </div>
-            <% end %>
-          </div>
-
-          <div class="flex items-center justify-between pt-4 border-t border-neutral-100">
-            <div class="flex -space-x-2">
-              <% 3.times do |i| %>
-                <div class="w-7 h-7 rounded-full border-2 border-white bg-neutral-<%= 200 + i * 100 %> flex items-center justify-center text-[10px] font-medium text-neutral-600">
-                  <%= ['AK', 'MW', 'JD'][i] %>
-                </div>
-              <% end %>
             </div>
-            <p class="text-xs text-neutral-400">Ostatnia aktualizacja: dzis, 14:32</p>
+
+            <div class="flex items-center justify-between pt-2 sm:pt-3 border-t border-neutral-100">
+              <div class="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs text-neutral-400">
+                <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span class="hidden sm:inline">Zaktualizowano 2 min temu</span>
+                <span class="sm:hidden">2 min temu</span>
+              </div>
+              <button class="text-[10px] sm:text-xs font-medium text-emerald-600 hover:text-emerald-700">+ Dodaj</button>
+            </div>
           </div>
         </div>
       </div>
@@ -128,27 +161,113 @@
 <section class="border-y border-neutral-200/70 bg-white/50">
   <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
     <p class="text-center text-xs font-medium tracking-[0.15em] uppercase text-neutral-400 mb-6">
-      Zaufali nam architekci z calej Polski
+      Zaufali nam architekci z całej Polski
     </p>
     <div class="flex flex-wrap items-center justify-center gap-x-12 gap-y-4 opacity-40">
-      <% ['Studio Forma', 'Wnetrza Plus', 'Design Lab', 'Architektura M', 'Home Concept'].each do |name| %>
+      <% ['Studio Forma', 'Wnętrza Plus', 'Design Lab', 'Architektura M', 'Home Concept'].each do |name| %>
         <span class="text-lg font-semibold text-neutral-400"><%= name %></span>
       <% end %>
     </div>
   </div>
 </section>
 
-<%# Features Section %>
-<section id="features" class="py-20 sm:py-28">
+<%# How it works %>
+<section class="py-20 sm:py-28">
   <div class="max-w-6xl mx-auto px-4 sm:px-6">
     <div class="text-center mb-16">
-      <p class="text-xs font-bold tracking-[0.2em] uppercase text-emerald-600 mb-3">Funkcje</p>
+      <p class="text-xs font-bold tracking-[0.2em] uppercase text-emerald-600 mb-3">Jak to działa</p>
       <h2 class="text-3xl sm:text-4xl font-bold text-neutral-900 mb-4">
-        Wszystko czego potrzebujesz
+        Trzy proste kroki
       </h2>
       <p class="text-neutral-600 max-w-2xl mx-auto">
-        Od zbierania produktow po generowanie PDF-ow - SAIVED to kompletne narzedzie
-        dla profesjonalnych projektantow wnetrz.
+        Od pomysłu do gotowego kosztorysu w kilka minut, nie godzin.
+      </p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-8">
+      <%# Step 1 - Chrome Extension %>
+      <div class="relative">
+        <div class="text-6xl font-bold text-neutral-100 mb-4">01</div>
+        <div class="relative -mt-8">
+          <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-lg">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
+                <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div>
+                <h3 class="font-semibold text-neutral-900">Zainstaluj rozszerzenie</h3>
+                <p class="text-xs text-neutral-500">Chrome Web Store</p>
+              </div>
+            </div>
+            <p class="text-sm text-neutral-600 leading-relaxed">
+              Dodaj rozszerzenie SAIVED do Chrome i zacznij zbierać produkty z dowolnego sklepu.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <%# Step 2 - Collect products %>
+      <div class="relative">
+        <div class="text-6xl font-bold text-neutral-100 mb-4">02</div>
+        <div class="relative -mt-8">
+          <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-lg">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center">
+                <svg class="w-5 h-5 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+              </div>
+              <div>
+                <h3 class="font-semibold text-neutral-900">Zbieraj produkty</h3>
+                <p class="text-xs text-neutral-500">Jeden klik</p>
+              </div>
+            </div>
+            <p class="text-sm text-neutral-600 leading-relaxed">
+              Przeglądaj IKEA, Westwing, Zara Home - jedno kliknięcie i produkt ląduje w projekcie.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <%# Step 3 - Generate PDF %>
+      <div class="relative">
+        <div class="text-6xl font-bold text-neutral-100 mb-4">03</div>
+        <div class="relative -mt-8">
+          <div class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-lg">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center">
+                <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                </svg>
+              </div>
+              <div>
+                <h3 class="font-semibold text-neutral-900">Generuj kosztorys</h3>
+                <p class="text-xs text-neutral-500">PDF lub link</p>
+              </div>
+            </div>
+            <p class="text-sm text-neutral-600 leading-relaxed">
+              Eksportuj profesjonalny PDF z Twoim logo lub wyślij klientowi link do podglądu.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%# Features Section %>
+<section id="features" class="py-20 sm:py-28 bg-neutral-900 text-white">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="text-center mb-16">
+      <p class="text-xs font-bold tracking-[0.2em] uppercase text-emerald-400 mb-3">Funkcje</p>
+      <h2 class="text-3xl sm:text-4xl font-bold mb-4">
+        Wszystko czego potrzebujesz
+      </h2>
+      <p class="text-neutral-400 max-w-2xl mx-auto">
+        Od zbierania produktów po generowanie PDF-ów - SAIVED to kompletne narzędzie
+        dla profesjonalnych projektantów wnętrz.
       </p>
     </div>
 
@@ -157,48 +276,48 @@
         {
           icon: "M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z",
           title: "Rozszerzenie Chrome",
-          desc: "Zbieraj produkty jednym kliknieciem z dowolnego sklepu internetowego. Cena, zdjecie i link - wszystko automatycznie."
+          desc: "Zbieraj produkty jednym kliknięciem z dowolnego sklepu internetowego."
         },
         {
           icon: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4",
-          title: "Organizacja projektow",
-          desc: "Podziel produkty na sekcje: salon, sypialnia, kuchnia. Przejrzyste zestawienia dla kazdego pomieszczenia."
+          title: "Organizacja projektów",
+          desc: "Podziel produkty na sekcje: salon, sypialnia, kuchnia."
         },
         {
-          icon: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z",
-          title: "Sledzenie cen",
-          desc: "Automatyczne aktualizacje cen produktow. Zawsze aktualne kosztorysy bez recznego sprawdzania."
+          icon: "M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4",
+          title: "Drag & drop",
+          desc: "Przesuwaj produkty między sekcjami i zmieniaj kolejność."
         },
         {
           icon: "M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z",
           title: "Eksport do PDF",
-          desc: "Generuj profesjonalne kosztorysy i moodboardy. Twoj branding, Twoj styl - gotowe do wyslania klientowi."
+          desc: "Generuj profesjonalne kosztorysy z Twoim brandingiem."
         },
         {
-          icon: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z",
-          title: "Wspolpraca zespolowa",
-          desc: "Zapraszaj wspolpracownikow do projektow. Rozne poziomy dostepu dla designerow i klientow."
+          icon: "M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z",
+          title: "Filtrowanie i sortowanie",
+          desc: "Znajdź produkty po statusie, kategorii lub cenie."
         },
         {
           icon: "M13 10V3L4 14h7v7l9-11h-7z",
-          title: "Szybkosc dzialania",
-          desc: "Intuicyjny interfejs zaprojektowany z mysla o efektywnosci. Mniej klikania, wiecej projektowania."
+          title: "Szybkość działania",
+          desc: "Intuicyjny interfejs - mniej klikania, więcej projektowania."
         }
       ].each do |feature| %>
-        <div class="group p-6 rounded-2xl border border-neutral-200 bg-white hover:border-emerald-200 hover:shadow-lg transition-all">
-          <div class="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center mb-4 group-hover:bg-emerald-500 transition-colors">
-            <svg class="w-6 h-6 text-emerald-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="group p-6 rounded-2xl border border-neutral-800 bg-neutral-800/50 hover:bg-neutral-800 transition-all">
+          <div class="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="<%= feature[:icon] %>" />
             </svg>
           </div>
-          <h3 class="text-lg font-semibold text-neutral-900 mb-2"><%= feature[:title] %></h3>
-          <p class="text-sm text-neutral-600 leading-relaxed"><%= feature[:desc] %></p>
+          <h3 class="text-lg font-semibold text-white mb-2"><%= feature[:title] %></h3>
+          <p class="text-sm text-neutral-400 leading-relaxed"><%= feature[:desc] %></p>
         </div>
       <% end %>
     </div>
 
     <div class="text-center mt-10">
-      <%= link_to features_path, class: "inline-flex items-center gap-2 text-sm font-medium text-emerald-600 hover:text-emerald-700" do %>
+      <%= link_to features_path, class: "inline-flex items-center gap-2 text-sm font-medium text-emerald-400 hover:text-emerald-300" do %>
         Zobacz wszystkie funkcje
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
@@ -208,50 +327,92 @@
   </div>
 </section>
 
-<%# How it works %>
-<section class="py-20 sm:py-28 bg-neutral-900 text-white">
+<%# Coming Soon Section %>
+<section class="py-20 sm:py-28">
   <div class="max-w-6xl mx-auto px-4 sm:px-6">
     <div class="text-center mb-16">
-      <p class="text-xs font-bold tracking-[0.2em] uppercase text-emerald-400 mb-3">Jak to dziala</p>
-      <h2 class="text-3xl sm:text-4xl font-bold mb-4">
-        Trzy proste kroki
+      <p class="text-xs font-bold tracking-[0.2em] uppercase text-violet-600 mb-3">Wkrótce</p>
+      <h2 class="text-3xl sm:text-4xl font-bold text-neutral-900 mb-4">
+        Nad czym pracujemy
       </h2>
-      <p class="text-neutral-400 max-w-2xl mx-auto">
-        Od pomyslu do gotowego kosztorysu w kilka minut, nie godzin.
+      <p class="text-neutral-600 max-w-2xl mx-auto">
+        Nieustannie rozwijamy SAIVED. Oto funkcje, które wkrótce do nas dołączą.
       </p>
     </div>
 
-    <div class="grid md:grid-cols-3 gap-8">
-      <% [
-        { step: "01", title: "Zbieraj produkty", desc: "Przegladaj ulubione sklepy i dodawaj produkty jednym kliknieciem za pomoca naszego rozszerzenia." },
-        { step: "02", title: "Organizuj projekty", desc: "Grupuj produkty w projekty i sekcje. Dodawaj notatki, zmieniaj ilosci, sledzl statusy." },
-        { step: "03", title: "Eksportuj i udostepniaj", desc: "Generuj profesjonalne PDF-y lub udostepnij link klientowi do przegladania na zywo." }
-      ].each do |item| %>
-        <div class="relative">
-          <div class="text-6xl font-bold text-neutral-800 mb-4"><%= item[:step] %></div>
-          <h3 class="text-xl font-semibold mb-3"><%= item[:title] %></h3>
-          <p class="text-neutral-400 leading-relaxed"><%= item[:desc] %></p>
+    <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+      <%# Price Tracking %>
+      <div class="relative p-8 rounded-3xl border-2 border-violet-200 bg-gradient-to-br from-violet-50/50 to-white">
+        <div class="absolute -top-3 left-6">
+          <span class="rounded-full bg-violet-500 px-3 py-1 text-xs font-semibold text-white">Q1 2026</span>
         </div>
-      <% end %>
+        <div class="w-14 h-14 rounded-2xl bg-violet-100 flex items-center justify-center mb-5">
+          <svg class="w-7 h-7 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold text-neutral-900 mb-3">Automatyczne śledzenie cen</h3>
+        <p class="text-neutral-600 mb-4 leading-relaxed">
+          Nasze crawlery będą codziennie sprawdzać ceny produktów w Twoich projektach.
+          Otrzymasz powiadomienie gdy cena spadnie lub produkt zniknie ze sklepu.
+        </p>
+        <ul class="space-y-2">
+          <% ['Nocne aktualizacje cen', 'Alerty o zmianach', 'Historia cen produktu'].each do |item| %>
+            <li class="flex items-center gap-2 text-sm text-neutral-600">
+              <svg class="w-4 h-4 text-violet-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+              </svg>
+              <%= item %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+
+      <%# Moodboards %>
+      <div class="relative p-8 rounded-3xl border-2 border-violet-200 bg-gradient-to-br from-violet-50/50 to-white">
+        <div class="absolute -top-3 left-6">
+          <span class="rounded-full bg-violet-500 px-3 py-1 text-xs font-semibold text-white">Q2 2026</span>
+        </div>
+        <div class="w-14 h-14 rounded-2xl bg-violet-100 flex items-center justify-center mb-5">
+          <svg class="w-7 h-7 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold text-neutral-900 mb-3">Moodboardy</h3>
+        <p class="text-neutral-600 mb-4 leading-relaxed">
+          Tworzenie wizualnych tablic inspiracji z produktów w projekcie.
+          Idealne do prezentacji koncepcji klientom.
+        </p>
+        <ul class="space-y-2">
+          <% ['Drag & drop układ', 'Eksport do PDF/PNG', 'Udostępnianie klientom'].each do |item| %>
+            <li class="flex items-center gap-2 text-sm text-neutral-600">
+              <svg class="w-4 h-4 text-violet-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+              </svg>
+              <%= item %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
     </div>
   </div>
 </section>
 
 <%# Testimonials %>
-<section class="py-20 sm:py-28">
+<section class="py-20 sm:py-28 bg-neutral-50">
   <div class="max-w-6xl mx-auto px-4 sm:px-6">
     <div class="text-center mb-16">
       <p class="text-xs font-bold tracking-[0.2em] uppercase text-emerald-600 mb-3">Opinie</p>
       <h2 class="text-3xl sm:text-4xl font-bold text-neutral-900 mb-4">
-        Co mowia nasi uzytkownicy
+        Co mówią nasi użytkownicy
       </h2>
     </div>
 
     <div class="grid md:grid-cols-3 gap-6">
       <% [
-        { name: "Anna Kowalska", role: "Architekt wnetrz, Szczecin", text: "SAIVED zmienil sposob w jaki pracuje. Kosztorysy ktore zajmowaly mi pol dnia, teraz robie w godzine.", rating: 5 },
-        { name: "Michal Nowak", role: "Studio Design Lab", text: "Rozszerzenie do Chrome to game changer. Zbieranie produktow z roznych sklepow nigdy nie bylo prostsze.", rating: 5 },
-        { name: "Joanna Dabrowska", role: "Home Staging Pro", text: "Moi klienci uwielbiaja przejrzyste zestawienia. SAIVED sprawia ze wygladam bardziej profesjonalnie.", rating: 5 }
+        { name: "Anna Kowalska", role: "Architekt wnętrz, Szczecin", text: "SAIVED zmienił sposób w jaki pracuję. Kosztorysy które zajmowały mi pół dnia, teraz robię w godzinę.", rating: 5 },
+        { name: "Michał Nowak", role: "Studio Design Lab", text: "Rozszerzenie do Chrome to game changer. Zbieranie produktów z różnych sklepów nigdy nie było prostsze.", rating: 5 },
+        { name: "Joanna Dąbrowska", role: "Home Staging Pro", text: "Moi klienci uwielbiają przejrzyste zestawienia. SAIVED sprawia że wyglądam bardziej profesjonalnie.", rating: 5 }
       ].each do |testimonial| %>
         <div class="p-6 rounded-2xl border border-neutral-200 bg-white">
           <div class="flex gap-1 mb-4">
@@ -277,60 +438,64 @@
   </div>
 </section>
 
-<%# Pricing Preview %>
-<section class="py-20 sm:py-28 bg-gradient-to-b from-neutral-50 to-white">
+<%# Pricing Preview - Single Tier %>
+<section class="py-20 sm:py-28">
   <div class="max-w-6xl mx-auto px-4 sm:px-6">
     <div class="text-center mb-16">
       <p class="text-xs font-bold tracking-[0.2em] uppercase text-emerald-600 mb-3">Cennik</p>
       <h2 class="text-3xl sm:text-4xl font-bold text-neutral-900 mb-4">
-        Prosty i przejrzysty cennik
+        Prosty cennik, bez ukrytych kosztów
       </h2>
       <p class="text-neutral-600 max-w-2xl mx-auto">
-        Zacznij za darmo, rozwijaj sie wraz z Twoim biznesem.
+        Jeden plan z pełnym dostępem do wszystkich funkcji.
+        Zacznij od 14-dniowego trialu bez podawania karty.
       </p>
     </div>
 
-    <div class="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-      <% [
-        { name: "Starter", price: "0", period: "na zawsze", features: ["3 projekty", "50 produktow", "Rozszerzenie Chrome", "Eksport PDF"], highlight: false },
-        { name: "Pro", price: "49", period: "miesiecznie", features: ["Nielimitowane projekty", "Nielimitowane produkty", "Sledzenie cen", "Priorytetowe wsparcie", "Wlasny branding PDF"], highlight: true },
-        { name: "Team", price: "149", period: "miesiecznie", features: ["Wszystko z Pro", "Do 5 uzytkownikow", "Wspoldzielone projekty", "Panel admina", "API dostep"], highlight: false }
-      ].each do |plan| %>
-        <div class="relative p-6 rounded-2xl border <%= plan[:highlight] ? 'border-emerald-500 bg-white shadow-xl' : 'border-neutral-200 bg-white' %>">
-          <% if plan[:highlight] %>
-            <div class="absolute -top-3 left-1/2 -translate-x-1/2">
-              <span class="rounded-full bg-emerald-500 px-3 py-1 text-xs font-medium text-white">Popularny</span>
-            </div>
-          <% end %>
-
-          <h3 class="text-lg font-semibold text-neutral-900 mb-2"><%= plan[:name] %></h3>
-          <div class="mb-6">
-            <span class="text-4xl font-bold text-neutral-900"><%= plan[:price] %> zl</span>
-            <span class="text-neutral-500">/ <%= plan[:period] %></span>
-          </div>
-
-          <ul class="space-y-3 mb-6">
-            <% plan[:features].each do |feature| %>
-              <li class="flex items-center gap-2 text-sm text-neutral-600">
-                <svg class="w-4 h-4 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                </svg>
-                <%= feature %>
-              </li>
-            <% end %>
-          </ul>
-
-          <%= link_to pricing_path,
-              class: "block w-full text-center rounded-full py-2.5 text-sm font-medium transition-all #{plan[:highlight] ? 'bg-neutral-900 text-white hover:bg-neutral-800' : 'border border-neutral-300 text-neutral-700 hover:bg-neutral-50'}" do %>
-            Zobacz szczegoly
-          <% end %>
+    <div class="max-w-md mx-auto">
+      <div class="relative p-8 rounded-3xl border-2 border-emerald-500 bg-white shadow-xl">
+        <div class="absolute -top-4 left-1/2 -translate-x-1/2">
+          <span class="rounded-full bg-emerald-500 px-4 py-1.5 text-sm font-semibold text-white shadow-lg">
+            Pełny dostęp
+          </span>
         </div>
-      <% end %>
+
+        <div class="text-center mb-6">
+          <h3 class="text-xl font-bold text-neutral-900 mb-1">SAIVED Pro</h3>
+          <p class="text-sm text-neutral-500">Wszystko czego potrzebujesz</p>
+        </div>
+
+        <div class="text-center mb-6">
+          <span class="text-5xl font-bold text-neutral-900">39</span>
+          <span class="text-xl text-neutral-500"> zł</span>
+          <p class="text-neutral-500 text-sm">/ miesiąc</p>
+          <p class="text-xs text-emerald-600 mt-1">lub 349 zł/rok (-15%)</p>
+        </div>
+
+        <ul class="space-y-3 mb-8">
+          <% ['Nielimitowane projekty', 'Nielimitowane produkty', 'Rozszerzenie Chrome', 'Eksport PDF z brandingiem', 'Wsparcie priorytetowe'].each do |feature| %>
+            <li class="flex items-center gap-3 text-sm text-neutral-600">
+              <svg class="w-5 h-5 text-emerald-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+              </svg>
+              <%= feature %>
+            </li>
+          <% end %>
+        </ul>
+
+        <%= link_to about_path, class: "block w-full text-center rounded-full py-3.5 text-base font-semibold bg-neutral-900 text-white hover:bg-neutral-800 transition-all shadow-lg hover:shadow-xl" do %>
+          Wypróbuj 14 dni za darmo
+        <% end %>
+
+        <p class="text-center text-xs text-neutral-500 mt-4">
+          Bez karty kredytowej
+        </p>
+      </div>
     </div>
 
     <div class="text-center mt-8">
       <%= link_to pricing_path, class: "inline-flex items-center gap-2 text-sm font-medium text-emerald-600 hover:text-emerald-700" do %>
-        Porownaj wszystkie plany
+        Zobacz pełny cennik i FAQ
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
         </svg>
@@ -350,29 +515,29 @@
           Gotowy na sprawniejsze projekty?
         </h2>
         <p class="text-neutral-400 max-w-xl mx-auto mb-8">
-          Dolacz do setek architektow wnetrz, ktorzy juz uzywaja SAIVED.
-          Skontaktuj sie, aby uzyskac dostep.
+          Dołącz do architektów wnętrz, którzy już używają SAIVED.
+          14 dni za darmo, bez zobowiązań.
         </p>
 
         <div class="flex flex-wrap items-center justify-center gap-4">
           <% if user_signed_in? %>
             <%= link_to workspace_path, class: "inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-neutral-900 hover:bg-neutral-100 transition-all" do %>
-              Przejdz do panelu
+              Przejdź do panelu
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
             <% end %>
           <% else %>
             <%= link_to about_path, class: "inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-neutral-900 hover:bg-neutral-100 transition-all" do %>
-              Skontaktuj sie z nami
+              Zacznij za darmo
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
             <% end %>
           <% end %>
 
-          <%= link_to about_path, class: "inline-flex items-center gap-2 rounded-full border border-neutral-700 px-5 py-3 text-sm font-medium text-white hover:bg-white/10 transition-all" do %>
-            Dowiedz sie wiecej
+          <%= link_to features_path, class: "inline-flex items-center gap-2 rounded-full border border-neutral-700 px-5 py-3 text-sm font-medium text-white hover:bg-white/10 transition-all" do %>
+            Zobacz funkcje
           <% end %>
         </div>
       </div>

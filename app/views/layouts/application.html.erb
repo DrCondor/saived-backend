@@ -53,32 +53,58 @@
                   <span class="hidden sm:inline">Panel</span>
                 <% end %>
               <% else %>
-                <%= link_to new_user_session_path, class: "inline-flex items-center gap-2 rounded-full bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800 transition-colors" do %>
+                <%= link_to new_user_session_path, class: "hidden sm:inline-flex items-center gap-2 rounded-full bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800 transition-colors" do %>
                   Zaloguj sie
                 <% end %>
               <% end %>
 
-              <%# Mobile menu button %>
-              <button type="button" class="md:hidden p-2 rounded-lg text-neutral-600 hover:bg-neutral-100" data-controller="mobile-menu" data-action="click->mobile-menu#toggle">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
+              <%# Mobile menu wrapper with Stimulus controller %>
+              <div class="md:hidden" data-controller="mobile-menu">
+                <button type="button" class="p-2 rounded-lg text-neutral-600 hover:bg-neutral-100" data-action="click->mobile-menu#toggle">
+                  <%# Hamburger icon (open state) %>
+                  <svg data-mobile-menu-target="openIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                  <%# X icon (close state) %>
+                  <svg data-mobile-menu-target="closeIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
 
-        <%# Mobile menu %>
-        <div class="md:hidden hidden border-t border-neutral-200" data-mobile-menu-target="menu">
-          <div class="px-4 py-4 space-y-2">
-            <%= link_to "Funkcje", features_path, class: "block px-4 py-2 text-sm font-medium text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 rounded-lg" %>
-            <%= link_to "Cennik", pricing_path, class: "block px-4 py-2 text-sm font-medium text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 rounded-lg" %>
-            <%= link_to "O nas", about_path, class: "block px-4 py-2 text-sm font-medium text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 rounded-lg" %>
-            <% unless user_signed_in? %>
-              <div class="pt-2 border-t border-neutral-200">
-                <%= link_to "Zaloguj", new_user_session_path, class: "block px-4 py-2 text-sm font-medium text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 rounded-lg" %>
+                <%# Mobile menu dropdown %>
+                <div class="hidden absolute top-16 left-0 right-0 bg-white border-b border-neutral-200 shadow-lg" data-mobile-menu-target="menu">
+                  <div class="max-w-6xl mx-auto px-4 py-4 space-y-1">
+                    <%= link_to "Funkcje", features_path,
+                        class: "block px-4 py-3 text-sm font-medium rounded-lg transition-colors #{current_page?(features_path) ? 'text-neutral-900 bg-neutral-100' : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50'}",
+                        data: { action: "click->mobile-menu#close" } %>
+                    <%= link_to "Cennik", pricing_path,
+                        class: "block px-4 py-3 text-sm font-medium rounded-lg transition-colors #{current_page?(pricing_path) ? 'text-neutral-900 bg-neutral-100' : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50'}",
+                        data: { action: "click->mobile-menu#close" } %>
+                    <%= link_to "O nas", about_path,
+                        class: "block px-4 py-3 text-sm font-medium rounded-lg transition-colors #{current_page?(about_path) ? 'text-neutral-900 bg-neutral-100' : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50'}",
+                        data: { action: "click->mobile-menu#close" } %>
+                    <div class="pt-3 mt-3 border-t border-neutral-200">
+                      <% if user_signed_in? %>
+                        <%= link_to workspace_path,
+                            class: "flex items-center gap-2 px-4 py-3 text-sm font-medium text-white bg-neutral-900 rounded-lg hover:bg-neutral-800",
+                            data: { action: "click->mobile-menu#close" } do %>
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                          </svg>
+                          Przejdz do panelu
+                        <% end %>
+                      <% else %>
+                        <%= link_to new_user_session_path,
+                            class: "flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-white bg-neutral-900 rounded-lg hover:bg-neutral-800",
+                            data: { action: "click->mobile-menu#close" } do %>
+                          Zaloguj sie
+                        <% end %>
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
               </div>
-            <% end %>
+            </div>
           </div>
         </div>
       </header>
