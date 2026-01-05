@@ -22,6 +22,7 @@ Rails.application.routes.draw do
   get "features", to: "pages#features", as: :features
   get "pricing", to: "pages#pricing", as: :pricing
   get "about", to: "pages#about", as: :about
+  get "privacy", to: "pages#privacy", as: :privacy
 
   # API endpoints
   namespace :api do
