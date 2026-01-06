@@ -36,6 +36,8 @@
 
             <%# Navigation %>
             <nav class="hidden md:flex items-center gap-1">
+              <%= link_to "Jak to działa", jak_to_dziala_path,
+                  class: "px-4 py-2 text-sm font-medium rounded-full transition-colors #{current_page?(jak_to_dziala_path) ? 'text-neutral-900 bg-neutral-100' : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50'}" %>
               <%= link_to "Funkcje", features_path,
                   class: "px-4 py-2 text-sm font-medium rounded-full transition-colors #{current_page?(features_path) ? 'text-neutral-900 bg-neutral-100' : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50'}" %>
               <%= link_to "Cennik", pricing_path,
@@ -75,6 +77,9 @@
                 <%# Mobile menu dropdown %>
                 <div class="hidden absolute top-16 left-0 right-0 bg-white border-b border-neutral-200 shadow-lg" data-mobile-menu-target="menu">
                   <div class="max-w-6xl mx-auto px-4 py-4 space-y-1">
+                    <%= link_to "Jak to działa", jak_to_dziala_path,
+                        class: "block px-4 py-3 text-sm font-medium rounded-lg transition-colors #{current_page?(jak_to_dziala_path) ? 'text-neutral-900 bg-neutral-100' : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50'}",
+                        data: { action: "click->mobile-menu#close" } %>
                     <%= link_to "Funkcje", features_path,
                         class: "block px-4 py-3 text-sm font-medium rounded-lg transition-colors #{current_page?(features_path) ? 'text-neutral-900 bg-neutral-100' : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50'}",
                         data: { action: "click->mobile-menu#close" } %>

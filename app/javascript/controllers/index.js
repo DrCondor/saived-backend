@@ -4,8 +4,10 @@
 
 import { application } from "./application"
 
+import AccordionController from "./accordion_controller"
 import DropdownController from "./dropdown_controller"
 import MobileMenuController from "./mobile_menu_controller"
 
+application.register("accordion", AccordionController)
 application.register("dropdown", DropdownController)
 application.register("mobile-menu", MobileMenuController)

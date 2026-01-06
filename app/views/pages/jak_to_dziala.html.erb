@@ -1,0 +1,540 @@
+<%# Hero Section %>
+<section class="relative overflow-hidden">
+  <div class="absolute inset-0 bg-gradient-to-br from-emerald-50/50 via-transparent to-violet-50/30 pointer-events-none"></div>
+
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-24 relative">
+    <div class="text-center max-w-3xl mx-auto">
+      <div class="inline-flex items-center gap-2 rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-700 mb-6">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+        Tutorial
+      </div>
+
+      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-neutral-900 mb-6">
+        Jak działa
+        <span class="text-emerald-600">SAIVED?</span>
+      </h1>
+
+      <p class="text-lg sm:text-xl text-neutral-600 max-w-2xl mx-auto leading-relaxed">
+        Od przeglądania sklepu do gotowego kosztorysu w trzech prostych krokach.
+        Bez ręcznego przepisywania, bez Excela, bez stresu.
+      </p>
+    </div>
+  </div>
+</section>
+
+<%# Step 1: Chrome Extension %>
+<section class="py-20 sm:py-28">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+      <%# Text %>
+      <div>
+        <div class="inline-flex items-center gap-2 rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700 mb-4">
+          Krok 1
+        </div>
+        <h2 class="text-3xl sm:text-4xl font-bold text-neutral-900 mb-6">
+          Zbieraj produkty
+          <span class="text-emerald-600">jednym kliknięciem</span>
+        </h2>
+        <p class="text-lg text-neutral-600 mb-8 leading-relaxed">
+          Zainstaluj rozszerzenie SAIVED do Chrome i zacznij zbierać produkty z dowolnego sklepu internetowego.
+          Wtyczka automatycznie wykrywa najważniejsze informacje.
+        </p>
+
+        <ul class="space-y-4">
+          <% [
+            { icon: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z", text: "Automatyczne rozpoznawanie nazwy produktu" },
+            { icon: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z", text: "Wykrywanie ceny (nawet promocyjnej)" },
+            { icon: "M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z", text: "Pobieranie zdjęcia produktu" },
+            { icon: "M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9", text: "Działa z IKEA, Westwing, Zara Home i wieloma innymi" }
+          ].each do |item| %>
+            <li class="flex items-start gap-3">
+              <div class="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="<%= item[:icon] %>" />
+                </svg>
+              </div>
+              <span class="text-neutral-700"><%= item[:text] %></span>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+
+      <%# Browser Mockup %>
+      <div class="relative">
+        <div class="absolute -inset-4 bg-gradient-to-r from-emerald-100 to-violet-100 rounded-[2rem] blur-2xl opacity-40"></div>
+        <div class="relative rounded-2xl sm:rounded-3xl border border-neutral-200 bg-white shadow-2xl overflow-hidden">
+          <%# Browser chrome %>
+          <div class="flex items-center gap-2 px-4 py-3 bg-neutral-50 border-b border-neutral-200">
+            <div class="flex gap-1.5">
+              <div class="w-3 h-3 rounded-full bg-red-400"></div>
+              <div class="w-3 h-3 rounded-full bg-amber-400"></div>
+              <div class="w-3 h-3 rounded-full bg-emerald-400"></div>
+            </div>
+            <div class="flex-1">
+              <div class="max-w-md mx-auto rounded-lg bg-white border border-neutral-200 px-3 py-1.5 text-xs text-neutral-500 flex items-center gap-2">
+                <svg class="w-3 h-3 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                ikea.pl/products/jarvafjallet-chair
+              </div>
+            </div>
+          </div>
+
+          <%# Page content %>
+          <div class="p-6 sm:p-8 bg-neutral-50/50 min-h-[280px] sm:min-h-[320px]">
+            <div class="grid grid-cols-[80px_1fr] sm:grid-cols-[120px_1fr] gap-4 sm:gap-6">
+              <%# Product image placeholder %>
+              <div class="aspect-square rounded-xl bg-gradient-to-br from-neutral-200 to-neutral-100 flex items-center justify-center">
+                <svg class="w-8 h-8 sm:w-10 sm:h-10 text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+
+              <%# Product info - placeholders %>
+              <div class="opacity-60">
+                <div class="h-2.5 w-14 bg-neutral-200 rounded mb-2"></div>
+                <div class="h-4 sm:h-5 w-32 sm:w-40 bg-neutral-300 rounded mb-3"></div>
+                <div class="h-5 sm:h-6 w-20 bg-emerald-200 rounded mb-4"></div>
+                <div class="space-y-2 hidden sm:block">
+                  <div class="h-2 w-full max-w-[180px] bg-neutral-200 rounded"></div>
+                  <div class="h-2 w-3/4 max-w-[140px] bg-neutral-200 rounded"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <%# SAIVED Extension Popup - prominent overlay with glow %>
+          <div class="absolute top-16 right-4 sm:top-20 sm:right-6 w-64 sm:w-72">
+            <%# Glow effect %>
+            <div class="absolute -inset-2 bg-emerald-400/30 rounded-3xl blur-xl"></div>
+
+            <%# Popup card %>
+            <div class="relative rounded-2xl border-2 border-emerald-400 bg-white shadow-2xl overflow-hidden">
+              <%# Header %>
+              <div class="px-4 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white">
+                <div class="flex items-center gap-2">
+                  <div class="w-7 h-7 rounded-lg bg-white/20 flex items-center justify-center">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                    </svg>
+                  </div>
+                  <span class="font-bold text-sm">SAIVED</span>
+                  <span class="ml-auto text-xs bg-white/25 px-2.5 py-1 rounded-full font-medium">Wykryto!</span>
+                </div>
+              </div>
+
+              <%# Content %>
+              <div class="p-4 space-y-4">
+                <div>
+                  <p class="text-[10px] uppercase tracking-wider text-neutral-400 mb-1">Nazwa</p>
+                  <p class="text-sm font-semibold text-neutral-900">Krzesło biurowe JÄRVFJÄLLET</p>
+                </div>
+                <div>
+                  <p class="text-[10px] uppercase tracking-wider text-neutral-400 mb-1">Cena</p>
+                  <p class="text-xl font-bold text-emerald-600">1 299 zł</p>
+                </div>
+                <button class="w-full py-3 rounded-xl bg-emerald-500 text-white text-sm font-bold hover:bg-emerald-600 transition-all hover:shadow-lg flex items-center justify-center gap-2">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                  </svg>
+                  Dodaj do projektu
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%# Step 2: Sync %>
+<section class="py-20 sm:py-28 bg-neutral-50">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+      <%# Sync Visualization %>
+      <div class="relative order-2 lg:order-1">
+        <div class="absolute -inset-4 bg-gradient-to-r from-violet-100 to-emerald-100 rounded-[2rem] blur-2xl opacity-40"></div>
+        <div class="relative flex flex-col items-center gap-6">
+          <%# Source - Browser icon %>
+          <div class="w-20 h-20 rounded-2xl bg-white shadow-xl border border-neutral-200 flex items-center justify-center">
+            <svg class="w-10 h-10 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+            </svg>
+          </div>
+
+          <%# Animated data flow %>
+          <div class="relative h-24 w-px bg-gradient-to-b from-neutral-300 via-emerald-400 to-neutral-300">
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-emerald-500 animate-bounce-slow"></div>
+            <div class="absolute top-1/3 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-emerald-400 animate-bounce-slow" style="animation-delay: 0.2s"></div>
+            <div class="absolute top-2/3 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-emerald-300 animate-bounce-slow" style="animation-delay: 0.4s"></div>
+          </div>
+
+          <%# Cloud icon %>
+          <div class="w-24 h-24 rounded-3xl bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-xl flex items-center justify-center animate-pulse-subtle">
+            <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+            </svg>
+          </div>
+
+          <%# Animated data flow down %>
+          <div class="relative h-24 w-px bg-gradient-to-b from-neutral-300 via-violet-400 to-neutral-300">
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-violet-300 animate-bounce-slow" style="animation-delay: 0.6s"></div>
+            <div class="absolute top-1/3 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-violet-400 animate-bounce-slow" style="animation-delay: 0.8s"></div>
+            <div class="absolute top-2/3 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-violet-500 animate-bounce-slow" style="animation-delay: 1s"></div>
+          </div>
+
+          <%# Project card %>
+          <div class="w-64 rounded-2xl bg-white shadow-xl border border-neutral-200 overflow-hidden">
+            <div class="px-4 py-3 bg-neutral-50 border-b border-neutral-100">
+              <div class="flex items-center gap-2">
+                <div class="w-2 h-2 rounded-full bg-emerald-500"></div>
+                <span class="text-sm font-semibold text-neutral-900">Apartament Mokotów</span>
+              </div>
+            </div>
+            <div class="p-3 space-y-2">
+              <div class="flex items-center gap-2 p-2 rounded-lg bg-neutral-50">
+                <div class="w-8 h-8 rounded-lg bg-neutral-200"></div>
+                <div class="flex-1 min-w-0">
+                  <div class="h-2.5 w-20 bg-neutral-200 rounded"></div>
+                  <div class="h-2 w-12 bg-neutral-100 rounded mt-1"></div>
+                </div>
+              </div>
+              <%# New item - highlighted %>
+              <div class="flex items-center gap-2 p-2 rounded-lg bg-emerald-50 border-2 border-emerald-300 animate-pulse-subtle">
+                <div class="w-8 h-8 rounded-lg bg-emerald-200 flex items-center justify-center">
+                  <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-xs font-medium text-emerald-900 truncate">Krzesło JÄRVFJÄLLET</p>
+                  <p class="text-[10px] text-emerald-600">1 299 zł</p>
+                </div>
+                <span class="text-[9px] font-semibold text-emerald-600 bg-emerald-100 px-1.5 py-0.5 rounded">NOWY</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <%# Text %>
+      <div class="order-1 lg:order-2">
+        <div class="inline-flex items-center gap-2 rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold text-violet-700 mb-4">
+          Krok 2
+        </div>
+        <h2 class="text-3xl sm:text-4xl font-bold text-neutral-900 mb-6">
+          Wszystko trafia
+          <span class="text-violet-600">do projektu</span>
+        </h2>
+        <p class="text-lg text-neutral-600 mb-8 leading-relaxed">
+          Po kliknięciu "Dodaj" produkt natychmiast pojawia się w wybranym projekcie.
+          Żadnego kopiowania, żadnego wklejania - wszystko dzieje się automatycznie.
+        </p>
+
+        <ul class="space-y-4">
+          <% [
+            { icon: "M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10", text: "Wybierz projekt i sekcję przed dodaniem" },
+            { icon: "M13 10V3L4 14h7v7l9-11h-7z", text: "Natychmiastowa synchronizacja" },
+            { icon: "M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z", text: "Dostępne na każdym urządzeniu" },
+            { icon: "M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z", text: "Organizuj produkty według pomieszczeń" }
+          ].each do |item| %>
+            <li class="flex items-start gap-3">
+              <div class="w-6 h-6 rounded-full bg-violet-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <svg class="w-4 h-4 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="<%= item[:icon] %>" />
+                </svg>
+              </div>
+              <span class="text-neutral-700"><%= item[:text] %></span>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%# Step 3: Learning System %>
+<section class="py-20 sm:py-28">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="text-center mb-16">
+      <div class="inline-flex items-center gap-2 rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700 mb-4">
+        Krok 3
+      </div>
+      <h2 class="text-3xl sm:text-4xl font-bold text-neutral-900 mb-6">
+        Im więcej używasz,
+        <span class="text-amber-600">tym lepiej działa</span>
+      </h2>
+      <p class="text-lg text-neutral-600 max-w-2xl mx-auto leading-relaxed">
+        SAIVED uczy się na bieżąco. Każda Twoja poprawka sprawia, że system działa coraz lepiej -
+        nie tylko dla Ciebie, ale dla wszystkich użytkowników.
+      </p>
+    </div>
+
+    <%# Learning Cycle Diagram %>
+    <div class="relative max-w-lg mx-auto mb-16">
+      <div class="relative w-64 h-64 sm:w-80 sm:h-80 mx-auto">
+        <%# Center logo %>
+        <div class="absolute inset-0 flex items-center justify-center">
+          <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-amber-400 to-amber-500 shadow-lg flex items-center justify-center">
+            <svg class="w-10 h-10 sm:w-12 sm:h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
+          </div>
+        </div>
+
+        <%# Rotating circle animation %>
+        <div class="absolute inset-0 animate-spin-slow">
+          <%# Step 1 - Top %>
+          <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2">
+            <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white shadow-lg border border-neutral-200 flex items-center justify-center">
+              <span class="text-2xl">1</span>
+            </div>
+          </div>
+
+          <%# Step 2 - Right %>
+          <div class="absolute top-1/2 right-0 translate-x-2 -translate-y-1/2">
+            <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white shadow-lg border border-neutral-200 flex items-center justify-center">
+              <span class="text-2xl">2</span>
+            </div>
+          </div>
+
+          <%# Step 3 - Bottom %>
+          <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-2">
+            <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white shadow-lg border border-neutral-200 flex items-center justify-center">
+              <span class="text-2xl">3</span>
+            </div>
+          </div>
+
+          <%# Step 4 - Left %>
+          <div class="absolute top-1/2 left-0 -translate-x-2 -translate-y-1/2">
+            <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white shadow-lg border border-neutral-200 flex items-center justify-center">
+              <span class="text-2xl">4</span>
+            </div>
+          </div>
+        </div>
+
+        <%# Circle border %>
+        <div class="absolute inset-8 sm:inset-10 border-2 border-dashed border-amber-200 rounded-full"></div>
+      </div>
+
+      <%# Labels outside the circle %>
+      <div class="grid grid-cols-2 gap-4 mt-8 text-center">
+        <div class="p-3 rounded-xl bg-neutral-50">
+          <span class="text-lg font-bold text-amber-500">1.</span>
+          <span class="text-sm text-neutral-700 ml-1">Zbierasz produkty</span>
+        </div>
+        <div class="p-3 rounded-xl bg-neutral-50">
+          <span class="text-lg font-bold text-amber-500">2.</span>
+          <span class="text-sm text-neutral-700 ml-1">Poprawiasz jeśli trzeba</span>
+        </div>
+        <div class="p-3 rounded-xl bg-neutral-50">
+          <span class="text-lg font-bold text-amber-500">3.</span>
+          <span class="text-sm text-neutral-700 ml-1">SAIVED się uczy</span>
+        </div>
+        <div class="p-3 rounded-xl bg-neutral-50">
+          <span class="text-lg font-bold text-amber-500">4.</span>
+          <span class="text-sm text-neutral-700 ml-1">Działa coraz lepiej</span>
+        </div>
+      </div>
+    </div>
+
+    <%# Benefit Cards %>
+    <div class="grid md:grid-cols-3 gap-6">
+      <% [
+        {
+          icon: "M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z",
+          title: "Uczy się na bieżąco",
+          desc: "Każda Twoja poprawka sprawia, że system działa lepiej. Jeśli zmienisz cenę czy nazwę, SAIVED to zapamięta.",
+          color: "amber"
+        },
+        {
+          icon: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z",
+          title: "Wspólna mądrość",
+          desc: "Poprawki wszystkich użytkowników pomagają całej społeczności. Im więcej osób używa, tym lepiej dla wszystkich.",
+          color: "violet"
+        },
+        {
+          icon: "M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z",
+          title: "Coraz mniej pracy",
+          desc: "Z czasem prawie nie musisz nic poprawiać. System poznaje Twoje ulubione sklepy i działa bezbłędnie.",
+          color: "emerald"
+        }
+      ].each do |card| %>
+        <div class="p-6 rounded-2xl border border-neutral-200 bg-white hover:shadow-lg transition-all">
+          <div class="w-12 h-12 rounded-xl bg-<%= card[:color] %>-100 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-<%= card[:color] %>-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="<%= card[:icon] %>" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-neutral-900 mb-2"><%= card[:title] %></h3>
+          <p class="text-sm text-neutral-600 leading-relaxed"><%= card[:desc] %></p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<%# Video Placeholder %>
+<section class="py-20 sm:py-28 bg-neutral-900">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6">
+    <div class="text-center mb-10">
+      <p class="text-xs font-bold tracking-[0.2em] uppercase text-emerald-400 mb-3">Demo</p>
+      <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">
+        Zobacz SAIVED w akcji
+      </h2>
+      <p class="text-neutral-400">
+        30-sekundowe demo całego procesu - od sklepu do kosztorysu.
+      </p>
+    </div>
+
+    <div class="relative aspect-video rounded-2xl bg-neutral-800 border border-neutral-700 overflow-hidden group cursor-pointer hover:border-emerald-500/50 transition-all">
+      <div class="absolute inset-0 flex items-center justify-center">
+        <div class="w-20 h-20 rounded-full bg-emerald-500/20 flex items-center justify-center group-hover:bg-emerald-500/30 transition-all">
+          <div class="w-16 h-16 rounded-full bg-emerald-500 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+            <svg class="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+      <p class="absolute bottom-4 left-1/2 -translate-x-1/2 text-sm text-neutral-500">
+        Video wkrótce
+      </p>
+    </div>
+  </div>
+</section>
+
+<%# FAQ Section %>
+<section class="py-20 sm:py-28">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6">
+    <div class="text-center mb-16">
+      <p class="text-xs font-bold tracking-[0.2em] uppercase text-emerald-600 mb-3">FAQ</p>
+      <h2 class="text-3xl sm:text-4xl font-bold text-neutral-900 mb-4">
+        Często zadawane pytania
+      </h2>
+    </div>
+
+    <div class="space-y-4" data-controller="accordion">
+      <% [
+        {
+          q: "Czy SAIVED działa z każdym sklepem?",
+          a: "SAIVED działa z większością polskich i zagranicznych sklepów meblowych i wnętrzarskich. Obsługujemy m.in. IKEA, Westwing, Zara Home, H&M Home, Homla, BoConcept i wiele innych. Jeśli napotkasz sklep, który nie działa poprawnie, daj nam znać - dodamy go w ciągu kilku dni."
+        },
+        {
+          q: "Co jeśli wtyczka źle odczyta cenę lub nazwę?",
+          a: "To się zdarza, szczególnie na nowych sklepach. Wystarczy, że poprawisz dane przed zapisaniem - SAIVED zapamięta poprawkę i następnym razem na tej stronie będzie działać lepiej. Im więcej użytkowników poprawia dane, tym system staje się mądrzejszy."
+        },
+        {
+          q: "Czy moje dane są bezpieczne?",
+          a: "Tak, bezpieczeństwo danych to nasz priorytet. Wszystkie dane są szyfrowane, a serwery znajdują się w Europie (zgodność z RODO). Nie udostępniamy Twoich danych osobom trzecim. Możesz w każdej chwili pobrać lub usunąć swoje dane."
+        },
+        {
+          q: "Czy mogę używać SAIVED offline?",
+          a: "Wtyczka Chrome wymaga połączenia z internetem, aby pobierać dane ze stron i synchronizować je z Twoim kontem. Jednak panel z projektami możesz przeglądać również bez internetu - dane są cachowane lokalnie."
+        }
+      ].each_with_index do |faq, index| %>
+        <div class="rounded-2xl border border-neutral-200 bg-white overflow-hidden" data-accordion-target="item">
+          <button
+            type="button"
+            class="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-neutral-50 transition-colors"
+            data-action="click->accordion#toggle"
+            data-index="<%= index %>"
+          >
+            <span class="font-semibold text-neutral-900 pr-4"><%= faq[:q] %></span>
+            <svg class="w-5 h-5 text-neutral-400 flex-shrink-0 transition-transform" data-accordion-target="icon<%= index %>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div class="hidden px-6 pb-5" data-accordion-target="content<%= index %>">
+            <p class="text-neutral-600 leading-relaxed"><%= faq[:a] %></p>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<%# CTA Section %>
+<section class="py-20 sm:py-28">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6">
+    <div class="relative rounded-3xl bg-neutral-900 p-8 sm:p-12 overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-br from-emerald-600/20 to-violet-600/20 pointer-events-none"></div>
+
+      <div class="relative text-center">
+        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4">
+          Gotowy by spróbować?
+        </h2>
+        <p class="text-neutral-400 max-w-xl mx-auto mb-8">
+          Dołącz do architektów wnętrz, którzy już oszczędzają godziny pracy tygodniowo.
+          14 dni za darmo, bez zobowiązań.
+        </p>
+
+        <div class="flex flex-wrap items-center justify-center gap-4">
+          <% if user_signed_in? %>
+            <%= link_to workspace_path, class: "inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-neutral-900 hover:bg-neutral-100 transition-all" do %>
+              Przejdź do panelu
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            <% end %>
+          <% else %>
+            <%= link_to about_path, class: "inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-neutral-900 hover:bg-neutral-100 transition-all" do %>
+              Zacznij za darmo
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            <% end %>
+          <% end %>
+
+          <%= link_to features_path, class: "inline-flex items-center gap-2 rounded-full border border-neutral-700 px-5 py-3 text-sm font-medium text-white hover:bg-white/10 transition-all" do %>
+            Zobacz funkcje
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  @keyframes bounce-slow {
+    0%, 100% {
+      transform: translateY(0) translateX(-50%);
+      opacity: 1;
+    }
+    50% {
+      transform: translateY(20px) translateX(-50%);
+      opacity: 0.5;
+    }
+  }
+
+  @keyframes pulse-subtle {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.85;
+    }
+  }
+
+  @keyframes spin-slow {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .animate-bounce-slow {
+    animation: bounce-slow 2s ease-in-out infinite;
+  }
+
+  .animate-pulse-subtle {
+    animation: pulse-subtle 3s ease-in-out infinite;
+  }
+
+  .animate-spin-slow {
+    animation: spin-slow 20s linear infinite;
+  }
+</style>

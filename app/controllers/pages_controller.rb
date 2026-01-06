@@ -13,4 +13,7 @@ class PagesController < ApplicationController
 
   def privacy
   end
+
+  def jak_to_dziala
+  end
 end

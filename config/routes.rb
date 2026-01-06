@@ -25,6 +25,7 @@ Rails.application.routes.draw do
   get "pricing", to: "pages#pricing", as: :pricing
   get "about", to: "pages#about", as: :about
   get "privacy", to: "pages#privacy", as: :privacy
+  get "jak-to-dziala", to: "pages#jak_to_dziala", as: :jak_to_dziala
 
   # API endpoints
   namespace :api do
