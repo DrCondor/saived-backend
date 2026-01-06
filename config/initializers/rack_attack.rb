@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-require "rack/attack"
+# Only configure Rack::Attack if the gem is available
+return unless defined?(Rack::Attack)
 
 class Rack::Attack
   ### Rate Limiting for Admin Panel ###
