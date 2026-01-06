@@ -15,7 +15,7 @@ class AdminUser < ApplicationRecord
   end
 
   # Only these emails can be admin users in production
-  ALLOWED_EMAILS = %w[konrad@saived.pl martyna@saived.pl].freeze
+  ALLOWED_EMAILS = %w[konrad@saived.ai martyna@saived.ai].freeze
 
   validate :email_in_allowlist, if: -> { Rails.env.production? }
 
