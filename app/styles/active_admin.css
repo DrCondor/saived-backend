@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-@config "../../../tailwind-active_admin.config.js";
+@config "../../tailwind-active_admin.config.js";
 
 /* ============================================
    SAIVED Admin - ActiveAdmin 4.0 Custom Styles
