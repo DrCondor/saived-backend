@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "rack/attack"
+
 class Rack::Attack
   ### Rate Limiting for Admin Panel ###
 
