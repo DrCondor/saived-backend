@@ -16,7 +16,6 @@ gem "devise"
 
 # Admin panel
 gem "activeadmin", "~> 4.0.0.beta13"
-gem "sassc-rails"
 
 # Security
 gem "rack-attack"
