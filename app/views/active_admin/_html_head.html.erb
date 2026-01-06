@@ -1,0 +1,71 @@
+<%= stylesheet_link_tag "active_admin" %>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<%= csrf_meta_tags %>
+<%= csp_meta_tag %>
+<% # On page load or when changing themes, best to add inline in `head` to avoid FOUC %>
+<%= javascript_tag nonce: true do %>
+  if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    document.documentElement.classList.add('dark')
+  } else {
+    document.documentElement.classList.remove('dark')
+  }
+<% end %>
+<%= javascript_importmap_tags "active_admin", importmap: ActiveAdmin.importmap %>
+
+<%# Custom JavaScript to fix batch actions dropdown %>
+<%= javascript_tag nonce: true do %>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Fix batch actions dropdown - hide menu by default
+    var batchMenu = document.getElementById('batch-action-menu');
+    if (batchMenu) {
+      // Add hidden attribute
+      batchMenu.setAttribute('hidden', '');
+      batchMenu.style.display = 'none';
+
+      // Find the toggle button
+      var toggleBtn = document.querySelector('[data-dropdown-toggle="batch-action-menu"]');
+      if (toggleBtn) {
+        toggleBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var menu = document.getElementById('batch-action-menu');
+          if (menu) {
+            if (menu.hasAttribute('hidden')) {
+              menu.removeAttribute('hidden');
+              menu.style.display = 'block';
+              // Position menu below button
+              var rect = toggleBtn.getBoundingClientRect();
+              menu.style.position = 'absolute';
+              menu.style.top = (rect.bottom + window.scrollY) + 'px';
+              menu.style.left = rect.left + 'px';
+              menu.style.zIndex = '9999';
+            } else {
+              menu.setAttribute('hidden', '');
+              menu.style.display = 'none';
+            }
+          }
+        });
+      }
+
+      // Close menu when clicking outside
+      document.addEventListener('click', function(e) {
+        var menu = document.getElementById('batch-action-menu');
+        var toggleBtn = document.querySelector('[data-dropdown-toggle="batch-action-menu"]');
+        if (menu && toggleBtn && !menu.contains(e.target) && !toggleBtn.contains(e.target)) {
+          menu.setAttribute('hidden', '');
+          menu.style.display = 'none';
+        }
+      });
+    }
+  });
+<% end %>
+
+<%# Additional CSS fixes that need higher specificity %>
+<style>
+  /* Force hide batch actions menu */
+  #batch-action-menu {
+    display: none !important;
+  }
+  #batch-action-menu:not([hidden]) {
+    display: block !important;
+  }
+</style>

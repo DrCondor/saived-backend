@@ -1,0 +1,1252 @@
+@import "tailwindcss";
+
+@config "../../../tailwind-active_admin.config.js";
+
+/* ============================================
+   SAIVED Admin - ActiveAdmin 4.0 Custom Styles
+   Based on actual AA4 HTML structure
+   ============================================ */
+
+/* ===========================================
+   1. CSS VARIABLES - Light theme (default)
+   =========================================== */
+
+:root {
+  --panel-bg: #ffffff;
+  --panel-header-bg: #f9fafb;
+  --border-color: #e5e7eb;
+  --table-header-bg: #f9fafb;
+  --table-hover-bg: #f3f4f6;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+  --input-bg: #ffffff;
+  --input-border: #d1d5db;
+  --input-text: #111827;
+  --primary-color: #3b82f6;
+  --primary-hover: #2563eb;
+  --link-color: #2563eb;
+  --hover-bg: #f3f4f6;
+  --scope-bg: #ffffff;
+  --scope-hover-bg: #f3f4f6;
+  --button-secondary-bg: #f3f4f6;
+  --button-secondary-hover: #e5e7eb;
+  --dropdown-bg: #ffffff;
+}
+
+/* Dark theme - when html has .dark class (ActiveAdmin toggles on <html>) */
+html.dark,
+html.dark body,
+:root.dark {
+  --panel-bg: #1f2937;
+  --panel-header-bg: #111827;
+  --border-color: #374151;
+  --table-header-bg: #111827;
+  --table-hover-bg: rgba(55, 65, 81, 0.5);
+  --text-primary: #f9fafb;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --input-bg: #374151;
+  --input-border: #4b5563;
+  --input-text: #f9fafb;
+  --link-color: #60a5fa;
+  --hover-bg: #374151;
+  --scope-bg: #1f2937;
+  --scope-hover-bg: #374151;
+  --button-secondary-bg: #374151;
+  --button-secondary-hover: #4b5563;
+  --dropdown-bg: #1f2937;
+}
+
+/* ===========================================
+   2. MAIN LAYOUT - Override ActiveAdmin grid
+   =========================================== */
+
+/* The main content wrapper - override the problematic grid */
+[data-test-page-content] {
+  display: block !important;
+  padding: 1.5rem 2rem !important;
+  max-width: 100% !important;
+}
+
+/* When sidebar exists, use flexbox layout */
+[data-test-page-content]:has(> .space-y-8:not(:empty)) {
+  display: flex !important;
+  gap: 2rem !important;
+}
+
+/* Main content area takes available space */
+[data-test-page-content] > *:first-child {
+  flex: 1;
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Sidebar wrapper styling - fixed width */
+[data-test-page-content] > .space-y-8 {
+  flex-shrink: 0;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Hide empty sidebar completely */
+[data-test-page-content] > .space-y-8:empty {
+  display: none !important;
+}
+
+/* Responsive: stack on smaller screens */
+@media (max-width: 1024px) {
+  [data-test-page-content]:has(> .space-y-8:not(:empty)) {
+    flex-direction: column !important;
+  }
+
+  [data-test-page-content] > .space-y-8 {
+    width: 100%;
+  }
+}
+
+/* ===========================================
+   3. PANELS - Section containers
+   =========================================== */
+
+.panel {
+  background: var(--panel-bg);
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.panel > h3 {
+  padding: 1rem 1.25rem;
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--panel-header-bg);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.panel-body,
+.panel > div:not(.paginated-collection):not(.index-as-table) {
+  padding: 1rem 1.25rem;
+}
+
+/* ===========================================
+   4. SCOPES - Navigation tabs (AA4 uses index-button)
+   =========================================== */
+
+.scopes {
+  display: flex !important;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin-bottom: 1rem;
+  padding: 0;
+}
+
+.index-button-group {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  border-radius: 0.375rem;
+  overflow: hidden;
+}
+
+/* Prevent double borders when buttons are next to each other */
+.index-button-group > *:not(:first-child) {
+  margin-inline-start: -1px;
+}
+
+/* Individual scope button */
+a.index-button,
+.index-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  background: var(--panel-bg);
+  border: 1px solid var(--border-color);
+  text-decoration: none;
+  transition: all 0.15s;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+/* First button in group gets left rounded corners */
+.index-button-group > a.index-button:first-child,
+.index-button-group > .index-button:first-child {
+  border-top-left-radius: 0.375rem;
+  border-bottom-left-radius: 0.375rem;
+}
+
+/* Last button in group gets right rounded corners */
+.index-button-group > a.index-button:last-child,
+.index-button-group > .index-button:last-child {
+  border-top-right-radius: 0.375rem;
+  border-bottom-right-radius: 0.375rem;
+}
+
+a.index-button:hover,
+.index-button:hover {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+/* Selected scope */
+a.index-button-selected,
+.index-button-selected {
+  background: var(--table-header-bg) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Scope count badge */
+.scopes-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: rgba(99, 102, 241, 0.15);
+  color: #818cf8;
+  border-radius: 9999px;
+  margin-left: 0.25rem;
+  line-height: 1;
+}
+
+/* ===========================================
+   5. TABLES - Index and data tables
+   =========================================== */
+
+/* Paginated collection wrapper */
+.paginated-collection {
+  background: var(--panel-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.paginated-collection-contents {
+  overflow-x: auto;
+}
+
+/* Data table */
+table.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+table.data-table th {
+  text-align: left;
+  padding: 0.875rem 1rem;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  background: var(--table-header-bg);
+  border-bottom: 1px solid var(--border-color);
+  white-space: nowrap;
+}
+
+table.data-table td {
+  padding: 0.875rem 1rem;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
+  vertical-align: middle;
+}
+
+table.data-table tbody tr:hover {
+  background: var(--table-hover-bg);
+}
+
+/* Sort icons in headers */
+table.data-table th a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+.data-table-sorted-icon {
+  width: 0.75rem;
+  height: 0.75rem;
+  opacity: 0.5;
+  transition: transform 0.2s;
+}
+
+th[data-sort-direction="asc"] .data-table-sorted-icon {
+  transform: rotate(180deg);
+  opacity: 1;
+}
+
+th[data-sort-direction="desc"] .data-table-sorted-icon {
+  opacity: 1;
+}
+
+/* Table actions (View, Edit, Delete) */
+.data-table-resource-actions {
+  display: flex;
+  gap: 0.25rem;
+  justify-content: flex-end;
+  white-space: nowrap;
+}
+
+.data-table-resource-actions a {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  color: var(--link-color);
+  text-decoration: none;
+  border-radius: 0.25rem;
+  transition: background 0.15s;
+}
+
+.data-table-resource-actions a:hover {
+  background: rgba(59, 130, 246, 0.1);
+}
+
+/* Selectable column checkbox */
+table.data-table input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--primary-color);
+  cursor: pointer;
+}
+
+/* ===========================================
+   6. PAGINATION
+   =========================================== */
+
+.paginated-collection-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-top: 1px solid var(--border-color);
+  background: var(--panel-header-bg);
+}
+
+.pagination-information {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+/* Kaminari pagination */
+nav.pagination {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+nav.pagination a,
+nav.pagination span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  background: transparent;
+  border-radius: 0.375rem;
+  text-decoration: none;
+}
+
+nav.pagination a:hover {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+nav.pagination span.current {
+  background: var(--primary-color);
+  color: white;
+}
+
+nav.pagination span.gap {
+  color: var(--text-muted);
+}
+
+/* Pagination footer (download links, per-page) */
+.paginated-collection-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1.25rem;
+  border-top: 1px solid var(--border-color);
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.paginated-collection-footer a {
+  color: var(--link-color);
+  text-decoration: none;
+}
+
+.paginated-collection-footer a:hover {
+  text-decoration: underline;
+}
+
+/* Per-page select */
+.pagination-per-page {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 0.25rem;
+  color: var(--input-text);
+  margin-left: 0.5rem;
+}
+
+/* ===========================================
+   7. SIDEBAR - Filter panels
+   =========================================== */
+
+/* Sidebar section wrapper */
+[data-test-page-content] > .space-y-8 > div,
+.sidebar-section {
+  background: var(--panel-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+/* Sidebar section title */
+[data-test-page-content] > .space-y-8 > div > h3,
+.sidebar-section > h3 {
+  padding: 1rem 1.5rem !important;
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  background: var(--panel-header-bg);
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* Sidebar section content - generous padding */
+[data-test-page-content] > .space-y-8 > div > div,
+[data-test-page-content] > .space-y-8 > div > form,
+.sidebar-section > div,
+.sidebar-section > form {
+  padding: 1.5rem !important;
+}
+
+/* Filter form inside sidebar - with proper padding */
+[data-test-page-content] > .space-y-8 .filters-form,
+.sidebar-section .filters-form {
+  padding: 1.25rem 1.5rem !important;
+}
+
+/* Filter form - AA4 uses .filters-form class */
+.filters-form,
+form.q-filters,
+.filter-form {
+  font-size: 0.875rem;
+}
+
+/* Filter field wrapper */
+.filters-form-field,
+.filter-form-field {
+  margin-bottom: 1rem;
+}
+
+/* Filter labels */
+.filters-form .label,
+.filters-form label,
+.filter-form label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 0.375rem;
+}
+
+/* Filter input group (search method select + text input) */
+.filters-form-input-group {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.5rem;
+}
+
+/* Search method select in filters (Contains, Equals, etc.) */
+.filters-form-input-group select[data-search-methods] {
+  width: auto;
+  min-width: 5rem;
+  padding-right: 1.75rem;
+  font-size: 0.75rem;
+}
+
+/* Date range inputs - stack vertically to fit sidebar */
+.filters-form-input-group:has(input[type="date"]:first-child) {
+  grid-template-columns: 1fr;
+}
+
+.filters-form-input-group input[type="date"] {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Filter choices (for boolean/select filters with checkboxes) */
+.filters-form-field .choices {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.filters-form-field .choices > label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+/* Filter buttons row */
+.filters-form-buttons,
+form.q-filters .buttons,
+.filter-form .buttons {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+/* Filter submit button */
+.filters-form-submit {
+  min-width: 5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: white;
+  background: var(--primary-color);
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+}
+
+.filters-form-submit:hover {
+  background: var(--primary-hover);
+}
+
+/* Filter clear link */
+.filters-form-clear {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-decoration: none;
+  border-radius: 0.375rem;
+}
+
+.filters-form-clear:hover {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+/* ===========================================
+   8. FORM INPUTS
+   =========================================== */
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="date"],
+input[type="datetime-local"],
+input[type="search"],
+input[type="tel"],
+input[type="url"],
+select,
+textarea {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: var(--input-text);
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 0.375rem;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+input::placeholder {
+  color: var(--text-muted);
+}
+
+/* Select dropdown arrow */
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239ca3af'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  background-size: 1.25rem;
+  padding-right: 2.5rem;
+}
+
+/* ===========================================
+   9. BUTTONS
+   =========================================== */
+
+input[type="submit"],
+button[type="submit"],
+.button,
+a.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: white;
+  background: var(--primary-color);
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+
+input[type="submit"]:hover,
+button[type="submit"]:hover,
+.button:hover,
+a.button:hover {
+  background: var(--primary-hover);
+}
+
+/* Clear filters button */
+a.clear-filters-btn,
+.button.secondary {
+  color: var(--text-secondary);
+  background: var(--button-secondary-bg);
+}
+
+a.clear-filters-btn:hover,
+.button.secondary:hover {
+  background: var(--button-secondary-hover);
+  color: white;
+}
+
+/* ===========================================
+   10. BATCH ACTIONS
+   =========================================== */
+
+.batch-actions-dropdown {
+  position: relative;
+  display: inline-block;
+  margin-right: 1rem;
+}
+
+.batch-actions-dropdown-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  background: var(--panel-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: opacity 0.15s, background 0.15s;
+}
+
+.batch-actions-dropdown-toggle:hover {
+  background: var(--hover-bg);
+}
+
+.batch-actions-dropdown-toggle:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.batch-actions-dropdown-arrow {
+  width: 0.625rem;
+  height: 0.625rem;
+}
+
+/*
+ * BATCH ACTIONS DROPDOWN MENU
+ * Flowbite controls this via data attributes and inline styles.
+ * We hide by default and only show when Flowbite sets position.
+ */
+.batch-actions-dropdown-menu,
+#batch-action-menu,
+ul.batch-actions-dropdown-menu {
+  /* Hidden by default */
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+
+  /* Positioning */
+  position: absolute;
+  z-index: 9999;
+  min-width: 12rem;
+  margin-top: 0.25rem;
+  padding: 0.5rem 0;
+
+  /* Styling */
+  background: var(--panel-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 0.375rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+  list-style: none;
+}
+
+/* Show menu when Flowbite activates it (adds inline position style) */
+.batch-actions-dropdown-menu[style*="position"],
+#batch-action-menu[style*="position"],
+.batch-actions-dropdown-menu[data-popper-reference-hidden="false"],
+#batch-action-menu[data-popper-reference-hidden="false"] {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+.batch-actions-dropdown-menu li {
+  list-style: none;
+}
+
+.batch-actions-dropdown-menu li a,
+#batch-action-menu li a {
+  display: block;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.batch-actions-dropdown-menu li a:hover,
+#batch-action-menu li a:hover {
+  background: var(--hover-bg);
+}
+
+/* ===========================================
+   11. ATTRIBUTES TABLE (Show pages)
+   =========================================== */
+
+.attributes-table,
+.attributes_table {
+  width: 100%;
+  background: var(--panel-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.attributes-table tr,
+.attributes_table tr {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.attributes-table tr:last-child,
+.attributes_table tr:last-child {
+  border-bottom: none;
+}
+
+.attributes-table th,
+.attributes_table th {
+  text-align: right;
+  padding: 0.875rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  background: var(--panel-header-bg);
+  width: 200px;
+  vertical-align: top;
+}
+
+.attributes-table td,
+.attributes_table td {
+  padding: 0.875rem 1rem;
+  color: var(--text-primary);
+}
+
+/* ===========================================
+   12. STATUS TAGS & BADGES
+   =========================================== */
+
+.status-tag {
+  display: inline-block;
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 9999px;
+}
+
+.status-tag.yes,
+.status-tag.active,
+.status-tag.published {
+  background: rgba(16, 185, 129, 0.1);
+  color: #34d399;
+}
+
+.status-tag.no,
+.status-tag.inactive,
+.status-tag.draft {
+  background: rgba(239, 68, 68, 0.1);
+  color: #f87171;
+}
+
+/* Confidence badges */
+.confidence-high {
+  display: inline-block;
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border-radius: 0.25rem;
+}
+
+.confidence-medium {
+  display: inline-block;
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: rgba(251, 191, 36, 0.15);
+  color: #fbbf24;
+  border-radius: 0.25rem;
+}
+
+.confidence-low {
+  display: inline-block;
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border-radius: 0.25rem;
+}
+
+/* ===========================================
+   13. FLASH MESSAGES
+   =========================================== */
+
+.flash,
+.flash-message {
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.flash.notice,
+.flash.success,
+.flash-message.notice {
+  background: rgba(16, 185, 129, 0.1);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.flash.alert,
+.flash.error,
+.flash-message.alert {
+  background: rgba(239, 68, 68, 0.1);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.flash.warning,
+.flash-message.warning {
+  background: rgba(251, 191, 36, 0.1);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.2);
+}
+
+/* ===========================================
+   14. DASHBOARD SPECIFIC
+   =========================================== */
+
+.dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-card {
+  background: var(--panel-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-top: 0.25rem;
+}
+
+.dashboard-row {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.dashboard-col-1 {
+  flex: 1;
+  min-width: 0;
+}
+
+.dashboard-col-2 {
+  flex: 2;
+  min-width: 0;
+}
+
+/* Dashboard tables inside panels */
+.dashboard-row .panel table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.dashboard-row .panel th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  background: var(--table-header-bg);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.dashboard-row .panel td {
+  padding: 0.75rem 1rem;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.dashboard-row .panel tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.dashboard-row .panel tbody tr:hover {
+  background: var(--table-hover-bg);
+}
+
+/* ===========================================
+   15. FORMS (Edit/New pages)
+   =========================================== */
+
+.form-inputs,
+fieldset.inputs ol {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.input,
+fieldset.inputs li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.input > label,
+fieldset.inputs li > label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.input > label abbr,
+fieldset.inputs li > label abbr {
+  color: #ef4444;
+  text-decoration: none;
+}
+
+.inline-hints {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.inline-errors {
+  font-size: 0.75rem;
+  color: #ef4444;
+}
+
+fieldset.inputs {
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  background: var(--panel-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+}
+
+fieldset.inputs > legend {
+  padding: 0 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+fieldset.actions {
+  padding: 1rem 0;
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* ===========================================
+   16. COMMENTS
+   =========================================== */
+
+.comments {
+  margin-top: 2rem;
+}
+
+.comment {
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background: var(--panel-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+}
+
+.comment .author {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.comment .date {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.comment .body {
+  margin-top: 0.5rem;
+  color: var(--text-secondary);
+}
+
+/* ===========================================
+   17. INDEX PAGE WRAPPER & TOOLBAR
+   =========================================== */
+
+.index-as-table {
+  min-width: 0;
+}
+
+/* Toolbar containing batch actions and scopes */
+.index-data-table-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 1024px) {
+  .index-data-table-toolbar {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
+/* ===========================================
+   18. LINKS
+   =========================================== */
+
+.paginated-collection a,
+table.data-table a:not(.index-button):not([class*="button"]) {
+  color: var(--link-color);
+  text-decoration: none;
+}
+
+.paginated-collection a:hover,
+table.data-table a:not(.index-button):not([class*="button"]):hover {
+  text-decoration: underline;
+}
+
+/* ===========================================
+   19. RESPONSIVE
+   =========================================== */
+
+@media (max-width: 1280px) {
+  .dashboard-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 1024px) {
+  .dashboard-row {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 640px) {
+  .dashboard-stats {
+    grid-template-columns: 1fr;
+  }
+
+  table.data-table th,
+  table.data-table td {
+    padding: 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .index-button-group {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  a.index-button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ===========================================
+   21. CHECKBOX & RADIO STYLING
+   =========================================== */
+
+input[type="checkbox"],
+input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 1rem;
+  height: 1rem;
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 0.25rem;
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+input[type="radio"] {
+  border-radius: 50%;
+}
+
+input[type="checkbox"]:checked {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4 8 L7 11 L12 5' stroke='white' stroke-linecap='round' stroke-linejoin='round' stroke-width='2'/%3E%3C/svg%3E");
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+input[type="radio"]:checked {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='8' cy='8' r='3'/%3E%3C/svg%3E");
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+input[type="checkbox"]:focus,
+input[type="radio"]:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+/* ===========================================
+   22. MISC FIXES
+   =========================================== */
+
+/*
+ * Hide Flowbite checkmark SVGs that appear in filter dropdowns.
+ * Flowbite enhances selects and shows checkmarks for each option,
+ * but without proper styling they appear as a row of visible icons.
+ */
+
+/* Hide all SVGs in sidebar filter area except specific ones */
+[data-test-page-content] > .space-y-8 svg {
+  display: none !important;
+}
+
+/* But show the dropdown arrow on batch actions */
+.batch-actions-dropdown-arrow {
+  display: inline-block !important;
+}
+
+/* Hide any dropdown menus that aren't properly toggled */
+[data-test-page-content] > .space-y-8 [role="listbox"],
+[data-test-page-content] > .space-y-8 [role="menu"],
+[data-test-page-content] > .space-y-8 ul[id*="dropdown"] {
+  display: none !important;
+}
+
+/* Ensure native selects display properly */
+[data-test-page-content] > .space-y-8 select {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239ca3af'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 0.5rem center !important;
+  background-size: 1.25rem !important;
+}
+
+/* Ensure select options don't show extra icons */
+select option {
+  background: var(--panel-bg);
+  color: var(--text-primary);
+}
+
+/* Fix filter form title if present */
+.filters-form-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+/* Active filters styling */
+.active-filters-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+}
+
+.active-filters-list {
+  list-style: disc;
+  padding-left: 1.25rem;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.active-filters-list li {
+  margin-bottom: 0.25rem;
+}

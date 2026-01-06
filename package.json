@@ -17,11 +17,14 @@
   "scripts": {
     "build": "esbuild app/javascript/*.* --bundle --sourcemap --format=esm --outdir=app/assets/builds --public-path=/assets --loader:.tsx=tsx --loader:.ts=ts && esbuild app/javascript/workspace/index.tsx --bundle --sourcemap --format=esm --outfile=app/assets/builds/workspace.js --public-path=/assets --loader:.tsx=tsx --loader:.ts=ts",
     "build:css": "npx @tailwindcss/cli -i ./app/assets/stylesheets/application.tailwind.css -o ./app/assets/builds/application.css --minify",
+    "build:admin-css": "npx @tailwindcss/cli -i ./app/assets/stylesheets/active_admin.css -o ./app/assets/builds/active_admin.css --minify",
+    "build:all-css": "npm run build:css && npm run build:admin-css",
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
+    "@activeadmin/activeadmin": "^3.4.0",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",

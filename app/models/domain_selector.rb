@@ -2,6 +2,15 @@ class DomainSelector < ApplicationRecord
   TRACKABLE_FIELDS = %w[name price thumbnail_url].freeze
   DISCOVERY_METHODS = %w[heuristic discovered manual].freeze
 
+  # Ransack whitelist for ActiveAdmin
+  def self.ransackable_attributes(auth_object = nil)
+    %w[id domain field_name selector success_count failure_count discovery_method discovery_score last_seen_at created_at updated_at]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    []
+  end
+
   validates :domain, :field_name, :selector, presence: true
   validates :field_name, inclusion: { in: TRACKABLE_FIELDS }
   validates :selector, uniqueness: { scope: [ :domain, :field_name ] }

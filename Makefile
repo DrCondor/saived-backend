@@ -10,7 +10,8 @@ REDIS_URL ?= redis://127.0.0.1:6380/0
 RAILS_ENV ?= development
 
 .PHONY: help db-up db-down db-restart db-logs db-psql db-wipe db-status \
-        dev dev-db dev-down prepare console routes redis-up redis-down redis-logs test
+        dev dev-db dev-down prepare console routes redis-up redis-down redis-logs test \
+        seed reseed
 
 help:
 	@echo "Targets:"
@@ -20,6 +21,8 @@ help:
 	@echo "  make db-up/down  - Postgres (compose)"
 	@echo "  make redis-up/down - Redis (compose)"
 	@echo "  make console/routes - rails c / routes"
+	@echo "  make seed        - run db:seed (adds missing data)"
+	@echo "  make reseed      - db:reset (drop + create + migrate + seed)"
 
 db-up:
 	$(DB_COMPOSE) up -d
@@ -76,3 +79,10 @@ routes:
 
 test:
 	PGHOST=$(PGHOST) PGPORT=$(PGPORT) PGUSER=$(PGUSER) PGPASSWORD=$(PGPASSWORD) bin/rails test
+
+seed:
+	PGHOST=$(PGHOST) PGPORT=$(PGPORT) PGUSER=$(PGUSER) PGPASSWORD=$(PGPASSWORD) bin/rails db:seed
+
+reseed:
+	@echo "Dropping and recreating database with fresh seeds..."
+	PGHOST=$(PGHOST) PGPORT=$(PGPORT) PGUSER=$(PGUSER) PGPASSWORD=$(PGPASSWORD) bin/rails db:reset

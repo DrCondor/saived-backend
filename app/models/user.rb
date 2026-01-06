@@ -6,6 +6,15 @@ class User < ApplicationRecord
 
   has_secure_token :api_token
 
+  # Ransack whitelist for ActiveAdmin (exclude sensitive fields)
+  def self.ransackable_attributes(auth_object = nil)
+    %w[id email first_name last_name company_name phone title created_at updated_at]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    %w[owned_projects projects product_capture_samples]
+  end
+
   # Avatar attachment
   has_one_attached :avatar
 

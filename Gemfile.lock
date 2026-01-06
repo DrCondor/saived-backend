@@ -47,6 +47,15 @@ GEM
       erubi (~> 1.11)
       rails-dom-testing (~> 2.2)
       rails-html-sanitizer (~> 1.6)
+    activeadmin (4.0.0.beta19)
+      arbre (~> 2.0)
+      csv
+      formtastic (>= 5.0)
+      formtastic_i18n (>= 0.7)
+      inherited_resources (~> 2.0)
+      kaminari (>= 1.2.1)
+      railties (>= 7.0)
+      ransack (>= 4.0)
     activejob (7.2.3)
       activesupport (= 7.2.3)
       globalid (>= 0.3.6)
@@ -76,6 +85,8 @@ GEM
       tzinfo (~> 2.0, >= 2.0.5)
     addressable (2.8.8)
       public_suffix (>= 2.0.2, < 8.0)
+    arbre (2.2.1)
+      activesupport (>= 7.0)
     ast (2.4.3)
     base64 (0.3.0)
     bcrypt (3.1.20)
@@ -105,6 +116,7 @@ GEM
     crass (1.0.6)
     cssbundling-rails (1.4.3)
       railties (>= 6.0.0)
+    csv (3.3.5)
     date (3.5.0)
     debug (1.11.0)
       irb (~> 1.10)
@@ -128,11 +140,34 @@ GEM
       railties (>= 6.1.0)
     faker (3.5.3)
       i18n (>= 1.8.11, < 2)
+    ffi (1.17.3-aarch64-linux-gnu)
+    ffi (1.17.3-aarch64-linux-musl)
+    ffi (1.17.3-arm-linux-gnu)
+    ffi (1.17.3-arm-linux-musl)
+    ffi (1.17.3-arm64-darwin)
+    ffi (1.17.3-x86_64-darwin)
+    ffi (1.17.3-x86_64-linux-gnu)
+    ffi (1.17.3-x86_64-linux-musl)
+    formtastic (5.0.0)
+      actionpack (>= 6.0.0)
+    formtastic_i18n (0.7.0)
     globalid (1.3.0)
       activesupport (>= 6.1)
+    has_scope (0.9.0)
+      actionpack (>= 7.0)
+      activesupport (>= 7.0)
     hashdiff (1.2.1)
     i18n (1.14.7)
       concurrent-ruby (~> 1.0)
+    importmap-rails (2.2.2)
+      actionpack (>= 6.0.0)
+      activesupport (>= 6.0.0)
+      railties (>= 6.0.0)
+    inherited_resources (2.1.0)
+      actionpack (>= 7.0)
+      has_scope (>= 0.6)
+      railties (>= 7.0)
+      responders (>= 2)
     io-console (0.8.1)
     irb (1.15.3)
       pp (>= 0.6.0)
@@ -144,6 +179,18 @@ GEM
     jsbundling-rails (1.3.1)
       railties (>= 6.0.0)
     json (2.16.0)
+    kaminari (1.2.2)
+      activesupport (>= 4.1.0)
+      kaminari-actionview (= 1.2.2)
+      kaminari-activerecord (= 1.2.2)
+      kaminari-core (= 1.2.2)
+    kaminari-actionview (1.2.2)
+      actionview
+      kaminari-core (= 1.2.2)
+    kaminari-activerecord (1.2.2)
+      activerecord
+      kaminari-core (= 1.2.2)
+    kaminari-core (1.2.2)
     language_server-protocol (3.17.0.5)
     lint_roller (1.1.0)
     logger (1.7.0)
@@ -218,6 +265,8 @@ GEM
       nio4r (~> 2.0)
     racc (1.8.1)
     rack (3.2.4)
+    rack-attack (6.8.0)
+      rack (>= 1.0, < 4)
     rack-session (2.1.1)
       base64 (>= 0.1.0)
       rack (>= 3.0.0)
@@ -258,6 +307,10 @@ GEM
       zeitwerk (~> 2.6)
     rainbow (3.1.1)
     rake (13.3.1)
+    ransack (4.4.1)
+      activerecord (>= 7.2)
+      activesupport (>= 7.2)
+      i18n
     rdoc (6.16.1)
       erb
       psych (>= 4.0.0)
@@ -299,6 +352,14 @@ GEM
       rubocop-rails (>= 2.30)
     ruby-progressbar (1.13.0)
     rubyzip (3.2.2)
+    sassc (2.4.0)
+      ffi (~> 1.9)
+    sassc-rails (2.1.2)
+      railties (>= 4.0.0)
+      sassc (>= 2.0)
+      sprockets (> 3.0)
+      sprockets-rails
+      tilt
     securerandom (0.4.1)
     selenium-webdriver (4.38.0)
       base64 (~> 0.2)
@@ -324,6 +385,7 @@ GEM
       railties (>= 6.0.0)
     stringio (3.1.8)
     thor (1.4.0)
+    tilt (2.6.1)
     timeout (0.4.4)
     tsort (0.2.0)
     ttfunk (1.8.0)
@@ -370,6 +432,7 @@ PLATFORMS
   x86_64-linux-musl
 
 DEPENDENCIES
+  activeadmin (~> 4.0.0.beta13)
   bootsnap
   brakeman
   capybara
@@ -379,14 +442,17 @@ DEPENDENCIES
   dockerfile-rails (~> 1.7)
   factory_bot_rails
   faker
+  importmap-rails
   jbuilder
   jsbundling-rails
   pg (~> 1.1)
   prawn (~> 2.5)
   prawn-table (~> 0.2)
   puma (>= 5.0)
+  rack-attack
   rails (~> 7.2.3)
   rubocop-rails-omakase
+  sassc-rails
   selenium-webdriver
   simplecov
   sprockets-rails
