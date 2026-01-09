@@ -1,0 +1,18 @@
+<h1>Witaj!</h1>
+
+<p>Zostales zaproszony do SAIVED - aplikacji do tworzenia kosztorysow dla projektantow wnetrz.</p>
+
+<p>Kliknij ponizszy przycisk, aby aktywowac swoje konto i ustawic haslo:</p>
+
+<p style="text-align: center; margin: 24px 0;">
+  <%= link_to "Aktywuj konto", accept_invitation_url(@resource, invitation_token: @token), class: "button" %>
+</p>
+
+<p style="font-size: 14px; color: #737373;">
+  Jesli przycisk nie dziala, skopiuj i wklej ten link do przegladarki:<br>
+  <span style="word-break: break-all;"><%= accept_invitation_url(@resource, invitation_token: @token) %></span>
+</p>
+
+<p style="font-size: 14px; color: #737373;">
+  Link wygasa za 7 dni. Jesli nie prosiles o to zaproszenie, zignoruj ten email.
+</p>

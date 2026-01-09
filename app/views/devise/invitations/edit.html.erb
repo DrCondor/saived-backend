@@ -1,0 +1,52 @@
+<div class="min-h-[calc(100vh-64px)] flex items-center justify-center px-4 py-10">
+  <div class="w-full max-w-md">
+    <div class="mb-8 text-center">
+      <h1 class="text-2xl font-semibold tracking-tight text-neutral-900">
+        Witaj w SAIVED!
+      </h1>
+      <p class="mt-2 text-sm text-neutral-600">
+        Ustaw haslo, aby aktywowac swoje konto.
+      </p>
+    </div>
+
+    <div class="rounded-3xl border border-neutral-200 bg-white/90 shadow-sm px-6 py-6 sm:px-7 sm:py-7">
+      <%= form_for resource,
+                   as: resource_name,
+                   url: invitation_path(resource_name),
+                   html: { method: :put },
+                   data: { turbo: false } do |f| %>
+
+        <%= render "devise/shared/error_messages", resource: resource %>
+
+        <%= f.hidden_field :invitation_token %>
+
+        <div class="space-y-4">
+          <div>
+            <%= f.label :password, "Haslo", class: "block text-sm font-medium text-neutral-800 mb-1.5" %>
+            <%= f.password_field :password,
+                  autofocus: true,
+                  autocomplete: "new-password",
+                  placeholder: "Minimum 6 znakow",
+                  class: "block w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 shadow-sm focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900" %>
+          </div>
+
+          <div>
+            <%= f.label :password_confirmation, "Potwierdz haslo", class: "block text-sm font-medium text-neutral-800 mb-1.5" %>
+            <%= f.password_field :password_confirmation,
+                  autocomplete: "new-password",
+                  class: "block w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 shadow-sm focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900" %>
+          </div>
+        </div>
+
+        <div class="mt-6">
+          <%= f.submit "Aktywuj konto",
+                class: "inline-flex w-full items-center justify-center rounded-full bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-neutral-800 transition" %>
+        </div>
+      <% end %>
+    </div>
+
+    <p class="mt-6 text-center text-xs text-neutral-500">
+      Po aktywacji konta zostaniesz automatycznie zalogowany.
+    </p>
+  </div>
+</div>

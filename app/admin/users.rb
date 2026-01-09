@@ -3,8 +3,8 @@
 ActiveAdmin.register User do
   menu priority: 2
 
-  # Security: Prevent deletion
-  actions :all, except: [:destroy]
+  # Security: Prevent deletion, replace new/create with invitation
+  actions :all, except: [ :destroy, :new, :create ]
 
   # Pagination
   config.per_page = 25
@@ -17,6 +17,7 @@ ActiveAdmin.register User do
     users.where(id: user_ids)
   end
   scope("New (30d)") { |users| users.where("created_at > ?", 30.days.ago) }
+  scope("Pending Invitation") { |users| users.invitation_not_accepted }
 
   # Filters
   filter :email
@@ -25,12 +26,26 @@ ActiveAdmin.register User do
   filter :company_name
   filter :created_at
 
+  # Invite User button
+  action_item :invite_user, only: :index do
+    link_to "Zapros uzytkownika", invite_admin_users_path, class: "action-item-button"
+  end
+
   # Index columns
   index do
     selectable_column
     id_column
     column :email
     column :full_name
+    column("Status") do |user|
+      if user.invitation_accepted_at.present?
+        status_tag "Aktywny", class: "ok"
+      elsif user.invitation_sent_at.present?
+        status_tag "Oczekuje", class: "warning"
+      else
+        status_tag "Aktywny", class: "ok"
+      end
+    end
     column :company_name
     column "Projects" do |user|
       user.owned_projects.count
@@ -39,7 +54,13 @@ ActiveAdmin.register User do
       user.product_capture_samples.count
     end
     column :created_at
-    actions
+    actions defaults: true do |user|
+      if user.invitation_sent_at.present? && user.invitation_accepted_at.blank?
+        link_to "Wyslij ponownie", resend_invitation_admin_user_path(user),
+                method: :post,
+                class: "member_link"
+      end
+    end
   end
 
   # Show page
@@ -127,4 +148,29 @@ ActiveAdmin.register User do
 
   # Permitted parameters
   permit_params :email, :first_name, :last_name, :company_name, :phone, :title
+
+  # === Invitation Actions ===
+
+  # Invite form
+  collection_action :invite, method: :get do
+    @user = User.new
+  end
+
+  # Send invitation
+  collection_action :send_invitation, method: :post do
+    @user = User.invite!(email: params[:user][:email], skip_invitation: false)
+
+    if @user.errors.empty?
+      redirect_to admin_users_path, notice: "Zaproszenie wyslane na #{@user.email}!"
+    else
+      flash.now[:error] = @user.errors.full_messages.join(", ")
+      render :invite
+    end
+  end
+
+  # Resend invitation
+  member_action :resend_invitation, method: :post do
+    resource.invite!
+    redirect_to admin_users_path, notice: "Zaproszenie wyslane ponownie na #{resource.email}!"
+  end
 end

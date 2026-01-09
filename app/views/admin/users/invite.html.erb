@@ -1,0 +1,49 @@
+<% @page_title = "Zapros uzytkownika" %>
+
+<div class="panel">
+  <h3>Zapros nowego uzytkownika</h3>
+
+  <div class="panel_contents">
+    <%= form_for @user, url: send_invitation_admin_users_path, method: :post do |f| %>
+      <% if @user.errors.any? %>
+        <div class="flash flash_error">
+          <% @user.errors.full_messages.each do |msg| %>
+            <p><%= msg %></p>
+          <% end %>
+        </div>
+      <% end %>
+
+      <fieldset class="inputs">
+        <legend><span>Dane uzytkownika</span></legend>
+        <ol>
+          <li class="string input required">
+            <%= f.label :email, "Adres email *" %>
+            <%= f.email_field :email, required: true, placeholder: "jan.kowalski@example.com" %>
+            <p class="inline-hints">Zaproszenie zostanie wyslane na ten adres email.</p>
+          </li>
+        </ol>
+      </fieldset>
+
+      <fieldset class="actions">
+        <%= f.submit "Wyslij zaproszenie", class: "button" %>
+        <span class="or">lub</span>
+        <%= link_to "Anuluj", admin_users_path, class: "button" %>
+      </fieldset>
+    <% end %>
+  </div>
+</div>
+
+<div class="panel">
+  <h3>Jak to dziala?</h3>
+  <div class="panel_contents">
+    <ol style="margin: 1em 0; padding-left: 2em;">
+      <li>Wpisz adres email uzytkownika</li>
+      <li>System wysle email z linkiem aktywacyjnym</li>
+      <li>Uzytkownik kliknie link i ustawi swoje haslo</li>
+      <li>Konto jest gotowe do uzycia!</li>
+    </ol>
+    <p style="margin-top: 1em; color: #666;">
+      <strong>Uwaga:</strong> Zaproszenie wygasa po 7 dniach. Mozesz wyslac je ponownie z listy uzytkownikow.
+    </p>
+  </div>
+</div>

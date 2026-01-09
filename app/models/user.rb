@@ -1,14 +1,14 @@
 class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
-  devise :database_authenticatable, :registerable,
+  devise :invitable, :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
   has_secure_token :api_token
 
   # Ransack whitelist for ActiveAdmin (exclude sensitive fields)
   def self.ransackable_attributes(auth_object = nil)
-    %w[id email first_name last_name company_name phone title created_at updated_at]
+    %w[id email first_name last_name company_name phone title created_at updated_at invitation_sent_at invitation_accepted_at]
   end
 
   def self.ransackable_associations(auth_object = nil)

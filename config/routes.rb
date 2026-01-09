@@ -3,7 +3,8 @@ Rails.application.routes.draw do
   ActiveAdmin.routes(self)
   devise_for :users, controllers: {
     sessions: "users/sessions",
-    registrations: "users/registrations"
+    registrations: "users/registrations",
+    invitations: "devise/invitations"
   }, skip: [ :registrations ]
 
   # Only allow edit/update/destroy for existing users (no new registrations)

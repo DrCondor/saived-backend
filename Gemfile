@@ -13,6 +13,10 @@ gem "jbuilder"
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 gem "bootsnap", require: false
 gem "devise"
+gem "devise_invitable"
+
+# Email delivery
+gem "resend"
 
 # Admin panel
 gem "activeadmin", "~> 4.0.0.beta13"
@@ -30,10 +34,12 @@ group :development, :test do
   gem "rubocop-rails-omakase", require: false
   gem "factory_bot_rails"
   gem "faker"
+  gem "dotenv-rails"
 end
 
 group :development do
   gem "web-console"
+  gem "letter_opener"
 end
 
 group :test do
