@@ -1,7 +1,7 @@
-<% @page_title = "Zapros uzytkownika" %>
+<% @page_title = "Invite User" %>
 
 <div class="panel">
-  <h3>Zapros nowego uzytkownika</h3>
+  <h3>Invite New User</h3>
 
   <div class="panel_contents">
     <%= form_for @user, url: send_invitation_admin_users_path, method: :post do |f| %>
@@ -14,36 +14,36 @@
       <% end %>
 
       <fieldset class="inputs">
-        <legend><span>Dane uzytkownika</span></legend>
+        <legend><span>User Details</span></legend>
         <ol>
           <li class="string input required">
-            <%= f.label :email, "Adres email *" %>
-            <%= f.email_field :email, required: true, placeholder: "jan.kowalski@example.com" %>
-            <p class="inline-hints">Zaproszenie zostanie wyslane na ten adres email.</p>
+            <%= f.label :email, "Email Address *" %>
+            <%= f.email_field :email, required: true, placeholder: "john.doe@example.com" %>
+            <p class="inline-hints">An invitation will be sent to this email address.</p>
           </li>
         </ol>
       </fieldset>
 
       <fieldset class="actions">
-        <%= f.submit "Wyslij zaproszenie", class: "button" %>
-        <span class="or">lub</span>
-        <%= link_to "Anuluj", admin_users_path, class: "button" %>
+        <%= f.submit "Send Invitation", class: "button" %>
+        <span class="or">or</span>
+        <%= link_to "Cancel", admin_users_path, class: "button" %>
       </fieldset>
     <% end %>
   </div>
 </div>
 
 <div class="panel">
-  <h3>Jak to dziala?</h3>
+  <h3>How it works</h3>
   <div class="panel_contents">
     <ol style="margin: 1em 0; padding-left: 2em;">
-      <li>Wpisz adres email uzytkownika</li>
-      <li>System wysle email z linkiem aktywacyjnym</li>
-      <li>Uzytkownik kliknie link i ustawi swoje haslo</li>
-      <li>Konto jest gotowe do uzycia!</li>
+      <li>Enter the user's email address</li>
+      <li>System sends an email with activation link</li>
+      <li>User clicks the link and sets their password</li>
+      <li>Account is ready to use!</li>
     </ol>
     <p style="margin-top: 1em; color: #666;">
-      <strong>Uwaga:</strong> Zaproszenie wygasa po 7 dniach. Mozesz wyslac je ponownie z listy uzytkownikow.
+      <strong>Note:</strong> Invitations expire after 7 days. You can resend them from the users list.
     </p>
   </div>
 </div>

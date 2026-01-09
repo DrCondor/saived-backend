@@ -28,7 +28,7 @@ ActiveAdmin.register User do
 
   # Invite User button
   action_item :invite_user, only: :index do
-    link_to "Zapros uzytkownika", invite_admin_users_path, class: "action-item-button"
+    link_to "Invite User", invite_admin_users_path, class: "action-item-button"
   end
 
   # Index columns
@@ -39,11 +39,11 @@ ActiveAdmin.register User do
     column :full_name
     column("Status") do |user|
       if user.invitation_accepted_at.present?
-        status_tag "Aktywny", class: "ok"
+        status_tag "Active", class: "ok"
       elsif user.invitation_sent_at.present?
-        status_tag "Oczekuje", class: "warning"
+        status_tag "Pending", class: "warning"
       else
-        status_tag "Aktywny", class: "ok"
+        status_tag "Active", class: "ok"
       end
     end
     column :company_name
@@ -56,7 +56,7 @@ ActiveAdmin.register User do
     column :created_at
     actions defaults: true do |user|
       if user.invitation_sent_at.present? && user.invitation_accepted_at.blank?
-        link_to "Wyslij ponownie", resend_invitation_admin_user_path(user),
+        link_to "Resend", resend_invitation_admin_user_path(user),
                 method: :post,
                 class: "member_link"
       end
@@ -161,7 +161,7 @@ ActiveAdmin.register User do
     @user = User.invite!(email: params[:user][:email], skip_invitation: false)
 
     if @user.errors.empty?
-      redirect_to admin_users_path, notice: "Zaproszenie wyslane na #{@user.email}!"
+      redirect_to admin_users_path, notice: "Invitation sent to #{@user.email}!"
     else
       flash.now[:error] = @user.errors.full_messages.join(", ")
       render :invite
@@ -171,6 +171,6 @@ ActiveAdmin.register User do
   # Resend invitation
   member_action :resend_invitation, method: :post do
     resource.invite!
-    redirect_to admin_users_path, notice: "Zaproszenie wyslane ponownie na #{resource.email}!"
+    redirect_to admin_users_path, notice: "Invitation resent to #{resource.email}!"
   end
 end
