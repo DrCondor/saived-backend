@@ -1250,3 +1250,78 @@ select option {
 .active-filters-list li {
   margin-bottom: 0.25rem;
 }
+
+/* ===========================================
+   23. ACTION ITEMS (Header buttons on show/edit pages)
+   =========================================== */
+
+/* Action item container in header */
+.action-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* Individual action item links */
+.action-item a,
+.action-items a,
+a.action-item-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  background: var(--panel-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 0.375rem;
+  text-decoration: none;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.action-item a:hover,
+.action-items a:hover,
+a.action-item-button:hover {
+  background: var(--hover-bg);
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+/* Primary action (first button or marked as primary) */
+.action-item:first-child a,
+.action-items a:first-child,
+a.action-item-button.primary {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+}
+
+.action-item:first-child a:hover,
+.action-items a:first-child:hover,
+a.action-item-button.primary:hover {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+  color: white;
+}
+
+/* Destructive actions (Delete) */
+.action-item a[data-method="delete"],
+.action-items a[data-method="delete"],
+.action-item a[href*="delete"],
+.action-items a[href*="delete"] {
+  color: #f87171;
+  border-color: rgba(248, 113, 113, 0.3);
+  background: rgba(248, 113, 113, 0.1);
+}
+
+.action-item a[data-method="delete"]:hover,
+.action-items a[data-method="delete"]:hover,
+.action-item a[href*="delete"]:hover,
+.action-items a[href*="delete"]:hover {
+  background: rgba(248, 113, 113, 0.2);
+  border-color: #f87171;
+  color: #f87171;
+}
