@@ -74,7 +74,7 @@ export default function Header() {
         <div className="flex items-center gap-6">
           <Link to="/workspace" className="flex items-center gap-3">
             <img
-              src="/assets/saived-logo.jpg"
+              src="/images/saived-logo.jpg"
               alt="SAIVED"
               className="h-9 w-9 object-contain"
             />
