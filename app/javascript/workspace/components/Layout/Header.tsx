@@ -69,7 +69,7 @@ export default function Header() {
 
   return (
     <header className="border-b border-neutral-200/70 bg-white/90 backdrop-blur sticky top-0 z-40">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+      <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
         {/* Logo + Navigation */}
         <div className="flex items-center gap-6">
           <Link to="/workspace" className="flex items-center gap-3">
