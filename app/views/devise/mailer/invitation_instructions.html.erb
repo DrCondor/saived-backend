@@ -1,18 +1,132 @@
-<h1>Witaj!</h1>
+<%# Professional invitation email template %>
 
-<p>Zostales zaproszony do SAIVED - aplikacji do tworzenia kosztorysow dla projektantow wnetrz.</p>
+<table width="100%" cellpadding="0" cellspacing="0" style="margin: 0; padding: 0;">
+  <tr>
+    <td align="center" style="padding: 0;">
 
-<p>Kliknij ponizszy przycisk, aby aktywowac swoje konto i ustawic haslo:</p>
+      <%# Header with gradient accent %>
+      <table width="100%" cellpadding="0" cellspacing="0" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 16px 16px 0 0;">
+        <tr>
+          <td style="padding: 32px 24px; text-align: center;">
+            <h1 style="margin: 0; font-size: 28px; font-weight: 700; color: #ffffff; letter-spacing: -0.5px;">
+              Witaj w SAIVED!
+            </h1>
+            <p style="margin: 8px 0 0 0; font-size: 15px; color: rgba(255,255,255,0.9);">
+              Twoje zaproszenie czeka
+            </p>
+          </td>
+        </tr>
+      </table>
 
-<p style="text-align: center; margin: 24px 0;">
-  <%= link_to "Aktywuj konto", accept_invitation_url(@resource, invitation_token: @token), class: "button" %>
-</p>
+      <%# Main content %>
+      <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #ffffff;">
+        <tr>
+          <td style="padding: 32px 24px;">
 
-<p style="font-size: 14px; color: #737373;">
-  Jesli przycisk nie dziala, skopiuj i wklej ten link do przegladarki:<br>
-  <span style="word-break: break-all;"><%= accept_invitation_url(@resource, invitation_token: @token) %></span>
-</p>
+            <%# Welcome text %>
+            <p style="margin: 0 0 20px 0; font-size: 16px; line-height: 1.6; color: #374151;">
+              Zostales zaproszony do <strong>SAIVED</strong> - platformy, ktora pomaga projektantom wnetrz
+              zbierac produkty ze sklepow internetowych i tworzyc profesjonalne kosztorysy dla klientow.
+            </p>
 
-<p style="font-size: 14px; color: #737373;">
-  Link wygasa za 7 dni. Jesli nie prosiles o to zaproszenie, zignoruj ten email.
-</p>
+            <%# CTA Button %>
+            <table width="100%" cellpadding="0" cellspacing="0" style="margin: 28px 0;">
+              <tr>
+                <td align="center">
+                  <a href="<%= accept_invitation_url(@resource, invitation_token: @token) %>"
+                     style="display: inline-block;
+                            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                            color: #ffffff;
+                            text-decoration: none;
+                            padding: 16px 40px;
+                            border-radius: 50px;
+                            font-weight: 600;
+                            font-size: 16px;
+                            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);">
+                    Aktywuj swoje konto
+                  </a>
+                </td>
+              </tr>
+            </table>
+
+            <%# Divider %>
+            <table width="100%" cellpadding="0" cellspacing="0" style="margin: 28px 0;">
+              <tr>
+                <td style="border-top: 1px solid #e5e7eb;"></td>
+              </tr>
+            </table>
+
+            <%# Features section %>
+            <p style="margin: 0 0 16px 0; font-size: 13px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px;">
+              Co zyskujesz?
+            </p>
+
+            <%# Feature 1 %>
+            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 16px;">
+              <tr>
+                <td width="40" valign="top">
+                  <div style="width: 32px; height: 32px; background-color: #ecfdf5; border-radius: 8px; text-align: center; line-height: 32px; font-size: 16px;">
+                    <span style="color: #10b981;">&#10003;</span>
+                  </div>
+                </td>
+                <td valign="top" style="padding-left: 12px;">
+                  <p style="margin: 0; font-size: 15px; font-weight: 600; color: #111827;">Zbieraj produkty jednym kliknieciem</p>
+                  <p style="margin: 4px 0 0 0; font-size: 14px; color: #6b7280;">Wtyczka Chrome automatycznie wykrywa produkty ze sklepow.</p>
+                </td>
+              </tr>
+            </table>
+
+            <%# Feature 2 %>
+            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 16px;">
+              <tr>
+                <td width="40" valign="top">
+                  <div style="width: 32px; height: 32px; background-color: #ecfdf5; border-radius: 8px; text-align: center; line-height: 32px; font-size: 16px;">
+                    <span style="color: #10b981;">&#10003;</span>
+                  </div>
+                </td>
+                <td valign="top" style="padding-left: 12px;">
+                  <p style="margin: 0; font-size: 15px; font-weight: 600; color: #111827;">Organizuj projekty dla klientow</p>
+                  <p style="margin: 4px 0 0 0; font-size: 14px; color: #6b7280;">Tworzenie sekcji, komentarzy i porzadkowania produktow.</p>
+                </td>
+              </tr>
+            </table>
+
+            <%# Feature 3 %>
+            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 0;">
+              <tr>
+                <td width="40" valign="top">
+                  <div style="width: 32px; height: 32px; background-color: #ecfdf5; border-radius: 8px; text-align: center; line-height: 32px; font-size: 16px;">
+                    <span style="color: #10b981;">&#10003;</span>
+                  </div>
+                </td>
+                <td valign="top" style="padding-left: 12px;">
+                  <p style="margin: 0; font-size: 15px; font-weight: 600; color: #111827;">Generuj profesjonalne kosztorysy PDF</p>
+                  <p style="margin: 4px 0 0 0; font-size: 14px; color: #6b7280;">Eleganckie dokumenty gotowe do wyslania klientom.</p>
+                </td>
+              </tr>
+            </table>
+
+          </td>
+        </tr>
+      </table>
+
+      <%# Footer section %>
+      <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f9fafb; border-radius: 0 0 16px 16px;">
+        <tr>
+          <td style="padding: 24px; text-align: center;">
+            <p style="margin: 0 0 12px 0; font-size: 13px; color: #9ca3af;">
+              Jesli przycisk nie dziala, skopiuj ten link:
+            </p>
+            <p style="margin: 0 0 16px 0; font-size: 12px; color: #6b7280; word-break: break-all;">
+              <%= accept_invitation_url(@resource, invitation_token: @token) %>
+            </p>
+            <p style="margin: 0; font-size: 12px; color: #9ca3af;">
+              Link wygasa za 7 dni. Jesli nie prosiles o to zaproszenie, zignoruj ten email.
+            </p>
+          </td>
+        </tr>
+      </table>
+
+    </td>
+  </tr>
+</table>

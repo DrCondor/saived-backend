@@ -3,8 +3,8 @@
 ActiveAdmin.register User do
   menu priority: 2
 
-  # Security: Prevent deletion, replace new/create with invitation
-  actions :all, except: [ :destroy, :new, :create ]
+  # Replace new/create with invitation system
+  actions :all, except: [ :new, :create ]
 
   # Pagination
   config.per_page = 25
