@@ -27,15 +27,14 @@ class Api::V1::ProjectsControllerTest < ActionDispatch::IntegrationTest
   # ============================================================
 
   test "index returns user projects" do
-    section = create(:project_section, project: @project)
-
+    # Project already has 1 default section from after_create callback
     get api_v1_projects_path, headers: auth_headers(@user)
 
     assert_response :success
     assert_equal 1, json_response["projects"].length
     assert_equal @project.id, json_response["projects"][0]["id"]
     assert_equal @project.name, json_response["projects"][0]["name"]
-    assert_equal 1, json_response["projects"][0]["sections"].length
+    assert_equal 1, json_response["projects"][0]["sections"].length  # Default section
   end
 
   test "index does not return other users projects" do
@@ -64,7 +63,8 @@ class Api::V1::ProjectsControllerTest < ActionDispatch::IntegrationTest
   # ============================================================
 
   test "show returns project with sections and items" do
-    section = create(:project_section, project: @project)
+    # Use default section created by after_create callback
+    section = @project.sections.first
     item = create(:project_item, project_section: section, name: "Test Item")
 
     get api_v1_project_path(@project), headers: auth_headers(@user)
@@ -72,7 +72,7 @@ class Api::V1::ProjectsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_equal @project.id, json_response["id"]
     assert_equal @project.name, json_response["name"]
-    assert_equal 1, json_response["sections"].length
+    assert_equal 1, json_response["sections"].length  # Default section
     assert_equal section.id, json_response["sections"][0]["id"]
     assert_equal 1, json_response["sections"][0]["items"].length
     assert_equal item.id, json_response["sections"][0]["items"][0]["id"]

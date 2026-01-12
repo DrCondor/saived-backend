@@ -16,7 +16,9 @@ FactoryBot.define do
       end
 
       after(:create) do |project, evaluator|
+        project.sections.destroy_all  # Remove default section
         create_list(:project_section, evaluator.sections_count, project: project)
+        project.sections.reload  # Reload to clear cache
       end
     end
 
@@ -27,9 +29,11 @@ FactoryBot.define do
       end
 
       after(:create) do |project, evaluator|
+        project.sections.destroy_all  # Remove default section
         create_list(:project_section, evaluator.sections_count, :with_items,
                     project: project,
                     items_count: evaluator.items_per_section)
+        project.sections.reload  # Reload to clear cache
       end
     end
   end

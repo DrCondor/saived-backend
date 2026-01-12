@@ -12,7 +12,15 @@ class Project < ApplicationRecord
 
   validates :name, presence: true
 
+  after_create :create_default_section
+
   def total_price
     sections.includes(:items).sum { |s| s.total_price.to_f }
+  end
+
+  private
+
+  def create_default_section
+    sections.create!(name: "Nowa sekcja", position: 1)
   end
 end

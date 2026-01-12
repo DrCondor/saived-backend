@@ -115,9 +115,22 @@ export default function Section({ section, projectId, viewMode }: SectionProps) 
             <button
               type="button"
               onClick={() => setIsEditing(true)}
-              className="text-lg font-bold text-neutral-900 hover:text-neutral-700 text-left flex-1"
+              className="group/name text-lg font-bold text-neutral-900 hover:text-neutral-700 text-left flex-1 flex items-center gap-2"
             >
               {section.name}
+              <svg
+                className="w-4 h-4 text-neutral-300 opacity-0 group-hover/name:opacity-100 transition-opacity"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                />
+              </svg>
             </button>
           )}
         </div>

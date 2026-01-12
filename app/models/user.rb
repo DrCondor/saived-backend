@@ -18,7 +18,7 @@ class User < ApplicationRecord
   # Avatar attachment
   has_one_attached :avatar
 
-  has_many :product_capture_samples, dependent: :nullify
+  has_many :product_capture_samples, dependent: :destroy
 
   has_many :owned_projects,
            class_name: "Project",

@@ -18,6 +18,7 @@ import { arrayMove } from '@dnd-kit/sortable';
 import type { Project, ProjectItem, ProjectSection, ItemMove, SortOption, FilterState, ViewMode } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
 import { useCreateSection } from '../../hooks/useSections';
+import { useUpdateProject } from '../../hooks/useProjects';
 import { useReorderProject } from '../../hooks/useReorderProject';
 import Section from './Section';
 import ItemCard from './ItemCard';
@@ -68,6 +69,12 @@ const collisionDetectionStrategy: CollisionDetection = (args) => {
 export default function ProjectView({ project }: ProjectViewProps) {
   const createSection = useCreateSection(project.id);
   const reorderProject = useReorderProject(project.id);
+  const updateProject = useUpdateProject();
+
+  // Project name editing state
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [editName, setEditName] = useState(project.name);
+  const nameInputRef = useRef<HTMLInputElement>(null);
 
   // Local state for real-time DnD updates (enables cross-section animations)
   const [localSections, setLocalSections] = useState<ProjectSection[]>(project.sections || []);
@@ -96,6 +103,39 @@ export default function ProjectView({ project }: ProjectViewProps) {
     setSortBy('default');
     setFilters({ statuses: [], categories: [] });
   }, [project.id]);
+
+  // Sync editName when project changes
+  useEffect(() => {
+    setEditName(project.name);
+    setIsEditingName(false);
+  }, [project.name, project.id]);
+
+  // Auto-focus name input when editing
+  useEffect(() => {
+    if (isEditingName && nameInputRef.current) {
+      nameInputRef.current.focus();
+      nameInputRef.current.select();
+    }
+  }, [isEditingName]);
+
+  // Project name edit handlers
+  const handleNameSubmit = () => {
+    if (editName.trim() && editName !== project.name) {
+      updateProject.mutate({ id: project.id, input: { name: editName.trim() } });
+    } else {
+      setEditName(project.name);
+    }
+    setIsEditingName(false);
+  };
+
+  const handleNameKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleNameSubmit();
+    } else if (e.key === 'Escape') {
+      setEditName(project.name);
+      setIsEditingName(false);
+    }
+  };
 
   // Compute available statuses and categories from all items
   const { availableStatuses, availableCategories, totalItemCount } = useMemo(() => {
@@ -435,7 +475,38 @@ export default function ProjectView({ project }: ProjectViewProps) {
             <p className="text-xs font-bold tracking-[0.15em] uppercase text-neutral-400 mb-1">
               Projekt
             </p>
-            <h1 className="text-xl font-bold tracking-tight text-neutral-900">{project.name}</h1>
+            {isEditingName ? (
+              <input
+                ref={nameInputRef}
+                type="text"
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                onBlur={handleNameSubmit}
+                onKeyDown={handleNameKeyDown}
+                className="text-xl font-bold tracking-tight text-neutral-900 bg-transparent border-0 p-0 focus:ring-0 focus:outline-none w-full"
+              />
+            ) : (
+              <button
+                type="button"
+                onClick={() => setIsEditingName(true)}
+                className="group/name text-xl font-bold tracking-tight text-neutral-900 hover:text-neutral-700 text-left flex items-center gap-2"
+              >
+                {project.name}
+                <svg
+                  className="w-4 h-4 text-neutral-300 opacity-0 group-hover/name:opacity-100 transition-opacity"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                  />
+                </svg>
+              </button>
+            )}
           </div>
 
           {/* Toolbar with search, sort, filter */}

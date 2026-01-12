@@ -130,11 +130,11 @@ export default function ProjectToolbar({
   return (
     <div className="flex items-center gap-2 flex-shrink-0">
       {/* View mode toggle */}
-      <div className="inline-flex rounded-full border border-neutral-300 overflow-hidden flex-shrink-0">
+      <div className="inline-flex items-stretch rounded-full border border-neutral-300 overflow-hidden flex-shrink-0">
         <button
           type="button"
           onClick={() => onViewModeChange('grid')}
-          className={`p-2 transition-colors ${
+          className={`flex items-center justify-center px-2.5 py-2 text-xs leading-normal transition-colors ${
             viewMode === 'grid'
               ? 'bg-neutral-900 text-white'
               : 'bg-white text-neutral-500 hover:bg-neutral-50'
@@ -148,7 +148,7 @@ export default function ProjectToolbar({
         <button
           type="button"
           onClick={() => onViewModeChange('list')}
-          className={`p-2 transition-colors ${
+          className={`flex items-center justify-center px-2.5 py-2 text-xs leading-normal transition-colors ${
             viewMode === 'list'
               ? 'bg-neutral-900 text-white'
               : 'bg-white text-neutral-500 hover:bg-neutral-50'

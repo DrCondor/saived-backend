@@ -87,11 +87,13 @@ class ProjectSectionTest < ActiveSupport::TestCase
 
   test "sections are ordered by position by default" do
     project = create(:project)
+    project.sections.destroy_all  # Remove default section for this test
+
     section3 = create(:project_section, project: project, position: 3, name: "Third")
     section1 = create(:project_section, project: project, position: 1, name: "First")
     section2 = create(:project_section, project: project, position: 2, name: "Second")
 
-    ordered = project.sections.to_a
+    ordered = project.sections.reload.to_a
     assert_equal "First", ordered[0].name
     assert_equal "Second", ordered[1].name
     assert_equal "Third", ordered[2].name

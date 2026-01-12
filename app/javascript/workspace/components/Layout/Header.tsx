@@ -172,6 +172,28 @@ export default function Header() {
                 Ustawienia konta
               </Link>
 
+              {/* Extension download link */}
+              <Link
+                to="/workspace/extension"
+                onClick={() => setIsDropdownOpen(false)}
+                className="flex items-center gap-3 px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50"
+              >
+                <svg
+                  className="w-4 h-4 text-neutral-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"
+                  />
+                </svg>
+                Pobierz wtyczke
+              </Link>
+
               {/* API Token */}
               <div className="px-4 py-2 border-t border-neutral-100 mt-1">
                 <p className="text-xs font-medium text-neutral-500 mb-1">

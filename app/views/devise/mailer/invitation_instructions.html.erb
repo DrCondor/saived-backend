@@ -1,107 +1,108 @@
-<%# Professional invitation email template %>
+<%# SAIVED Invitation Email - "Turbo WOW" Edition %>
 
 <table width="100%" cellpadding="0" cellspacing="0" style="margin: 0; padding: 0;">
   <tr>
     <td align="center" style="padding: 0;">
 
-      <%# Header with gradient accent %>
-      <table width="100%" cellpadding="0" cellspacing="0" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 16px 16px 0 0;">
+      <%# ═══════════════════════════════════════════════════════════════
+           HERO SECTION - Gradient + Logo + Tagline
+           ═══════════════════════════════════════════════════════════════ %>
+      <table width="100%" cellpadding="0" cellspacing="0" style="background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%); border-radius: 16px 16px 0 0;">
+        <!--[if mso]>
+        <v:rect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false" style="width:520px;">
+        <v:fill type="gradient" color="#10b981" color2="#047857" angle="135"/>
+        <v:textbox style="mso-fit-shape-to-text:true" inset="0,0,0,0">
+        <![endif]-->
         <tr>
-          <td style="padding: 32px 24px; text-align: center;">
-            <h1 style="margin: 0; font-size: 28px; font-weight: 700; color: #ffffff; letter-spacing: -0.5px;">
-              Witaj w SAIVED!
-            </h1>
-            <p style="margin: 8px 0 0 0; font-size: 15px; color: rgba(255,255,255,0.9);">
-              Twoje zaproszenie czeka
+          <td style="padding: 40px 32px 32px 32px; text-align: center;">
+
+            <%# Logo %>
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td align="center" style="padding-bottom: 8px;">
+                  <img
+                    src="https://saived.ai/images/saived-logo.jpg"
+                    alt="SAIVED"
+                    width="56"
+                    height="56"
+                    style="display: block; border-radius: 12px; border: 2px solid rgba(255,255,255,0.3);"
+                  />
+                </td>
+              </tr>
+            </table>
+
+            <%# Tagline %>
+            <p style="margin: 0 0 24px 0; font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.85);">
+              Design More. Manage Less.
             </p>
+
+            <%# Divider %>
+            <table width="80" cellpadding="0" cellspacing="0" style="margin: 0 auto 24px auto;">
+              <tr>
+                <td style="border-top: 2px solid rgba(255,255,255,0.3);"></td>
+              </tr>
+            </table>
+
+            <%# Main heading %>
+            <h1 style="margin: 0 0 8px 0; font-size: 28px; font-weight: 700; color: #ffffff; letter-spacing: -0.5px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+              Zostałeś zaproszony!
+            </h1>
+            <p style="margin: 0; font-size: 16px; color: rgba(255,255,255,0.9);">
+              Dołącz do platformy <strong>SAIVED</strong>
+            </p>
+
           </td>
         </tr>
+        <!--[if mso]>
+        </v:textbox>
+        </v:rect>
+        <![endif]-->
       </table>
 
-      <%# Main content %>
+      <%# ═══════════════════════════════════════════════════════════════
+           MAIN CONTENT - Welcome text + CTA
+           ═══════════════════════════════════════════════════════════════ %>
       <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #ffffff;">
         <tr>
-          <td style="padding: 32px 24px;">
+          <td style="padding: 40px 32px;">
 
             <%# Welcome text %>
-            <p style="margin: 0 0 20px 0; font-size: 16px; line-height: 1.6; color: #374151;">
-              Zostales zaproszony do <strong>SAIVED</strong> - platformy, ktora pomaga projektantom wnetrz
-              zbierac produkty ze sklepow internetowych i tworzyc profesjonalne kosztorysy dla klientow.
+            <p style="margin: 0 0 8px 0; font-size: 18px; font-weight: 600; color: #171717; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+              Cześć!
+            </p>
+            <p style="margin: 0 0 32px 0; font-size: 15px; line-height: 1.7; color: #525252; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+              Otrzymujesz to zaproszenie, ponieważ ktoś chce, żebyś dołączył do <strong style="color: #171717;">SAIVED</strong> —
+              platformy, która pomaga projektantom wnętrz zbierać produkty ze sklepów internetowych
+              i tworzyć profesjonalne kosztorysy dla klientów.
             </p>
 
             <%# CTA Button %>
-            <table width="100%" cellpadding="0" cellspacing="0" style="margin: 28px 0;">
+            <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
-                <td align="center">
+                <td align="center" style="padding: 8px 0 8px 0;">
+                  <!--[if mso]>
+                  <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="<%= accept_invitation_url(@resource, invitation_token: @token) %>" style="height:52px;v-text-anchor:middle;width:240px;" arcsize="50%" strokecolor="#059669" fillcolor="#10b981">
+                  <w:anchorlock/>
+                  <center style="color:#ffffff;font-family:sans-serif;font-size:15px;font-weight:bold;">Aktywuj swoje konto</center>
+                  </v:roundrect>
+                  <![endif]-->
+                  <!--[if !mso]><!-->
                   <a href="<%= accept_invitation_url(@resource, invitation_token: @token) %>"
                      style="display: inline-block;
                             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
                             color: #ffffff;
                             text-decoration: none;
-                            padding: 16px 40px;
+                            padding: 16px 48px;
                             border-radius: 50px;
                             font-weight: 600;
-                            font-size: 16px;
-                            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);">
+                            font-size: 15px;
+                            letter-spacing: 0.3px;
+                            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+                            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+                            transition: transform 0.2s;">
                     Aktywuj swoje konto
                   </a>
-                </td>
-              </tr>
-            </table>
-
-            <%# Divider %>
-            <table width="100%" cellpadding="0" cellspacing="0" style="margin: 28px 0;">
-              <tr>
-                <td style="border-top: 1px solid #e5e7eb;"></td>
-              </tr>
-            </table>
-
-            <%# Features section %>
-            <p style="margin: 0 0 16px 0; font-size: 13px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px;">
-              Co zyskujesz?
-            </p>
-
-            <%# Feature 1 %>
-            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 16px;">
-              <tr>
-                <td width="40" valign="top">
-                  <div style="width: 32px; height: 32px; background-color: #ecfdf5; border-radius: 8px; text-align: center; line-height: 32px; font-size: 16px;">
-                    <span style="color: #10b981;">&#10003;</span>
-                  </div>
-                </td>
-                <td valign="top" style="padding-left: 12px;">
-                  <p style="margin: 0; font-size: 15px; font-weight: 600; color: #111827;">Zbieraj produkty jednym kliknieciem</p>
-                  <p style="margin: 4px 0 0 0; font-size: 14px; color: #6b7280;">Wtyczka Chrome automatycznie wykrywa produkty ze sklepow.</p>
-                </td>
-              </tr>
-            </table>
-
-            <%# Feature 2 %>
-            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 16px;">
-              <tr>
-                <td width="40" valign="top">
-                  <div style="width: 32px; height: 32px; background-color: #ecfdf5; border-radius: 8px; text-align: center; line-height: 32px; font-size: 16px;">
-                    <span style="color: #10b981;">&#10003;</span>
-                  </div>
-                </td>
-                <td valign="top" style="padding-left: 12px;">
-                  <p style="margin: 0; font-size: 15px; font-weight: 600; color: #111827;">Organizuj projekty dla klientow</p>
-                  <p style="margin: 4px 0 0 0; font-size: 14px; color: #6b7280;">Tworzenie sekcji, komentarzy i porzadkowania produktow.</p>
-                </td>
-              </tr>
-            </table>
-
-            <%# Feature 3 %>
-            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 0;">
-              <tr>
-                <td width="40" valign="top">
-                  <div style="width: 32px; height: 32px; background-color: #ecfdf5; border-radius: 8px; text-align: center; line-height: 32px; font-size: 16px;">
-                    <span style="color: #10b981;">&#10003;</span>
-                  </div>
-                </td>
-                <td valign="top" style="padding-left: 12px;">
-                  <p style="margin: 0; font-size: 15px; font-weight: 600; color: #111827;">Generuj profesjonalne kosztorysy PDF</p>
-                  <p style="margin: 4px 0 0 0; font-size: 14px; color: #6b7280;">Eleganckie dokumenty gotowe do wyslania klientom.</p>
+                  <!--<![endif]-->
                 </td>
               </tr>
             </table>
@@ -110,19 +111,120 @@
         </tr>
       </table>
 
-      <%# Footer section %>
-      <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f9fafb; border-radius: 0 0 16px 16px;">
+      <%# ═══════════════════════════════════════════════════════════════
+           FEATURES SECTION - Icons + Benefits
+           ═══════════════════════════════════════════════════════════════ %>
+      <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f9fafb;">
         <tr>
-          <td style="padding: 24px; text-align: center;">
-            <p style="margin: 0 0 12px 0; font-size: 13px; color: #9ca3af;">
-              Jesli przycisk nie dziala, skopiuj ten link:
+          <td style="padding: 32px;">
+
+            <%# Section header with decorative lines %>
+            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 24px;">
+              <tr>
+                <td width="25%" style="border-bottom: 1px solid #e5e7eb;"></td>
+                <td style="text-align: center; padding: 0 16px; white-space: nowrap;">
+                  <span style="font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #9ca3af; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+                    Co zyskujesz?
+                  </span>
+                </td>
+                <td width="25%" style="border-bottom: 1px solid #e5e7eb;"></td>
+              </tr>
+            </table>
+
+            <%# Feature 1: Chrome Extension %>
+            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 20px;">
+              <tr>
+                <td width="48" valign="top">
+                  <div style="width: 40px; height: 40px; background-color: #ecfdf5; border-radius: 10px; text-align: center; line-height: 40px;">
+                    <span style="font-size: 18px;">🧩</span>
+                  </div>
+                </td>
+                <td valign="top" style="padding-left: 14px;">
+                  <p style="margin: 0 0 2px 0; font-size: 14px; font-weight: 600; color: #171717; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+                    Rozszerzenie Chrome
+                  </p>
+                  <p style="margin: 0; font-size: 13px; line-height: 1.5; color: #6b7280; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+                    Zbieraj produkty ze sklepów jednym kliknięciem
+                  </p>
+                </td>
+              </tr>
+            </table>
+
+            <%# Feature 2: Project Organization %>
+            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 20px;">
+              <tr>
+                <td width="48" valign="top">
+                  <div style="width: 40px; height: 40px; background-color: #ecfdf5; border-radius: 10px; text-align: center; line-height: 40px;">
+                    <span style="font-size: 18px;">📁</span>
+                  </div>
+                </td>
+                <td valign="top" style="padding-left: 14px;">
+                  <p style="margin: 0 0 2px 0; font-size: 14px; font-weight: 600; color: #171717; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+                    Organizacja projektów
+                  </p>
+                  <p style="margin: 0; font-size: 13px; line-height: 1.5; color: #6b7280; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+                    Twórz sekcje i zarządzaj produktami dla klientów
+                  </p>
+                </td>
+              </tr>
+            </table>
+
+            <%# Feature 3: PDF Export %>
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td width="48" valign="top">
+                  <div style="width: 40px; height: 40px; background-color: #ecfdf5; border-radius: 10px; text-align: center; line-height: 40px;">
+                    <span style="font-size: 18px;">📄</span>
+                  </div>
+                </td>
+                <td valign="top" style="padding-left: 14px;">
+                  <p style="margin: 0 0 2px 0; font-size: 14px; font-weight: 600; color: #171717; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+                    Kosztorysy PDF
+                  </p>
+                  <p style="margin: 0; font-size: 13px; line-height: 1.5; color: #6b7280; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+                    Generuj profesjonalne dokumenty w kilka sekund
+                  </p>
+                </td>
+              </tr>
+            </table>
+
+          </td>
+        </tr>
+      </table>
+
+      <%# ═══════════════════════════════════════════════════════════════
+           FOOTER SECTION
+           ═══════════════════════════════════════════════════════════════ %>
+      <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 0 0 16px 16px;">
+        <tr>
+          <td style="padding: 28px 32px; text-align: center;">
+
+            <%# Fallback link %>
+            <p style="margin: 0 0 8px 0; font-size: 12px; color: #9ca3af; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+              Jeśli przycisk nie działa, skopiuj ten link:
             </p>
-            <p style="margin: 0 0 16px 0; font-size: 12px; color: #6b7280; word-break: break-all;">
+            <p style="margin: 0 0 20px 0; font-size: 11px; color: #6b7280; word-break: break-all; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
               <%= accept_invitation_url(@resource, invitation_token: @token) %>
             </p>
-            <p style="margin: 0; font-size: 12px; color: #9ca3af;">
-              Link wygasa za 7 dni. Jesli nie prosiles o to zaproszenie, zignoruj ten email.
+
+            <%# Divider %>
+            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 20px;">
+              <tr>
+                <td style="border-top: 1px solid #e5e7eb;"></td>
+              </tr>
+            </table>
+
+            <%# Brand footer %>
+            <p style="margin: 0 0 4px 0; font-size: 14px; font-weight: 700; color: #171717; letter-spacing: -0.3px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+              SAIVED
             </p>
+            <p style="margin: 0 0 16px 0; font-size: 12px; color: #9ca3af; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+              Kosztorysy dla projektantów wnętrz
+            </p>
+            <p style="margin: 0; font-size: 11px; color: #a3a3a3; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+              Link ważny 7 dni · Nie prosiłeś o zaproszenie? Po prostu zignoruj ten email.
+            </p>
+
           </td>
         </tr>
       </table>

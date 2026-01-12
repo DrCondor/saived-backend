@@ -4,6 +4,7 @@ import Layout from './components/Layout/Layout';
 import WorkspacePage from './pages/WorkspacePage';
 import NewProjectPage from './pages/NewProjectPage';
 import SettingsPage from './pages/SettingsPage';
+import ExtensionPage from './pages/ExtensionPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -24,6 +25,7 @@ export default function App() {
             <Route path="projects/new" element={<NewProjectPage />} />
             <Route path="projects/:projectId" element={<WorkspacePage />} />
             <Route path="settings" element={<SettingsPage />} />
+            <Route path="extension" element={<ExtensionPage />} />
           </Route>
           {/* Redirect /workspace to main workspace page */}
           <Route path="*" element={<Navigate to="/workspace" replace />} />

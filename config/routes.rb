@@ -4,7 +4,7 @@ Rails.application.routes.draw do
   devise_for :users, controllers: {
     sessions: "users/sessions",
     registrations: "users/registrations",
-    invitations: "devise/invitations"
+    invitations: "users/invitations"
   }, skip: [ :registrations ]
 
   # Only allow edit/update/destroy for existing users (no new registrations)
