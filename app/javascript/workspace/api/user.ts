@@ -56,3 +56,10 @@ export async function updateCustomStatuses(
     json: { custom_statuses: customStatuses },
   });
 }
+
+export async function dismissExtensionUpdate(version: number): Promise<void> {
+  await apiClient<void>('/me/dismiss-extension-update', {
+    method: 'PATCH',
+    json: { version },
+  });
+}

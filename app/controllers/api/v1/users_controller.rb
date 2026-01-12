@@ -92,6 +92,13 @@ module Api
         end
       end
 
+      # PATCH /api/v1/me/dismiss-extension-update
+      def dismiss_extension_update
+        version = params[:version].to_i
+        current_user.dismiss_extension_update(version)
+        head :no_content
+      end
+
       private
 
       def profile_params

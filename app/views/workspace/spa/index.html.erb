@@ -18,23 +18,28 @@
     <%= javascript_include_tag "workspace", "data-turbo-track": "reload", defer: true, type: "module" %>
 
     <%# Pass initial data to React %>
-    <script>
-      window.__INITIAL_DATA__ = {
+    <%
+      initial_data = {
+        extensionVersion: EXTENSION_VERSION,
         currentUser: {
-          id: <%= current_user.id %>,
-          email: "<%= j current_user.email %>",
-          first_name: <%= current_user.first_name ? "\"#{j current_user.first_name}\"" : "null" %>,
-          last_name: <%= current_user.last_name ? "\"#{j current_user.last_name}\"" : "null" %>,
-          full_name: <%= current_user.full_name ? "\"#{j current_user.full_name}\"" : "null" %>,
-          display_name: "<%= j current_user.display_name %>",
-          initials: "<%= j current_user.initials %>",
-          company_name: <%= current_user.company_name ? "\"#{j current_user.company_name}\"" : "null" %>,
-          phone: <%= current_user.phone ? "\"#{j current_user.phone}\"" : "null" %>,
-          title: <%= current_user.title ? "\"#{j current_user.title}\"" : "null" %>,
-          avatar_url: <%= current_user.avatar.attached? ? "\"#{rails_blob_path(current_user.avatar, only_path: true)}\"" : "null" %>,
-          api_token: "<%= j current_user.api_token %>"
+          id: current_user.id,
+          email: current_user.email,
+          first_name: current_user.first_name,
+          last_name: current_user.last_name,
+          full_name: current_user.full_name,
+          display_name: current_user.display_name,
+          initials: current_user.initials,
+          company_name: current_user.company_name,
+          phone: current_user.phone,
+          title: current_user.title,
+          avatar_url: current_user.avatar.attached? ? rails_blob_path(current_user.avatar, only_path: true) : nil,
+          api_token: current_user.api_token,
+          seen_extension_version: current_user.seen_extension_version
         }
-      };
+      }
+    %>
+    <script>
+      window.__INITIAL_DATA__ = <%= raw(initial_data.to_json) %>;
     </script>
   </head>
 

@@ -24,6 +24,7 @@ export interface User {
   avatar_url: string | null;
   api_token: string;
   custom_statuses: CustomStatus[];
+  seen_extension_version: number;
 }
 
 export interface UpdateProfileInput {
@@ -163,6 +164,7 @@ export interface ToolbarState {
 declare global {
   interface Window {
     __INITIAL_DATA__: {
+      extensionVersion: number;
       currentUser: User;
     };
   }

@@ -56,4 +56,13 @@ class User < ApplicationRecord
   def update_custom_statuses(statuses)
     update(preferences: (preferences || {}).merge("custom_statuses" => statuses))
   end
+
+  # Extension update notification helpers
+  def seen_extension_version
+    preferences&.dig("seen_extension_version") || 0
+  end
+
+  def dismiss_extension_update(version)
+    update(preferences: (preferences || {}).merge("seen_extension_version" => version))
+  end
 end

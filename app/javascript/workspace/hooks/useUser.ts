@@ -6,6 +6,7 @@ import {
   uploadAvatar,
   deleteAvatar,
   updateCustomStatuses,
+  dismissExtensionUpdate,
 } from '../api/user';
 import type { User, UpdateProfileInput, UpdatePasswordInput, CustomStatus } from '../types';
 
@@ -88,6 +89,20 @@ export function useUpdateCustomStatuses() {
       // Invalidate projects to recalculate totals
       queryClient.invalidateQueries({ queryKey: ['projects'] });
       queryClient.invalidateQueries({ queryKey: ['project'] });
+    },
+  });
+}
+
+export function useDismissExtensionUpdate() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (version: number) => dismissExtensionUpdate(version),
+    onSuccess: (_, version) => {
+      queryClient.setQueryData<User | undefined>(['currentUser'], (old) => {
+        if (!old) return old;
+        return { ...old, seen_extension_version: version };
+      });
     },
   });
 }
