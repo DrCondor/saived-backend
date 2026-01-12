@@ -1,3 +1,6 @@
+// Unit type for quantity measurement
+export type UnitType = 'szt' | 'kpl' | 'zestaw' | 'opak' | 'mb' | 'm2' | 'm3' | 'l' | 'kg';
+
 // Custom status type
 export interface CustomStatus {
   id: string;
@@ -43,6 +46,7 @@ export interface ProjectItem {
   name: string;
   note: string | null;
   quantity: number;
+  unit_type: UnitType;
   unit_price: number | null;
   total_price: number | null;
   currency: string;
@@ -106,6 +110,7 @@ export interface CreateItemInput {
   name: string;
   note?: string;
   quantity: number;
+  unit_type?: UnitType;
   unit_price?: number;
   currency?: string;
   category?: string;

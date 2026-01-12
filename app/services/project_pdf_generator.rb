@@ -252,7 +252,7 @@ class ProjectPdfGenerator
       table_data << [
         { content: (index + 1).to_s },
         { content: item_name },
-        { content: "#{item.quantity} szt." },
+        { content: "#{item.quantity} #{item.unit_type_label}" },
         { content: format_currency(item.unit_price) },
         { content: format_currency(item.total_price), font_style: :bold }
       ]

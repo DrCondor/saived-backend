@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { CreateItemInput } from '../../types';
 import { SYSTEM_STATUSES } from '../../utils/statusHelpers';
+import { UNIT_TYPES, DEFAULT_UNIT_TYPE } from '../../utils/unitTypes';
 
 interface AddItemFormProps {
   onSubmit: (data: CreateItemInput) => void;
@@ -10,6 +11,7 @@ interface AddItemFormProps {
 const defaultFormData: CreateItemInput = {
   name: '',
   quantity: 1,
+  unit_type: DEFAULT_UNIT_TYPE,
   status: 'bez_statusu',
   unit_price: undefined,
   dimensions: '',
@@ -79,15 +81,29 @@ export default function AddItemForm({ onSubmit, isSubmitting }: AddItemFormProps
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-neutral-600 mb-1">Ilosc</label>
-                <input
-                  type="number"
-                  name="quantity"
-                  value={formData.quantity}
-                  onChange={handleChange}
-                  min={1}
-                  className="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900"
-                />
+                <label className="block text-xs font-medium text-neutral-600 mb-1">Ilość</label>
+                <div className="flex gap-2">
+                  <input
+                    type="number"
+                    name="quantity"
+                    value={formData.quantity}
+                    onChange={handleChange}
+                    min={1}
+                    className="flex-1 rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+                  />
+                  <select
+                    name="unit_type"
+                    value={formData.unit_type}
+                    onChange={handleChange}
+                    className="w-24 rounded-xl border border-neutral-300 bg-white px-2 py-2 text-sm focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+                  >
+                    {UNIT_TYPES.map((unit) => (
+                      <option key={unit.id} value={unit.id}>
+                        {unit.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
               <div>

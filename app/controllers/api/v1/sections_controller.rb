@@ -63,6 +63,7 @@ module Api
           name: item.name,
           note: item.note,
           quantity: item.quantity,
+          unit_type: item.unit_type,
           unit_price: item.unit_price,
           total_price: item.total_price,
           currency: item.currency,

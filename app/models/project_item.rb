@@ -9,6 +9,23 @@ class ProjectItem < ApplicationRecord
   # Default status for new items
   attribute :status, :string, default: "bez_statusu"
 
+  # Unit types for quantity measurement
+  UNIT_TYPES = {
+    "szt" => { label: "szt.", full_name: "sztuka" },
+    "kpl" => { label: "kpl.", full_name: "komplet" },
+    "zestaw" => { label: "zestaw", full_name: "zestaw" },
+    "opak" => { label: "opak.", full_name: "opakowanie" },
+    "mb" => { label: "mb.", full_name: "metr bieżący" },
+    "m2" => { label: "m²", full_name: "metr kwadratowy" },
+    "m3" => { label: "m³", full_name: "metr sześcienny" },
+    "l" => { label: "l", full_name: "litr" },
+    "kg" => { label: "kg", full_name: "kilogram" }
+  }.freeze
+
+  def unit_type_label
+    UNIT_TYPES.dig(unit_type, :label) || "szt."
+  end
+
   # System statuses with their configuration
   SYSTEM_STATUSES = {
     "propozycja" => { include_in_sum: false, color: "neutral", label: "PROPOZYCJA" },

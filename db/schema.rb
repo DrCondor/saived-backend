@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_12_132142) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_12_154530) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -128,6 +128,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_12_132142) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "thumbnail_url"
+    t.string "unit_type", default: "szt", null: false
     t.index ["project_section_id"], name: "index_project_items_on_project_section_id"
   end
 

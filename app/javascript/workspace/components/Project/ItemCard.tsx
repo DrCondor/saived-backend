@@ -1,8 +1,9 @@
 import { useState, memo } from 'react';
-import type { ProjectItem, UpdateItemInput, CustomStatus } from '../../types';
+import type { ProjectItem, UpdateItemInput, CustomStatus, UnitType } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
 import EditableField from '../shared/EditableField';
 import StatusSelect from '../shared/StatusSelect';
+import UnitTypeSelect from '../shared/UnitTypeSelect';
 
 interface ItemCardProps {
   item: ProjectItem;
@@ -272,7 +273,10 @@ const ItemCard = memo(function ItemCard({
                     className="text-neutral-700 font-medium"
                     inputClassName="w-16"
                   />
-                  <span className="text-neutral-500">szt.</span>
+                  <UnitTypeSelect
+                    value={item.unit_type}
+                    onChange={(v: UnitType) => onUpdate?.(item.id, { unit_type: v })}
+                  />
                 </div>
               </div>
 
