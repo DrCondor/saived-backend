@@ -1,10 +1,12 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import type { ProjectSection, CreateItemInput, UpdateItemInput, ViewMode } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
+import { shouldIncludeInSum } from '../../utils/statusHelpers';
 import { useCreateItem, useUpdateItem, useDeleteItem } from '../../hooks/useItems';
 import { useUpdateSection, useDeleteSection } from '../../hooks/useSections';
+import { useCurrentUser } from '../../hooks/useUser';
 import SortableItemCard from './SortableItemCard';
 import SortableItemCardCompact from './SortableItemCardCompact';
 import AddItemForm from './AddItemForm';
@@ -20,6 +22,9 @@ export default function Section({ section, projectId, viewMode }: SectionProps) 
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(section.name);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const { data: user } = useCurrentUser();
+  const customStatuses = user?.custom_statuses || [];
 
   const updateSection = useUpdateSection(projectId);
   const deleteSection = useDeleteSection(projectId);
@@ -74,7 +79,14 @@ export default function Section({ section, projectId, viewMode }: SectionProps) 
   }, [deleteItem]);
 
   const items = section.items || [];
-  const sectionTotal = section.total_price || items.reduce((sum, item) => sum + (item.total_price || 0), 0);
+
+  // Calculate section total locally, filtering items by include_in_sum status
+  // Always calculate on frontend for reactive updates when status changes
+  const sectionTotal = useMemo(() => {
+    return items
+      .filter((item) => shouldIncludeInSum(item.status, customStatuses))
+      .reduce((sum, item) => sum + (item.total_price || 0), 0);
+  }, [items, customStatuses]);
 
   return (
     <div id={`section-${section.id}`} className="mb-6 scroll-mt-4">
@@ -188,6 +200,7 @@ export default function Section({ section, projectId, viewMode }: SectionProps) 
                     item={item}
                     onUpdate={handleUpdateItem}
                     onDelete={handleDeleteItem}
+                    customStatuses={customStatuses}
                   />
                 ) : (
                   <SortableItemCard
@@ -195,6 +208,7 @@ export default function Section({ section, projectId, viewMode }: SectionProps) 
                     item={item}
                     onUpdate={handleUpdateItem}
                     onDelete={handleDeleteItem}
+                    customStatuses={customStatuses}
                   />
                 )
               )}

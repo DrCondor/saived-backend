@@ -33,9 +33,9 @@ class ProjectItemTest < ActiveSupport::TestCase
     assert_includes item.errors[:status], "can't be blank"
   end
 
-  test "default status is propozycja" do
+  test "default status is bez_statusu" do
     item = ProjectItem.new
-    assert_equal "propozycja", item.status
+    assert_equal "bez_statusu", item.status
   end
 
   # ============================================================

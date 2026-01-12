@@ -128,9 +128,8 @@ Defined in `ProjectMembership::ROLES`:
 - `owner` - Full access (default)
 - `editor` - Can modify
 - `viewer` - Read only
-- `client` - Client view (future)
 
-Note: Role enforcement not fully implemented in controllers yet.
+Note: Role enforcement not fully implemented in controllers yet. Clients receive PDF exports only (no app access).
 
 ## Key Files
 

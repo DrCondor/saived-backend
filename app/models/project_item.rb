@@ -7,7 +7,15 @@ class ProjectItem < ApplicationRecord
   validates :status, presence: true
 
   # Default status for new items
-  attribute :status, :string, default: "propozycja"
+  attribute :status, :string, default: "bez_statusu"
+
+  # System statuses with their configuration
+  SYSTEM_STATUSES = {
+    "propozycja" => { include_in_sum: false, color: "neutral", label: "PROPOZYCJA" },
+    "do_wyceny" => { include_in_sum: true, color: "amber", label: "DO WYCENY" },
+    "kupione" => { include_in_sum: true, color: "emerald", label: "KUPIONE" },
+    "bez_statusu" => { include_in_sum: true, color: "slate", label: "BEZ STATUSU" }
+  }.freeze
 
   # -------------------------
   # PRICE HANDLING (GENERIC)
@@ -68,5 +76,24 @@ class ProjectItem < ApplicationRecord
 
   def thumbnail
     thumbnail_url.presence
+  end
+
+  # -------------------------
+  # STATUS HELPERS
+  # -------------------------
+
+  # Check if this item should be included in sum calculations
+  def include_in_sum?
+    # Check system statuses first
+    if SYSTEM_STATUSES.key?(status)
+      return SYSTEM_STATUSES[status][:include_in_sum]
+    end
+
+    # Check custom statuses from project owner
+    owner = project_section&.project&.owner
+    return true unless owner
+
+    custom = owner.custom_statuses.find { |s| s["id"] == status }
+    custom ? custom["include_in_sum"] : true
   end
 end

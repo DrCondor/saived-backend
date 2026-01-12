@@ -1,5 +1,5 @@
 import { apiClient } from './client';
-import type { User, UpdateProfileInput, UpdatePasswordInput } from '../types';
+import type { User, UpdateProfileInput, UpdatePasswordInput, CustomStatus } from '../types';
 
 export async function fetchCurrentUser(): Promise<User> {
   return apiClient<User>('/me');
@@ -45,5 +45,14 @@ export async function uploadAvatar(file: File): Promise<{ avatar_url: string }> 
 export async function deleteAvatar(): Promise<{ message: string }> {
   return apiClient<{ message: string }>('/me/avatar', {
     method: 'DELETE',
+  });
+}
+
+export async function updateCustomStatuses(
+  customStatuses: CustomStatus[]
+): Promise<{ custom_statuses: CustomStatus[] }> {
+  return apiClient<{ custom_statuses: CustomStatus[] }>('/me/statuses', {
+    method: 'PATCH',
+    json: { custom_statuses: customStatuses },
   });
 }

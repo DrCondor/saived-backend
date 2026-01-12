@@ -35,6 +35,7 @@ Rails.application.routes.draw do
       get "me", to: "users#me"
       patch "me", to: "users#update"
       patch "me/password", to: "users#update_password"
+      patch "me/statuses", to: "users#update_statuses"
       post "me/avatar", to: "users#upload_avatar"
       delete "me/avatar", to: "users#destroy_avatar"
 

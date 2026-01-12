@@ -65,6 +65,33 @@ module Api
         render json: { message: "Avatar został usunięty" }
       end
 
+      # PATCH /api/v1/me/statuses
+      def update_statuses
+        # Permit nested array of status objects
+        permitted = params.permit(custom_statuses: [ :id, :name, :color, :include_in_sum ])
+        statuses = permitted[:custom_statuses] || []
+
+        # Validate max 3 custom statuses
+        if statuses.length > 3
+          render json: { errors: [ "Maksymalnie 3 własne statusy" ] }, status: :unprocessable_entity
+          return
+        end
+
+        # Validate each status has required fields
+        statuses.each do |status|
+          unless status[:id].present? && status[:name].present? && status[:color].present?
+            render json: { errors: [ "Każdy status musi mieć id, nazwę i kolor" ] }, status: :unprocessable_entity
+            return
+          end
+        end
+
+        if current_user.update_custom_statuses(statuses.map(&:to_h))
+          render json: { custom_statuses: current_user.custom_statuses }
+        else
+          render json: { errors: current_user.errors.full_messages }, status: :unprocessable_entity
+        end
+      end
+
       private
 
       def profile_params
@@ -84,7 +111,8 @@ module Api
           phone: user.phone,
           title: user.title,
           avatar_url: avatar_url(user),
-          api_token: user.api_token
+          api_token: user.api_token,
+          custom_statuses: user.custom_statuses
         }
       end
 

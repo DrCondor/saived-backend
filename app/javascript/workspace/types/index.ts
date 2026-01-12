@@ -1,3 +1,11 @@
+// Custom status type
+export interface CustomStatus {
+  id: string;
+  name: string;
+  color: string;
+  include_in_sum: boolean;
+}
+
 // User types
 export interface User {
   id: number;
@@ -12,6 +20,7 @@ export interface User {
   title: string | null;
   avatar_url: string | null;
   api_token: string;
+  custom_statuses: CustomStatus[];
 }
 
 export interface UpdateProfileInput {

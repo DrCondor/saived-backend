@@ -11,6 +11,6 @@ class ProjectSection < ApplicationRecord
   validates :name, presence: true
 
   def total_price
-    items.sum { |i| i.total_price.to_f }
+    items.select(&:include_in_sum?).sum { |i| i.total_price.to_f }
   end
 end

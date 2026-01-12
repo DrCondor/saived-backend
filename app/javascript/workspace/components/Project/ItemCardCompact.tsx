@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import type { ProjectItem, UpdateItemInput } from '../../types';
+import type { ProjectItem, UpdateItemInput, CustomStatus } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
 import EditableField from '../shared/EditableField';
 import StatusSelect from '../shared/StatusSelect';
@@ -10,6 +10,7 @@ interface ItemCardCompactProps {
   onDelete?: (itemId: number) => void;
   dragHandleProps?: React.HTMLAttributes<HTMLDivElement>;
   isDragging?: boolean;
+  customStatuses?: CustomStatus[];
 }
 
 const ItemCardCompact = memo(function ItemCardCompact({
@@ -18,6 +19,7 @@ const ItemCardCompact = memo(function ItemCardCompact({
   onDelete,
   dragHandleProps,
   isDragging,
+  customStatuses = [],
 }: ItemCardCompactProps) {
   const isProposal = item.status.toLowerCase() === 'propozycja';
   const cardClasses = isDragging ? 'ring-2 ring-emerald-500 shadow-lg' : '';
@@ -144,6 +146,7 @@ const ItemCardCompact = memo(function ItemCardCompact({
             value={item.status}
             onChange={(v) => handleUpdate('status', v)}
             compact
+            customStatuses={customStatuses}
           />
         </div>
       </div>

@@ -47,4 +47,13 @@ class User < ApplicationRecord
       email[0..1].upcase
     end
   end
+
+  # Custom statuses helpers
+  def custom_statuses
+    preferences&.dig("custom_statuses") || []
+  end
+
+  def update_custom_statuses(statuses)
+    update(preferences: (preferences || {}).merge("custom_statuses" => statuses))
+  end
 end

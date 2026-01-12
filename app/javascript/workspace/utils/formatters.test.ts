@@ -52,38 +52,46 @@ describe('formatDate', () => {
   });
 });
 
-describe('getStatusColor', () => {
-  it('returns violet for wybrane', () => {
-    expect(getStatusColor('wybrane')).toBe('bg-violet-100 text-violet-700');
+describe('getStatusColor (deprecated)', () => {
+  it('returns amber for do_wyceny', () => {
+    expect(getStatusColor('do_wyceny')).toBe('bg-amber-100 text-amber-700');
   });
 
-  it('returns emerald for zamówione', () => {
-    expect(getStatusColor('zamówione')).toBe('bg-emerald-100 text-emerald-700');
+  it('returns emerald for kupione', () => {
+    expect(getStatusColor('kupione')).toBe('bg-emerald-100 text-emerald-700');
+  });
+
+  it('returns neutral-50 for bez_statusu', () => {
+    expect(getStatusColor('bez_statusu')).toBe('bg-neutral-50 text-neutral-500');
   });
 
   it('returns neutral for propozycja', () => {
     expect(getStatusColor('propozycja')).toBe('bg-neutral-100 text-neutral-600');
   });
 
-  it('returns neutral for unknown status', () => {
+  it('returns neutral for unknown status (default)', () => {
     expect(getStatusColor('unknown')).toBe('bg-neutral-100 text-neutral-600');
   });
 });
 
-describe('getStatusLabel', () => {
-  it('returns WYBRANE for wybrane', () => {
-    expect(getStatusLabel('wybrane')).toBe('WYBRANE');
+describe('getStatusLabel (deprecated)', () => {
+  it('returns DO WYCENY for do_wyceny', () => {
+    expect(getStatusLabel('do_wyceny')).toBe('DO WYCENY');
   });
 
-  it('returns ZAMÓWIONE for zamówione', () => {
-    expect(getStatusLabel('zamówione')).toBe('ZAMÓWIONE');
+  it('returns KUPIONE for kupione', () => {
+    expect(getStatusLabel('kupione')).toBe('KUPIONE');
+  });
+
+  it('returns BEZ STATUSU for bez_statusu', () => {
+    expect(getStatusLabel('bez_statusu')).toBe('BEZ STATUSU');
   });
 
   it('returns PROPOZYCJA for propozycja', () => {
     expect(getStatusLabel('propozycja')).toBe('PROPOZYCJA');
   });
 
-  it('returns PROPOZYCJA for unknown status', () => {
+  it('returns PROPOZYCJA for unknown status (default)', () => {
     expect(getStatusLabel('unknown')).toBe('PROPOZYCJA');
   });
 });

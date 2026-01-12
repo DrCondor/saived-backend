@@ -13,14 +13,19 @@ describe('StatusSelect', () => {
     expect(screen.getByText('PROPOZYCJA')).toBeInTheDocument();
   });
 
-  it('renders wybrane status', () => {
-    render(<StatusSelect {...defaultProps} value="wybrane" />);
-    expect(screen.getByText('WYBRANE')).toBeInTheDocument();
+  it('renders do_wyceny status', () => {
+    render(<StatusSelect {...defaultProps} value="do_wyceny" />);
+    expect(screen.getByText('DO WYCENY')).toBeInTheDocument();
   });
 
-  it('renders zamówione status', () => {
-    render(<StatusSelect {...defaultProps} value="zamówione" />);
-    expect(screen.getByText('ZAMÓWIONE')).toBeInTheDocument();
+  it('renders kupione status', () => {
+    render(<StatusSelect {...defaultProps} value="kupione" />);
+    expect(screen.getByText('KUPIONE')).toBeInTheDocument();
+  });
+
+  it('renders bez_statusu status', () => {
+    render(<StatusSelect {...defaultProps} value="bez_statusu" />);
+    expect(screen.getByText('BEZ STATUSU')).toBeInTheDocument();
   });
 
   it('opens dropdown on click', () => {
@@ -31,8 +36,9 @@ describe('StatusSelect', () => {
 
     // All options should be visible in dropdown
     expect(screen.getAllByText('PROPOZYCJA')).toHaveLength(2); // Button + dropdown
-    expect(screen.getByText('WYBRANE')).toBeInTheDocument();
-    expect(screen.getByText('ZAMÓWIONE')).toBeInTheDocument();
+    expect(screen.getByText('DO WYCENY')).toBeInTheDocument();
+    expect(screen.getByText('KUPIONE')).toBeInTheDocument();
+    expect(screen.getByText('BEZ STATUSU')).toBeInTheDocument();
   });
 
   it('calls onChange when selecting new status', () => {
@@ -43,9 +49,9 @@ describe('StatusSelect', () => {
     fireEvent.click(screen.getByRole('button', { name: /propozycja/i }));
 
     // Select new status
-    fireEvent.click(screen.getByText('WYBRANE'));
+    fireEvent.click(screen.getByText('DO WYCENY'));
 
-    expect(onChange).toHaveBeenCalledWith('wybrane');
+    expect(onChange).toHaveBeenCalledWith('do_wyceny');
   });
 
   it('does not call onChange when selecting same status', () => {
@@ -68,8 +74,8 @@ describe('StatusSelect', () => {
     fireEvent.click(button);
 
     // Should only show the button, not the dropdown options
-    expect(screen.queryAllByText('WYBRANE')).toHaveLength(0);
-    expect(screen.queryAllByText('ZAMÓWIONE')).toHaveLength(0);
+    expect(screen.queryAllByText('DO WYCENY')).toHaveLength(0);
+    expect(screen.queryAllByText('KUPIONE')).toHaveLength(0);
   });
 
   it('renders compact size when compact prop is true', () => {
@@ -111,12 +117,12 @@ describe('StatusSelect', () => {
 
     // Open dropdown
     fireEvent.click(screen.getByRole('button', { name: /propozycja/i }));
-    expect(screen.getByText('WYBRANE')).toBeInTheDocument();
+    expect(screen.getByText('DO WYCENY')).toBeInTheDocument();
 
     // Click outside
     fireEvent.mouseDown(screen.getByTestId('outside'));
 
-    // Dropdown should close (WYBRANE in dropdown should be gone)
-    expect(screen.queryAllByText('WYBRANE')).toHaveLength(0);
+    // Dropdown should close (DO WYCENY in dropdown should be gone)
+    expect(screen.queryAllByText('DO WYCENY')).toHaveLength(0);
   });
 });

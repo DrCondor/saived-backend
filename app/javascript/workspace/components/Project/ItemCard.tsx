@@ -1,5 +1,5 @@
 import { useState, memo } from 'react';
-import type { ProjectItem, UpdateItemInput } from '../../types';
+import type { ProjectItem, UpdateItemInput, CustomStatus } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
 import EditableField from '../shared/EditableField';
 import StatusSelect from '../shared/StatusSelect';
@@ -10,6 +10,7 @@ interface ItemCardProps {
   onDelete?: (itemId: number) => void;
   dragHandleProps?: React.HTMLAttributes<HTMLDivElement>;
   isDragging?: boolean;
+  customStatuses?: CustomStatus[];
 }
 
 // Memoize to prevent re-renders when other items change
@@ -19,6 +20,7 @@ const ItemCard = memo(function ItemCard({
   onDelete,
   dragHandleProps,
   isDragging,
+  customStatuses = [],
 }: ItemCardProps) {
   const [isEditingThumbnail, setIsEditingThumbnail] = useState(false);
   const [thumbnailUrl, setThumbnailUrl] = useState(item.thumbnail_url || '');
@@ -222,6 +224,7 @@ const ItemCard = memo(function ItemCard({
                   <StatusSelect
                     value={item.status}
                     onChange={(v) => handleUpdate('status', v)}
+                    customStatuses={customStatuses}
                   />
                 </div>
               </div>

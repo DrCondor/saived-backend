@@ -17,9 +17,11 @@ import {
 import { arrayMove } from '@dnd-kit/sortable';
 import type { Project, ProjectItem, ProjectSection, ItemMove, SortOption, FilterState, ViewMode } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
+import { shouldIncludeInSum } from '../../utils/statusHelpers';
 import { useCreateSection } from '../../hooks/useSections';
 import { useUpdateProject } from '../../hooks/useProjects';
 import { useReorderProject } from '../../hooks/useReorderProject';
+import { useCurrentUser } from '../../hooks/useUser';
 import Section from './Section';
 import ItemCard from './ItemCard';
 import ItemCardCompact from './ItemCardCompact';
@@ -67,6 +69,9 @@ const collisionDetectionStrategy: CollisionDetection = (args) => {
 };
 
 export default function ProjectView({ project }: ProjectViewProps) {
+  const { data: user } = useCurrentUser();
+  const customStatuses = user?.custom_statuses || [];
+
   const createSection = useCreateSection(project.id);
   const reorderProject = useReorderProject(project.id);
   const updateProject = useUpdateProject();
@@ -200,7 +205,10 @@ export default function ProjectView({ project }: ProjectViewProps) {
 
         matchedItems += items.length;
         items.forEach((item) => {
-          totalPrice += item.total_price || 0;
+          // Only add to total if status includes in sum
+          if (shouldIncludeInSum(item.status, customStatuses)) {
+            totalPrice += item.total_price || 0;
+          }
         });
 
         // Apply sorting
@@ -216,12 +224,12 @@ export default function ProjectView({ project }: ProjectViewProps) {
               case 'price-desc':
                 return (b.total_price || 0) - (a.total_price || 0);
               case 'status-approved':
-                // wybrane, zamowione first, propozycja last
-                const approvedOrder: Record<string, number> = { wybrane: 0, zamowione: 1, propozycja: 2 };
+                // kupione, do_wyceny first, propozycja last
+                const approvedOrder: Record<string, number> = { kupione: 0, do_wyceny: 1, bez_statusu: 2, propozycja: 3 };
                 return (approvedOrder[a.status] ?? 99) - (approvedOrder[b.status] ?? 99);
               case 'status-proposal':
                 // propozycja first
-                const proposalOrder: Record<string, number> = { propozycja: 0, wybrane: 1, zamowione: 2 };
+                const proposalOrder: Record<string, number> = { propozycja: 0, bez_statusu: 1, do_wyceny: 2, kupione: 3 };
                 return (proposalOrder[a.status] ?? 99) - (proposalOrder[b.status] ?? 99);
               default:
                 return 0;
@@ -238,7 +246,7 @@ export default function ProjectView({ project }: ProjectViewProps) {
       });
 
     return { processedSections: processed, matchCount: matchedItems, filteredTotal: totalPrice };
-  }, [localSections, searchQuery, filters, sortBy]);
+  }, [localSections, searchQuery, filters, sortBy, customStatuses]);
 
   const hasActiveFilters =
     searchQuery.trim() !== '' ||
@@ -540,7 +548,7 @@ export default function ProjectView({ project }: ProjectViewProps) {
                 : 'bg-neutral-900 text-white'
             }`}
           >
-            {formatCurrency(hasActiveFilters ? filteredTotal : project.total_price)}
+            {formatCurrency(filteredTotal)}
           </span>
           {hasActiveFilters && (
             <span className="text-xs text-neutral-400 whitespace-nowrap">
@@ -603,9 +611,9 @@ export default function ProjectView({ project }: ProjectViewProps) {
           {activeItem ? (
             <div className="rotate-2 scale-105 shadow-2xl">
               {viewMode === 'list' ? (
-                <ItemCardCompact item={activeItem} />
+                <ItemCardCompact item={activeItem} customStatuses={customStatuses} />
               ) : (
-                <ItemCard item={activeItem} />
+                <ItemCard item={activeItem} customStatuses={customStatuses} />
               )}
             </div>
           ) : null}

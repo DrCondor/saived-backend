@@ -26,13 +26,16 @@ export function formatDate(dateString: string): string {
 
 /**
  * Get status badge color classes
+ * @deprecated Use getStatusConfig from statusHelpers instead
  */
 export function getStatusColor(status: string): string {
   switch (status) {
-    case 'wybrane':
-      return 'bg-violet-100 text-violet-700';
-    case 'zamówione':
+    case 'do_wyceny':
+      return 'bg-amber-100 text-amber-700';
+    case 'kupione':
       return 'bg-emerald-100 text-emerald-700';
+    case 'bez_statusu':
+      return 'bg-neutral-50 text-neutral-500';
     case 'propozycja':
     default:
       return 'bg-neutral-100 text-neutral-600';
@@ -41,13 +44,16 @@ export function getStatusColor(status: string): string {
 
 /**
  * Get status display label
+ * @deprecated Use getStatusConfig from statusHelpers instead
  */
 export function getStatusLabel(status: string): string {
   switch (status) {
-    case 'wybrane':
-      return 'WYBRANE';
-    case 'zamówione':
-      return 'ZAMÓWIONE';
+    case 'do_wyceny':
+      return 'DO WYCENY';
+    case 'kupione':
+      return 'KUPIONE';
+    case 'bez_statusu':
+      return 'BEZ STATUSU';
     case 'propozycja':
     default:
       return 'PROPOZYCJA';

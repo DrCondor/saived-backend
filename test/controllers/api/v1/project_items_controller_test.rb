@@ -117,14 +117,14 @@ class Api::V1::ProjectItemsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
-  test "create sets default status to propozycja" do
+  test "create sets default status to bez_statusu" do
     post api_v1_project_section_items_path(@section),
          params: { product_item: { name: "Test" } },
          headers: auth_headers(@user)
 
     assert_response :created
     item = ProjectItem.last
-    assert_equal "propozycja", item.status
+    assert_equal "bez_statusu", item.status
   end
 
   # ============================================================

@@ -5,8 +5,9 @@ import {
   updatePassword,
   uploadAvatar,
   deleteAvatar,
+  updateCustomStatuses,
 } from '../api/user';
-import type { User, UpdateProfileInput, UpdatePasswordInput } from '../types';
+import type { User, UpdateProfileInput, UpdatePasswordInput, CustomStatus } from '../types';
 
 export function useCurrentUser() {
   return useQuery({
@@ -70,6 +71,23 @@ export function useDeleteAvatar() {
         if (!old) return old;
         return { ...old, avatar_url: null };
       });
+    },
+  });
+}
+
+export function useUpdateCustomStatuses() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (statuses: CustomStatus[]) => updateCustomStatuses(statuses),
+    onSuccess: (data) => {
+      queryClient.setQueryData<User | undefined>(['currentUser'], (old) => {
+        if (!old) return old;
+        return { ...old, custom_statuses: data.custom_statuses };
+      });
+      // Invalidate projects to recalculate totals
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      queryClient.invalidateQueries({ queryKey: ['project'] });
     },
   });
 }

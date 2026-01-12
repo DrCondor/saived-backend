@@ -1,18 +1,19 @@
 import { useSortable, type AnimateLayoutChanges } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import type { ProjectItem, UpdateItemInput } from '../../types';
+import type { ProjectItem, UpdateItemInput, CustomStatus } from '../../types';
 import ItemCardCompact from './ItemCardCompact';
 
 interface SortableItemCardCompactProps {
   item: ProjectItem;
   onUpdate?: (itemId: number, input: UpdateItemInput) => void;
   onDelete?: (itemId: number) => void;
+  customStatuses?: CustomStatus[];
 }
 
 // Always animate for smooth transitions
 const animateLayoutChanges: AnimateLayoutChanges = () => true;
 
-export default function SortableItemCardCompact({ item, onUpdate, onDelete }: SortableItemCardCompactProps) {
+export default function SortableItemCardCompact({ item, onUpdate, onDelete, customStatuses }: SortableItemCardCompactProps) {
   const {
     attributes,
     listeners,
@@ -47,6 +48,7 @@ export default function SortableItemCardCompact({ item, onUpdate, onDelete }: So
         onDelete={onDelete}
         dragHandleProps={{ ...attributes, ...listeners }}
         isDragging={isDragging}
+        customStatuses={customStatuses}
       />
     </div>
   );

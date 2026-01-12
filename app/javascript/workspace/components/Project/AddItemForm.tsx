@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { CreateItemInput } from '../../types';
+import { SYSTEM_STATUSES } from '../../utils/statusHelpers';
 
 interface AddItemFormProps {
   onSubmit: (data: CreateItemInput) => void;
@@ -9,7 +10,7 @@ interface AddItemFormProps {
 const defaultFormData: CreateItemInput = {
   name: '',
   quantity: 1,
-  status: 'propozycja',
+  status: 'bez_statusu',
   unit_price: undefined,
   dimensions: '',
   category: '',
@@ -136,9 +137,11 @@ export default function AddItemForm({ onSubmit, isSubmitting }: AddItemFormProps
                   onChange={handleChange}
                   className="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900"
                 >
-                  <option value="propozycja">Propozycja</option>
-                  <option value="wybrane">Wybrane</option>
-                  <option value="zamowione">Zamowione</option>
+                  {SYSTEM_STATUSES.map((status) => (
+                    <option key={status.id} value={status.id}>
+                      {status.label}
+                    </option>
+                  ))}
                 </select>
               </div>
 

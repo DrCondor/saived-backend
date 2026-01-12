@@ -1,12 +1,13 @@
 import { useSortable, defaultAnimateLayoutChanges, type AnimateLayoutChanges } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import type { ProjectItem, UpdateItemInput } from '../../types';
+import type { ProjectItem, UpdateItemInput, CustomStatus } from '../../types';
 import ItemCard from './ItemCard';
 
 interface SortableItemCardProps {
   item: ProjectItem;
   onUpdate?: (itemId: number, input: UpdateItemInput) => void;
   onDelete?: (itemId: number) => void;
+  customStatuses?: CustomStatus[];
 }
 
 // Custom animateLayoutChanges that always animates
@@ -18,7 +19,7 @@ const animateLayoutChanges: AnimateLayoutChanges = () => {
   return true;
 };
 
-export default function SortableItemCard({ item, onUpdate, onDelete }: SortableItemCardProps) {
+export default function SortableItemCard({ item, onUpdate, onDelete, customStatuses }: SortableItemCardProps) {
   const {
     attributes,
     listeners,
@@ -58,6 +59,7 @@ export default function SortableItemCard({ item, onUpdate, onDelete }: SortableI
         onDelete={onDelete}
         dragHandleProps={{ ...attributes, ...listeners }}
         isDragging={isDragging}
+        customStatuses={customStatuses}
       />
     </div>
   );
