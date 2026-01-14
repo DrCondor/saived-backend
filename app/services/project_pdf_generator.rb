@@ -145,8 +145,14 @@ class ProjectPdfGenerator
         logo_data = download_image(@user.company_logo)
         if logo_data
           logo_io = StringIO.new(logo_data)
-          # Large company logo - prominent placement
-          image logo_io, at: [ 0, header_start_y ], fit: [ 180, 70 ]
+          # Validate image is supported by Prawn before rendering
+          if prawn_compatible_image?(logo_io)
+            logo_io.rewind
+            # Large company logo - prominent placement
+            image logo_io, at: [ 0, header_start_y ], fit: [ 180, 70 ]
+          else
+            Rails.logger.warn "Company logo uses unsupported image format"
+          end
         end
       rescue StandardError => e
         Rails.logger.warn "Failed to render company logo in PDF: #{e.message}"
@@ -348,13 +354,27 @@ class ProjectPdfGenerator
         image_data = download_image(item.thumbnail_url)
         next unless image_data
 
-        thumbnails[item.id] = { image: StringIO.new(image_data), fit: [ 30, 30 ] }
+        # Validate image is supported by Prawn before adding
+        image_io = StringIO.new(image_data)
+        if prawn_compatible_image?(image_io)
+          image_io.rewind
+          thumbnails[item.id] = { image: image_io, fit: [ 30, 30 ] }
+        end
       rescue StandardError => e
         Rails.logger.warn "Failed to fetch thumbnail for item #{item.id}: #{e.message}"
       end
     end
 
     thumbnails
+  end
+
+  # Check if image can be rendered by Prawn (catches interlaced PNGs, etc.)
+  def prawn_compatible_image?(image_io)
+    document.send(:build_image_object, image_io)
+    true
+  rescue Prawn::Errors::UnsupportedImageType => e
+    Rails.logger.warn "Skipping unsupported image: #{e.message}"
+    false
   end
 
   def escape_html(text)
