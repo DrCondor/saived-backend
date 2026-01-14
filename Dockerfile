@@ -12,9 +12,9 @@ WORKDIR /rails
 RUN gem update --system --no-document && \
     gem install -N bundler
 
-# Install base packages
+# Install base packages (including libvips for image processing)
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libjemalloc2 postgresql-client && \
+    apt-get install --no-install-recommends -y curl libjemalloc2 libvips postgresql-client && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Set production environment
@@ -27,9 +27,9 @@ ENV BUNDLE_DEPLOYMENT="1" \
 # Throw-away build stage to reduce size of final image
 FROM base AS build
 
-# Install packages needed to build gems
+# Install packages needed to build gems and process images
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential libpq-dev libyaml-dev unzip && \
+    apt-get install --no-install-recommends -y build-essential libpq-dev libyaml-dev libvips-dev unzip && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Install Node.js and Yarn

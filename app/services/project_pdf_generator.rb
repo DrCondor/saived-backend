@@ -20,6 +20,11 @@ class ProjectPdfGenerator
   CONTENT_WIDTH = 535         # A4 width minus smaller margins
   FOOTER_Y_POSITION = 20
 
+  # Image optimization settings
+  THUMBNAIL_MAX_SIZE = 150    # Max dimension for item thumbnails (px)
+  LOGO_MAX_SIZE = 400         # Max dimension for company logo (px)
+  JPEG_QUALITY = 85           # JPEG compression quality (0-100)
+
   def initialize(project, user)
     @project = project
     @user = user
@@ -119,6 +124,30 @@ class ProjectPdfGenerator
     nil
   end
 
+  # Optimize image for PDF embedding: resize and convert to JPEG
+  # Returns optimized binary data or nil on failure
+  def optimize_image(image_data, max_size:)
+    return nil if image_data.blank?
+
+    require "image_processing/vips"
+
+    # Process with vips: resize to fit within max_size, convert to JPEG
+    processed = ImageProcessing::Vips
+      .source(image_data)
+      .resize_to_limit(max_size, max_size)
+      .saver(quality: JPEG_QUALITY)
+      .convert("jpeg")
+      .call
+
+    processed.read
+  rescue StandardError => e
+    Rails.logger.warn "Failed to optimize image: #{e.message}"
+    # Return original data as fallback (will still work, just larger)
+    image_data
+  ensure
+    processed&.close if processed.respond_to?(:close)
+  end
+
   # === HEADER ===
   def render_header
     header_start_y = cursor
@@ -144,14 +173,12 @@ class ProjectPdfGenerator
       begin
         logo_data = download_image(@user.company_logo)
         if logo_data
-          logo_io = StringIO.new(logo_data)
-          # Validate image is supported by Prawn before rendering
-          if prawn_compatible_image?(logo_io)
-            logo_io.rewind
+          # Optimize: resize to max 400px and convert to JPEG
+          optimized_logo = optimize_image(logo_data, max_size: LOGO_MAX_SIZE)
+          if optimized_logo
+            logo_io = StringIO.new(optimized_logo)
             # Large company logo - prominent placement
             image logo_io, at: [ 0, header_start_y ], fit: [ 180, 70 ]
-          else
-            Rails.logger.warn "Company logo uses unsupported image format"
           end
         end
       rescue StandardError => e
@@ -354,8 +381,12 @@ class ProjectPdfGenerator
         image_data = download_image(item.thumbnail_url)
         next unless image_data
 
-        # Validate image is supported by Prawn before adding
-        image_io = StringIO.new(image_data)
+        # Optimize: resize to max 150px and convert to JPEG
+        optimized_data = optimize_image(image_data, max_size: THUMBNAIL_MAX_SIZE)
+        next unless optimized_data
+
+        # Validate optimized image is supported by Prawn
+        image_io = StringIO.new(optimized_data)
         if prawn_compatible_image?(image_io)
           image_io.rewind
           thumbnails[item.id] = { image: image_io, fit: [ 30, 30 ] }
