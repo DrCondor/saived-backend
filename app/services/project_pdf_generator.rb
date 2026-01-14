@@ -130,10 +130,16 @@ class ProjectPdfGenerator
     return nil if image_data.blank?
 
     require "image_processing/vips"
+    require "tempfile"
+
+    # Write binary data to tempfile (vips needs file path or IO, not raw string)
+    input_file = Tempfile.new([ "pdf_image", ".bin" ], binmode: true)
+    input_file.write(image_data)
+    input_file.rewind
 
     # Process with vips: resize to fit within max_size, convert to JPEG
     processed = ImageProcessing::Vips
-      .source(image_data)
+      .source(input_file)
       .resize_to_limit(max_size, max_size)
       .saver(quality: JPEG_QUALITY)
       .convert("jpeg")
@@ -145,6 +151,8 @@ class ProjectPdfGenerator
     # Return original data as fallback (will still work, just larger)
     image_data
   ensure
+    input_file&.close
+    input_file&.unlink
     processed&.close if processed.respond_to?(:close)
   end
 
