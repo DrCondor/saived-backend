@@ -1,0 +1,58 @@
+#!/bin/bash
+set -e
+
+# Colors
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+BACKEND_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+EXTENSION_DIR="$BACKEND_DIR/../saived-extension"
+VERSION_FILE="$BACKEND_DIR/config/initializers/extension_version.rb"
+
+echo -e "${YELLOW}🔄 Aktualizacja wtyczki SAIVED${NC}"
+echo ""
+
+# 1. Check if extension directory exists
+if [ ! -d "$EXTENSION_DIR" ]; then
+  echo "❌ Nie znaleziono katalogu extension: $EXTENSION_DIR"
+  exit 1
+fi
+
+# 2. Create ZIP
+echo -e "${GREEN}📦 Tworzenie ZIP...${NC}"
+rm -f "$BACKEND_DIR/public/saived-extension.zip"
+zip -j "$BACKEND_DIR/public/saived-extension.zip" \
+  "$EXTENSION_DIR/manifest.json" \
+  "$EXTENSION_DIR/popup.html" \
+  "$EXTENSION_DIR/popup.js" \
+  "$EXTENSION_DIR/content-script.js" \
+  "$EXTENSION_DIR/icon48.png" \
+  "$EXTENSION_DIR/icon96.png" \
+  "$EXTENSION_DIR/icon128.png"
+echo ""
+
+# 3. Bump version
+echo -e "${GREEN}⬆️  Bumpowanie wersji...${NC}"
+CURRENT_VERSION=$(grep -o 'EXTENSION_VERSION = [0-9]*' "$VERSION_FILE" | grep -o '[0-9]*')
+NEW_VERSION=$((CURRENT_VERSION + 1))
+sed -i '' "s/EXTENSION_VERSION = $CURRENT_VERSION/EXTENSION_VERSION = $NEW_VERSION/" "$VERSION_FILE"
+echo "   $CURRENT_VERSION → $NEW_VERSION"
+echo ""
+
+# 4. Commit and push
+echo -e "${GREEN}📝 Commit i push...${NC}"
+cd "$BACKEND_DIR"
+git add public/saived-extension.zip config/initializers/extension_version.rb
+git commit -m "chore: update extension to v$NEW_VERSION
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+git push
+echo ""
+
+# 5. Deploy
+echo -e "${GREEN}🚀 Deploy na Fly.io...${NC}"
+fly deploy
+echo ""
+
+echo -e "${GREEN}✅ Gotowe! Wtyczka zaktualizowana do v$NEW_VERSION${NC}"
