@@ -1,6 +1,7 @@
 import { useState, memo } from 'react';
 import type { ProjectItem, UpdateItemInput, CustomStatus, UnitType } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
+import { CATEGORIES, getCategoryLabel } from '../../utils/categoryHelpers';
 import EditableField from '../shared/EditableField';
 import StatusSelect from '../shared/StatusSelect';
 import UnitTypeSelect from '../shared/UnitTypeSelect';
@@ -251,12 +252,18 @@ const ItemCard = memo(function ItemCard({
                 <span className="text-neutral-400 uppercase tracking-wide text-[10px] block mb-0.5">
                   Kategoria
                 </span>
-                <EditableField
-                  value={item.category}
-                  onChange={(v) => handleUpdate('category', v)}
-                  placeholder="np. Sofy"
-                  className="text-neutral-700 font-medium"
-                />
+                <select
+                  value={item.category || ''}
+                  onChange={(e) => handleUpdate('category', e.target.value)}
+                  className="text-xs text-neutral-700 font-medium bg-transparent border-0 p-0 pr-4 cursor-pointer hover:text-neutral-900 focus:outline-none focus:ring-0 appearance-none"
+                  style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 20 20\'%3E%3Cpath stroke=\'%236b7280\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'1.5\' d=\'m6 8 4 4 4-4\'/%3E%3C/svg%3E")', backgroundPosition: 'right 0 center', backgroundRepeat: 'no-repeat', backgroundSize: '16px' }}
+                >
+                  {CATEGORIES.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.label}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               {/* Quantity */}

@@ -528,6 +528,7 @@ export default function ProjectView({ project }: ProjectViewProps) {
             onFilterChange={setFilters}
             availableCategories={availableCategories}
             availableStatuses={availableStatuses}
+            customStatuses={customStatuses}
             matchCount={matchCount}
             totalCount={totalItemCount}
             hasActiveFilters={hasActiveFilters}

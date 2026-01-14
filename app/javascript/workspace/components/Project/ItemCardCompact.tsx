@@ -1,6 +1,7 @@
 import { memo } from 'react';
 import type { ProjectItem, UpdateItemInput, CustomStatus } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
+import { CATEGORIES } from '../../utils/categoryHelpers';
 import EditableField from '../shared/EditableField';
 import StatusSelect from '../shared/StatusSelect';
 
@@ -107,16 +108,20 @@ const ItemCardCompact = memo(function ItemCardCompact({
           )}
         </div>
 
-        {/* Category - editable */}
+        {/* Category - select */}
         <div className={`hidden lg:block shrink-0 ${isProposal ? 'opacity-70' : ''}`}>
-          <EditableField
-            value={item.category}
-            onChange={(v) => handleUpdate('category', v)}
-            placeholder="Kategoria"
-            emptyText="—"
-            className="text-xs text-neutral-500"
-            inputClassName="w-24 text-xs"
-          />
+          <select
+            value={item.category || ''}
+            onChange={(e) => handleUpdate('category', e.target.value)}
+            className="text-xs text-neutral-500 bg-transparent border-0 p-0 pr-4 cursor-pointer hover:text-neutral-700 focus:outline-none focus:ring-0 appearance-none"
+            style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 20 20\'%3E%3Cpath stroke=\'%236b7280\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'1.5\' d=\'m6 8 4 4 4-4\'/%3E%3C/svg%3E")', backgroundPosition: 'right 0 center', backgroundRepeat: 'no-repeat', backgroundSize: '14px' }}
+          >
+            {CATEGORIES.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.label}
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* Quantity x Unit Price = Total - unit price editable */}

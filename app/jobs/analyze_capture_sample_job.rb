@@ -28,6 +28,9 @@ class AnalyzeCaptureSampleJob < ApplicationJob
     analyze_field(domain, "name", raw, final, selectors)
     analyze_field(domain, "unit_price_cents", raw, final, selectors, :price)
     analyze_field(domain, "thumbnail_url", raw, final, selectors)
+
+    # Analyze category learning
+    analyze_category(sample)
   end
 
   private
@@ -142,5 +145,35 @@ class AnalyzeCaptureSampleJob < ApplicationJob
   def normalize_url(url)
     return "" if url.blank?
     url.to_s.strip.downcase.gsub(/\?.*$/, "") # Remove query params for comparison
+  end
+
+  def analyze_category(sample)
+    context = sample.context || {}
+    final_payload = sample.final_payload || {}
+
+    suggested_category = context["suggested_category"]
+    final_category = final_payload["category"]
+    domain = sample.domain
+
+    return unless domain.present? && final_category.present?
+
+    if suggested_category.present?
+      # Compare suggestion with final choice
+      success = (suggested_category == final_category)
+      DomainCategory.record_result(
+        domain: domain,
+        category: suggested_category,
+        success: success
+      )
+      Rails.logger.info("[Learning] CATEGORY #{success ? 'SUCCESS' : 'FAILURE'}: #{domain} / suggested: #{suggested_category}, final: #{final_category}")
+    end
+
+    # Always record final category as success (user confirmation)
+    DomainCategory.record_result(
+      domain: domain,
+      category: final_category,
+      success: true
+    )
+    Rails.logger.info("[Learning] CATEGORY CONFIRMED: #{domain} / #{final_category}")
   end
 end

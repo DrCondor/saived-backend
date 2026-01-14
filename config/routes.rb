@@ -63,6 +63,9 @@ Rails.application.routes.draw do
 
       # Learning system: fetch best selectors for a domain
       resources :selectors, only: [ :index ]
+
+      # Learning system: fetch learned categories for a domain
+      resources :categories, only: [ :index ]
     end
   end
 

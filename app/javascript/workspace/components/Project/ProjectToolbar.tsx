@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
-import type { SortOption, FilterState, ViewMode } from '../../types';
+import type { SortOption, FilterState, ViewMode, CustomStatus } from '../../types';
+import { getStatusConfig } from '../../utils/statusHelpers';
+import { getCategoryLabel } from '../../utils/categoryHelpers';
 
 interface ProjectToolbarProps {
   projectId: number;
@@ -11,6 +13,7 @@ interface ProjectToolbarProps {
   onFilterChange: (filters: FilterState) => void;
   availableCategories: string[];
   availableStatuses: string[];
+  customStatuses: CustomStatus[];
   matchCount: number;
   totalCount: number;
   hasActiveFilters: boolean;
@@ -28,12 +31,6 @@ const SORT_OPTIONS: { value: SortOption; label: string }[] = [
   { value: 'status-proposal', label: 'Propozycje najpierw' },
 ];
 
-const STATUS_LABELS: Record<string, string> = {
-  wybrane: 'Wybrane',
-  zamowione: 'Zamowione',
-  propozycja: 'Propozycja',
-};
-
 export default function ProjectToolbar({
   projectId,
   searchQuery,
@@ -44,6 +41,7 @@ export default function ProjectToolbar({
   onFilterChange,
   availableCategories,
   availableStatuses,
+  customStatuses,
   matchCount,
   totalCount,
   hasActiveFilters,
@@ -345,22 +343,26 @@ export default function ProjectToolbar({
                   Status
                 </p>
                 <div className="space-y-1">
-                  {availableStatuses.map((status) => (
-                    <label
-                      key={status}
-                      className="flex items-center gap-2 py-1 cursor-pointer group"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={filters.statuses.includes(status)}
-                        onChange={() => handleToggleStatus(status)}
-                        className="w-4 h-4 rounded border-neutral-300 text-emerald-500 focus:ring-emerald-500"
-                      />
-                      <span className="text-sm text-neutral-700 group-hover:text-neutral-900">
-                        {STATUS_LABELS[status] || status}
-                      </span>
-                    </label>
-                  ))}
+                  {availableStatuses.map((status) => {
+                    const statusConfig = getStatusConfig(status, customStatuses);
+                    return (
+                      <label
+                        key={status}
+                        className="flex items-center gap-2 py-1 cursor-pointer group"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={filters.statuses.includes(status)}
+                          onChange={() => handleToggleStatus(status)}
+                          className="w-4 h-4 rounded border-neutral-300 text-emerald-500 focus:ring-emerald-500"
+                        />
+                        <span className="flex-1 text-sm text-neutral-700 group-hover:text-neutral-900">
+                          {statusConfig.label}
+                        </span>
+                        <span className={`w-3 h-3 rounded-full ${statusConfig.bgColor}`} />
+                      </label>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -383,8 +385,8 @@ export default function ProjectToolbar({
                         onChange={() => handleToggleCategory(category)}
                         className="w-4 h-4 rounded border-neutral-300 text-emerald-500 focus:ring-emerald-500"
                       />
-                      <span className="text-sm text-neutral-700 group-hover:text-neutral-900 capitalize">
-                        {category}
+                      <span className="text-sm text-neutral-700 group-hover:text-neutral-900">
+                        {getCategoryLabel(category)}
                       </span>
                     </label>
                   ))}

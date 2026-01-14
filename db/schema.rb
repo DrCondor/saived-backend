@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_12_154530) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_14_105912) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -77,6 +77,19 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_12_154530) do
     t.index ["email"], name: "index_admin_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_admin_users_on_reset_password_token", unique: true
     t.index ["unlock_token"], name: "index_admin_users_on_unlock_token", unique: true
+  end
+
+  create_table "domain_categories", force: :cascade do |t|
+    t.string "domain", null: false
+    t.string "category_value", null: false
+    t.integer "success_count", default: 0, null: false
+    t.integer "failure_count", default: 0, null: false
+    t.string "discovery_method", default: "heuristic"
+    t.datetime "last_seen_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["domain", "category_value"], name: "index_domain_categories_on_domain_and_category_value", unique: true
+    t.index ["domain"], name: "index_domain_categories_on_domain"
   end
 
   create_table "domain_selectors", force: :cascade do |t|

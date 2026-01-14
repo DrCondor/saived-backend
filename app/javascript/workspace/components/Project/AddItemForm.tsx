@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { CreateItemInput } from '../../types';
 import { SYSTEM_STATUSES } from '../../utils/statusHelpers';
 import { UNIT_TYPES, DEFAULT_UNIT_TYPE } from '../../utils/unitTypes';
+import { CATEGORIES } from '../../utils/categoryHelpers';
 
 interface AddItemFormProps {
   onSubmit: (data: CreateItemInput) => void;
@@ -135,14 +136,18 @@ export default function AddItemForm({ onSubmit, isSubmitting }: AddItemFormProps
 
               <div>
                 <label className="block text-xs font-medium text-neutral-600 mb-1">Kategoria</label>
-                <input
-                  type="text"
+                <select
                   name="category"
                   value={formData.category}
                   onChange={handleChange}
-                  className="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm placeholder-neutral-400 focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900"
-                  placeholder="np. meble, oswietlenie"
-                />
+                  className="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+                >
+                  {CATEGORIES.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.label}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div>

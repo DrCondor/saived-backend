@@ -119,7 +119,8 @@ module Api
           title: user.title,
           avatar_url: avatar_url(user),
           api_token: user.api_token,
-          custom_statuses: user.custom_statuses
+          custom_statuses: user.custom_statuses,
+          seen_extension_version: user.seen_extension_version
         }
       end
 
