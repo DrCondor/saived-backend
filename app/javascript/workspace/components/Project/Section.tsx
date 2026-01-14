@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useDroppable } from '@dnd-kit/core';
-import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { SortableContext, verticalListSortingStrategy, rectSortingStrategy } from '@dnd-kit/sortable';
 import type { ProjectSection, CreateItemInput, UpdateItemInput, ViewMode } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
 import { shouldIncludeInSum } from '../../utils/statusHelpers';
@@ -9,6 +9,7 @@ import { useUpdateSection, useDeleteSection } from '../../hooks/useSections';
 import { useCurrentUser } from '../../hooks/useUser';
 import SortableItemCard from './SortableItemCard';
 import SortableItemCardCompact from './SortableItemCardCompact';
+import SortableItemCardMoodboard from './SortableItemCardMoodboard';
 import AddItemForm from './AddItemForm';
 
 interface SectionProps {
@@ -185,24 +186,39 @@ export default function Section({ section, projectId, viewMode }: SectionProps) 
           {/* Items list - droppable zone */}
           <div
             ref={setNodeRef}
-            className={`space-y-2 min-h-[40px] rounded-xl transition-colors ${
+            className={`min-h-[40px] rounded-xl transition-colors ${
               isOver && items.length === 0 ? 'bg-emerald-50 ring-2 ring-emerald-300 ring-dashed' : ''
+            } ${
+              viewMode === 'moodboard'
+                ? 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4'
+                : 'space-y-2'
             }`}
           >
             <SortableContext
               items={items.map((item) => item.id)}
-              strategy={verticalListSortingStrategy}
+              strategy={viewMode === 'moodboard' ? rectSortingStrategy : verticalListSortingStrategy}
             >
-              {items.map((item) =>
-                viewMode === 'list' ? (
-                  <SortableItemCardCompact
-                    key={item.id}
-                    item={item}
-                    onUpdate={handleUpdateItem}
-                    onDelete={handleDeleteItem}
-                    customStatuses={customStatuses}
-                  />
-                ) : (
+              {items.map((item) => {
+                if (viewMode === 'moodboard') {
+                  return (
+                    <SortableItemCardMoodboard
+                      key={item.id}
+                      item={item}
+                    />
+                  );
+                }
+                if (viewMode === 'list') {
+                  return (
+                    <SortableItemCardCompact
+                      key={item.id}
+                      item={item}
+                      onUpdate={handleUpdateItem}
+                      onDelete={handleDeleteItem}
+                      customStatuses={customStatuses}
+                    />
+                  );
+                }
+                return (
                   <SortableItemCard
                     key={item.id}
                     item={item}
@@ -210,12 +226,14 @@ export default function Section({ section, projectId, viewMode }: SectionProps) 
                     onDelete={handleDeleteItem}
                     customStatuses={customStatuses}
                   />
-                )
-              )}
+                );
+              })}
             </SortableContext>
 
             {items.length === 0 && !isOver && (
-              <div className="rounded-2xl border-2 border-dashed border-neutral-200 py-8 text-center">
+              <div className={`rounded-2xl border-2 border-dashed border-neutral-200 py-8 text-center ${
+                viewMode === 'moodboard' ? 'col-span-full' : ''
+              }`}>
                 <p className="text-sm text-neutral-400">Brak pozycji w tej sekcji</p>
               </div>
             )}

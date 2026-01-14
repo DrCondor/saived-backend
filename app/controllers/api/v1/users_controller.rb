@@ -65,6 +65,30 @@ module Api
         render json: { message: "Avatar został usunięty" }
       end
 
+      # POST /api/v1/me/company_logo
+      def upload_company_logo
+        unless params[:company_logo].present?
+          render json: { errors: [ "Plik jest wymagany" ] }, status: :unprocessable_entity
+          return
+        end
+
+        current_user.company_logo.attach(params[:company_logo])
+
+        if current_user.company_logo.attached?
+          render json: { company_logo_url: company_logo_url(current_user) }
+        else
+          render json: { errors: [ "Nie udało się przesłać pliku" ] }, status: :unprocessable_entity
+        end
+      end
+
+      # DELETE /api/v1/me/company_logo
+      def destroy_company_logo
+        if current_user.company_logo.attached?
+          current_user.company_logo.purge
+        end
+        render json: { message: "Logo firmy zostało usunięte" }
+      end
+
       # PATCH /api/v1/me/statuses
       def update_statuses
         # Permit nested array of status objects
@@ -118,6 +142,7 @@ module Api
           phone: user.phone,
           title: user.title,
           avatar_url: avatar_url(user),
+          company_logo_url: company_logo_url(user),
           api_token: user.api_token,
           custom_statuses: user.custom_statuses,
           seen_extension_version: user.seen_extension_version
@@ -130,6 +155,15 @@ module Api
         # Use polymorphic URL for avatar
         Rails.application.routes.url_helpers.rails_blob_url(
           user.avatar,
+          only_path: true
+        )
+      end
+
+      def company_logo_url(user)
+        return nil unless user.company_logo.attached?
+
+        Rails.application.routes.url_helpers.rails_blob_url(
+          user.company_logo,
           only_path: true
         )
       end

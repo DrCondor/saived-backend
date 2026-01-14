@@ -5,6 +5,8 @@ import {
   updatePassword,
   uploadAvatar,
   deleteAvatar,
+  uploadCompanyLogo,
+  deleteCompanyLogo,
   updateCustomStatuses,
   dismissExtensionUpdate,
 } from '../api/user';
@@ -71,6 +73,38 @@ export function useDeleteAvatar() {
       queryClient.setQueryData<User | undefined>(['currentUser'], (old) => {
         if (!old) return old;
         return { ...old, avatar_url: null };
+      });
+    },
+  });
+}
+
+export function useUploadCompanyLogo() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (file: File) => uploadCompanyLogo(file),
+    onSuccess: (data) => {
+      // Add cache-busting timestamp to prevent browser caching
+      const urlWithCacheBust = data.company_logo_url
+        ? `${data.company_logo_url}${data.company_logo_url.includes('?') ? '&' : '?'}t=${Date.now()}`
+        : null;
+      queryClient.setQueryData<User | undefined>(['currentUser'], (old) => {
+        if (!old) return old;
+        return { ...old, company_logo_url: urlWithCacheBust };
+      });
+    },
+  });
+}
+
+export function useDeleteCompanyLogo() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => deleteCompanyLogo(),
+    onSuccess: () => {
+      queryClient.setQueryData<User | undefined>(['currentUser'], (old) => {
+        if (!old) return old;
+        return { ...old, company_logo_url: null };
       });
     },
   });

@@ -39,6 +39,8 @@ Rails.application.routes.draw do
       patch "me/dismiss-extension-update", to: "users#dismiss_extension_update"
       post "me/avatar", to: "users#upload_avatar"
       delete "me/avatar", to: "users#destroy_avatar"
+      post "me/company_logo", to: "users#upload_company_logo"
+      delete "me/company_logo", to: "users#destroy_company_logo"
 
       # Projects CRUD
       resources :projects, only: [ :index, :show, :create, :update, :destroy ] do

@@ -22,6 +22,7 @@ export interface User {
   phone: string | null;
   title: string | null;
   avatar_url: string | null;
+  company_logo_url: string | null;
   api_token: string;
   custom_statuses: CustomStatus[];
   seen_extension_version: number;
@@ -137,7 +138,7 @@ export interface ReorderInput {
 }
 
 // View mode type
-export type ViewMode = 'grid' | 'list';
+export type ViewMode = 'grid' | 'list' | 'moodboard';
 
 // Sort and filter types
 export type SortOption =

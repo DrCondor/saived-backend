@@ -128,33 +128,57 @@ export default function ProjectToolbar({
   return (
     <div className="flex items-center gap-2 flex-shrink-0">
       {/* View mode toggle */}
-      <div className="inline-flex items-stretch rounded-full border border-neutral-300 overflow-hidden flex-shrink-0">
+      <div className="inline-flex items-stretch rounded-full border border-neutral-200 bg-white overflow-hidden flex-shrink-0">
         <button
           type="button"
           onClick={() => onViewModeChange('grid')}
-          className={`flex items-center justify-center px-2.5 py-2 text-xs leading-normal transition-colors ${
+          className={`flex items-center justify-center px-2.5 py-2 transition-colors ${
             viewMode === 'grid'
-              ? 'bg-neutral-900 text-white'
-              : 'bg-white text-neutral-500 hover:bg-neutral-50'
+              ? 'bg-neutral-100 text-neutral-700'
+              : 'text-neutral-400 hover:text-neutral-600 hover:bg-neutral-50'
           }`}
           title="Widok kart"
         >
+          {/* Card icon - rectangle with thumbnail and text lines */}
           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">
-            <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5v-3zm8 0A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5v-3zm-8 8A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5v-3zm8 0A1.5 1.5 0 0 1 10.5 9h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 13.5v-3z"/>
+            <rect x="1" y="1" width="14" height="14" rx="2" fillOpacity="0.15"/>
+            <rect x="2.5" y="2.5" width="4" height="4" rx="0.5"/>
+            <rect x="8" y="3" width="5.5" height="1.5" rx="0.5"/>
+            <rect x="8" y="5.5" width="4" height="1" rx="0.5" fillOpacity="0.5"/>
+            <rect x="2.5" y="8.5" width="11" height="1" rx="0.5" fillOpacity="0.4"/>
+            <rect x="2.5" y="10.5" width="9" height="1" rx="0.5" fillOpacity="0.4"/>
+            <rect x="2.5" y="12.5" width="6" height="1" rx="0.5" fillOpacity="0.4"/>
           </svg>
         </button>
         <button
           type="button"
           onClick={() => onViewModeChange('list')}
-          className={`flex items-center justify-center px-2.5 py-2 text-xs leading-normal transition-colors ${
+          className={`flex items-center justify-center px-2.5 py-2 transition-colors ${
             viewMode === 'list'
-              ? 'bg-neutral-900 text-white'
-              : 'bg-white text-neutral-500 hover:bg-neutral-50'
+              ? 'bg-neutral-100 text-neutral-700'
+              : 'text-neutral-400 hover:text-neutral-600 hover:bg-neutral-50'
           }`}
           title="Widok listy"
         >
           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">
             <path fillRule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
+          </svg>
+        </button>
+        <button
+          type="button"
+          onClick={() => onViewModeChange('moodboard')}
+          className={`flex items-center justify-center px-2.5 py-2 transition-colors ${
+            viewMode === 'moodboard'
+              ? 'bg-neutral-100 text-neutral-700'
+              : 'text-neutral-400 hover:text-neutral-600 hover:bg-neutral-50'
+          }`}
+          title="Moodboard"
+        >
+          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">
+            <rect x="1" y="1" width="6" height="6" rx="1"/>
+            <rect x="9" y="1" width="6" height="6" rx="1"/>
+            <rect x="1" y="9" width="6" height="6" rx="1"/>
+            <rect x="9" y="9" width="6" height="6" rx="1"/>
           </svg>
         </button>
       </div>

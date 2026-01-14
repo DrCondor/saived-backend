@@ -2,6 +2,7 @@
 
 require "prawn"
 require "prawn/table"
+require "open-uri"
 
 class ProjectPdfGenerator
   include Prawn::View
@@ -103,26 +104,28 @@ class ProjectPdfGenerator
     Rails.root.join("app", "assets", "images", "saived-logo-cropped.jpg").to_s
   end
 
+  def download_image(url_or_attachment)
+    return nil if url_or_attachment.blank?
+
+    if url_or_attachment.is_a?(String)
+      # Remote URL
+      URI.open(url_or_attachment, read_timeout: 5, open_timeout: 5).read
+    else
+      # ActiveStorage attachment
+      url_or_attachment.download
+    end
+  rescue StandardError => e
+    Rails.logger.warn "Failed to download image: #{e.message}"
+    nil
+  end
+
   # === HEADER ===
   def render_header
     header_start_y = cursor
-    logo_size = 24
+    has_company_logo = @user.company_logo.attached?
 
-    # Left side: Logo + Company name + slogan
-    # Logo positioned to vertically center with text block
-    if File.exist?(logo_path)
-      image logo_path, at: [ 0, header_start_y + 4 ], width: logo_size, height: logo_size
-    end
-
-    text_x = logo_size + 6
-
-    fill_color BRAND_PRIMARY
-    font_size 12
-    draw_text "SAIVED", at: [ text_x, header_start_y - 8 ], style: :bold
-
-    fill_color BRAND_SECONDARY
-    font_size 6
-    draw_text "DESIGN MORE. MANAGE LESS.", at: [ text_x, header_start_y - 18 ]
+    # Calculate header height based on whether company logo exists
+    header_height = has_company_logo ? 110 : 45
 
     # Right side: Document title and number
     fill_color BRAND_PRIMARY
@@ -136,8 +139,34 @@ class ProjectPdfGenerator
     font_size 8
     draw_text format_date(@generated_at), at: [ CONTENT_WIDTH - 85, header_start_y - 32 ]
 
+    # Company logo and name - prominent, left-aligned
+    if has_company_logo
+      begin
+        logo_data = download_image(@user.company_logo)
+        if logo_data
+          logo_io = StringIO.new(logo_data)
+          # Large company logo - prominent placement
+          image logo_io, at: [ 0, header_start_y ], fit: [ 180, 70 ]
+        end
+      rescue StandardError => e
+        Rails.logger.warn "Failed to render company logo in PDF: #{e.message}"
+      end
+
+      # Company name below logo
+      if @user.company_name.present?
+        fill_color BRAND_PRIMARY
+        font_size 14
+        text_box @user.company_name,
+                 at: [ 0, header_start_y - 75 ],
+                 width: 300,
+                 height: 20,
+                 align: :left,
+                 style: :bold
+      end
+    end
+
     # Move cursor down past the header
-    move_down 45
+    move_down header_height
 
     # Thin separator line
     stroke_color BRAND_BORDER
@@ -228,10 +257,14 @@ class ProjectPdfGenerator
   end
 
   def render_items_table(items)
+    # Pre-fetch all thumbnails to avoid multiple HTTP requests during table rendering
+    thumbnails = prefetch_thumbnails(items)
+
     table_data = []
 
-    # Header row
+    # Header row with thumbnail column
     table_data << [
+      { content: "", font_style: :bold },  # Thumbnail column
       { content: "#", font_style: :bold },
       { content: "Nazwa produktu", font_style: :bold },
       { content: "Ilość", font_style: :bold },
@@ -249,16 +282,29 @@ class ProjectPdfGenerator
         item_name += "\n#{item.note}"
       end
 
+      # Thumbnail cell
+      thumbnail_cell = thumbnails[item.id] || { content: "" }
+
+      # Name cell with optional link
+      # Note: Using same color as text (not blue) because multi-line links
+      # create separate link rectangles per line which looks odd in some PDF viewers
+      name_cell = if item.external_url.present?
+        { content: "<link href='#{item.external_url}'>#{escape_html(item_name)}</link>", inline_format: true }
+      else
+        { content: item_name }
+      end
+
       table_data << [
+        thumbnail_cell,
         { content: (index + 1).to_s },
-        { content: item_name },
+        name_cell,
         { content: "#{item.quantity} #{item.unit_type_label}" },
         { content: format_currency(item.unit_price) },
         { content: format_currency(item.total_price), font_style: :bold }
       ]
     end
 
-    # Compact table
+    # Compact table with thumbnail column
     table(table_data, width: CONTENT_WIDTH, cell_style: { size: 7.5, padding: [ 3, 5 ] }) do |t|
       # Header styling
       t.row(0).background_color = BRAND_LIGHT
@@ -270,24 +316,49 @@ class ProjectPdfGenerator
       t.cells.border_color = BRAND_BORDER
       t.cells.border_width = 0.25
 
-      # Column widths - optimized for compact layout
-      t.column(0).width = 25
-      t.column(1).width = 270
-      t.column(2).width = 55
-      t.column(3).width = 85
-      t.column(4).width = 100
+      # Column widths - with thumbnail column
+      t.column(0).width = 35   # Thumbnail
+      t.column(1).width = 25   # #
+      t.column(2).width = 235  # Nazwa (reduced to fit thumbnail)
+      t.column(3).width = 55   # Ilość
+      t.column(4).width = 85   # Cena
+      t.column(5).width = 100  # Suma
 
       # Alignments
       t.column(0).align = :center
-      t.column(2).align = :center
-      t.column(3).align = :right
+      t.column(1).align = :center
+      t.column(3).align = :center
       t.column(4).align = :right
+      t.column(5).align = :right
 
       # Last row no bottom border
       t.row(-1).borders = []
     end
 
     move_down 4
+  end
+
+  def prefetch_thumbnails(items)
+    thumbnails = {}
+
+    items.each do |item|
+      next unless item.thumbnail_url.present?
+
+      begin
+        image_data = download_image(item.thumbnail_url)
+        next unless image_data
+
+        thumbnails[item.id] = { image: StringIO.new(image_data), fit: [ 30, 30 ] }
+      rescue StandardError => e
+        Rails.logger.warn "Failed to fetch thumbnail for item #{item.id}: #{e.message}"
+      end
+    end
+
+    thumbnails
+  end
+
+  def escape_html(text)
+    text.to_s.gsub("&", "&amp;").gsub("<", "&lt;").gsub(">", "&gt;")
   end
 
   def render_empty_section_message
@@ -384,24 +455,31 @@ class ProjectPdfGenerator
   def render_footer_on_all_pages
     repeat(:all) do
       canvas do
-        bounding_box([ PAGE_MARGIN_SIDES, FOOTER_Y_POSITION + 12 ], width: CONTENT_WIDTH, height: 15) do
+        bounding_box([ PAGE_MARGIN_SIDES, FOOTER_Y_POSITION + 20 ], width: CONTENT_WIDTH, height: 25) do
           # Thin separator line
           stroke_color BRAND_BORDER
           line_width 0.5
           stroke_horizontal_line 0, CONTENT_WIDTH, at: cursor
 
-          move_down 5
+          move_down 6
 
-          font_size 6.5
+          # Left side - SAIVED logo + slogan
+          logo_size = 12
+          if File.exist?(logo_path)
+            image logo_path, at: [ 0, cursor ], width: logo_size, height: logo_size
+          end
+
+          fill_color BRAND_PRIMARY
+          font_size 7
+          draw_text "SAIVED", at: [ logo_size + 3, cursor - 4 ], style: :bold
+
           fill_color BRAND_SECONDARY
-
-          # Left side - branding
-          text_box "SAIVED | www.saived.com",
-                   at: [ 0, cursor ],
-                   width: 200,
-                   height: 10
+          font_size 5
+          draw_text "DESIGN MORE. MANAGE LESS.", at: [ logo_size + 3, cursor - 11 ]
 
           # Right side - page number
+          font_size 6.5
+          fill_color BRAND_SECONDARY
           text_box "Strona #{page_number} / #{page_count}",
                    at: [ CONTENT_WIDTH - 80, cursor ],
                    width: 80,

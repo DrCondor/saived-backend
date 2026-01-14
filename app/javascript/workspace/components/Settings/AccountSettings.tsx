@@ -15,11 +15,10 @@ export default function AccountSettings() {
   const uploadAvatar = useUploadAvatar();
   const deleteAvatar = useDeleteAvatar();
 
-  // Profile form state
-  const [profileForm, setProfileForm] = useState<UpdateProfileInput>({
+  // Profile form state (without company_name - moved to Documents tab)
+  const [profileForm, setProfileForm] = useState<Omit<UpdateProfileInput, 'company_name'>>({
     first_name: '',
     last_name: '',
-    company_name: '',
     phone: '',
     title: '',
   });
@@ -45,7 +44,6 @@ export default function AccountSettings() {
       setProfileForm({
         first_name: user.first_name || '',
         last_name: user.last_name || '',
-        company_name: user.company_name || '',
         phone: user.phone || '',
         title: user.title || '',
       });
@@ -212,20 +210,6 @@ export default function AccountSettings() {
               onChange={(e) => setProfileForm({ ...profileForm, title: e.target.value })}
               className="w-full rounded-xl border border-neutral-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
               placeholder="np. Projektant wnetrz"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="company_name" className="block text-sm font-medium text-neutral-700 mb-1">
-              Nazwa firmy
-            </label>
-            <input
-              type="text"
-              id="company_name"
-              value={profileForm.company_name}
-              onChange={(e) => setProfileForm({ ...profileForm, company_name: e.target.value })}
-              className="w-full rounded-xl border border-neutral-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-              placeholder="np. Studio Wnetrz ABC"
             />
           </div>
 

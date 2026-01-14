@@ -33,6 +33,7 @@
           phone: current_user.phone,
           title: current_user.title,
           avatar_url: current_user.avatar.attached? ? rails_blob_path(current_user.avatar, only_path: true) : nil,
+          company_logo_url: current_user.company_logo.attached? ? rails_blob_path(current_user.company_logo, only_path: true) : nil,
           api_token: current_user.api_token,
           custom_statuses: current_user.custom_statuses,
           seen_extension_version: current_user.seen_extension_version

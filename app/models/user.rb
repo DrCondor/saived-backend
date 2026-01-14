@@ -18,6 +18,9 @@ class User < ApplicationRecord
   # Avatar attachment
   has_one_attached :avatar
 
+  # Company logo for PDF branding
+  has_one_attached :company_logo
+
   has_many :product_capture_samples, dependent: :destroy
 
   has_many :owned_projects,

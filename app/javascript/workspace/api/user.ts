@@ -48,6 +48,35 @@ export async function deleteAvatar(): Promise<{ message: string }> {
   });
 }
 
+export async function uploadCompanyLogo(file: File): Promise<{ company_logo_url: string }> {
+  const formData = new FormData();
+  formData.append('company_logo', file);
+
+  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+  const response = await fetch('/api/v1/me/company_logo', {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'X-CSRF-Token': csrfToken || '',
+    },
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.errors?.[0] || 'Upload failed');
+  }
+
+  return response.json();
+}
+
+export async function deleteCompanyLogo(): Promise<{ message: string }> {
+  return apiClient<{ message: string }>('/me/company_logo', {
+    method: 'DELETE',
+  });
+}
+
 export async function updateCustomStatuses(
   customStatuses: CustomStatus[]
 ): Promise<{ custom_statuses: CustomStatus[] }> {
