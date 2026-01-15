@@ -1,6 +1,8 @@
 module Api
   module V1
     class ProjectItemsController < BaseController
+      include Rails.application.routes.url_helpers
+
       before_action :set_section
       before_action :set_item, only: [ :update, :destroy ]
 
@@ -9,23 +11,7 @@ module Api
 
         if item.save
           create_capture_sample(item)
-
-          render json: {
-            id: item.id,
-            name: item.name,
-            note: item.note,
-            quantity: item.quantity,
-            unit_type: item.unit_type,
-            unit_price: item.unit_price,
-            total_price: item.total_price,
-            currency: item.currency,
-            category: item.category,
-            dimensions: item.dimensions,
-            status: item.status,
-            external_url: item.external_url,
-            discount_label: item.discount_label,
-            thumbnail_url: item.thumbnail_url
-          }, status: :created
+          render json: item_json(item), status: :created
         else
           render json: { errors: item.errors.full_messages }, status: :unprocessable_entity
         end
@@ -79,7 +65,13 @@ module Api
           status: item.status,
           external_url: item.external_url,
           discount_label: item.discount_label,
-          thumbnail_url: item.thumbnail_url
+          thumbnail_url: item.thumbnail_url,
+          # Contractor fields
+          item_type: item.item_type,
+          address: item.address,
+          phone: item.phone,
+          attachment_url: item.attachment.attached? ? rails_blob_url(item.attachment, only_path: true) : nil,
+          attachment_filename: item.attachment.attached? ? item.attachment.filename.to_s : nil
         }
       end
 
@@ -97,7 +89,12 @@ module Api
           :status,
           :external_url,
           :discount_label,
-          :thumbnail_url
+          :thumbnail_url,
+          # Contractor fields
+          :item_type,
+          :address,
+          :phone,
+          :attachment
         )
       end
 

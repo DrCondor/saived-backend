@@ -63,3 +63,38 @@ export async function apiClient<T>(
 
   return response.json();
 }
+
+// Client for multipart/form-data requests (file uploads)
+export async function apiClientFormData<T>(
+  endpoint: string,
+  formData: FormData,
+  method: 'POST' | 'PATCH' = 'POST'
+): Promise<T> {
+  const headers: HeadersInit = {
+    Accept: 'application/json',
+    'X-CSRF-Token': getCsrfToken(),
+    // Note: Don't set Content-Type - browser sets it automatically with boundary for FormData
+  };
+
+  const config: RequestInit = {
+    method,
+    headers,
+    credentials: 'include',
+    body: formData,
+  };
+
+  const response = await fetch(`/api/v1${endpoint}`, config);
+
+  if (!response.ok) {
+    const errorData: ApiError = await response.json().catch(() => ({}));
+    const message =
+      errorData.error || errorData.errors?.join(', ') || 'Request failed';
+    throw new ApiClientError(message, response.status, errorData.errors);
+  }
+
+  if (response.status === 204) {
+    return {} as T;
+  }
+
+  return response.json();
+}

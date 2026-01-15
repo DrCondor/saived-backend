@@ -1,13 +1,40 @@
 class ProjectItem < ApplicationRecord
   belongs_to :project_section
   has_many :product_capture_samples, dependent: :nullify
+  has_one_attached :attachment
+
+  # Item types
+  ITEM_TYPES = %w[product contractor].freeze
 
   validates :name, presence: true
-  validates :quantity, numericality: { greater_than: 0 }
+  validates :quantity, numericality: { greater_than: 0 }, if: :product?
   validates :status, presence: true
+  validates :item_type, inclusion: { in: ITEM_TYPES }
 
   # Default status for new items
   attribute :status, :string, default: "bez_statusu"
+
+  # Set position to end of list when creating new item
+  before_create :set_position_at_end
+
+  def set_position_at_end
+    return if position.present? && position > 0
+
+    max_position = project_section.items.maximum(:position) || -1
+    self.position = max_position + 1
+  end
+
+  # -------------------------
+  # ITEM TYPE HELPERS
+  # -------------------------
+
+  def product?
+    item_type == "product"
+  end
+
+  def contractor?
+    item_type == "contractor"
+  end
 
   # Unit types for quantity measurement
   UNIT_TYPES = {
@@ -55,8 +82,15 @@ class ProjectItem < ApplicationRecord
   end
 
   def total_price
-    return nil unless unit_price_cents && quantity
-    (unit_price_cents * quantity) / 100.0
+    return nil unless unit_price_cents
+    if contractor?
+      # Contractors have a flat price (no quantity multiplication)
+      unit_price_cents / 100.0
+    else
+      # Products: price × quantity
+      return nil unless quantity
+      (unit_price_cents * quantity) / 100.0
+    end
   end
 
   # -------------------------

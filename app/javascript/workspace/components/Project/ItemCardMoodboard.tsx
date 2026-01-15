@@ -2,6 +2,17 @@ import { memo } from 'react';
 import type { ProjectItem } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
 
+// Large contractor icon for moodboard view
+function ContractorIconLarge() {
+  return (
+    <div className="w-full h-full bg-neutral-100 flex items-center justify-center">
+      <svg className="w-16 h-16 text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+      </svg>
+    </div>
+  );
+}
+
 interface ItemCardMoodboardProps {
   item: ProjectItem;
   dragHandleProps?: React.HTMLAttributes<HTMLDivElement>;
@@ -13,11 +24,17 @@ const ItemCardMoodboard = memo(function ItemCardMoodboard({
   dragHandleProps,
   isDragging,
 }: ItemCardMoodboardProps) {
+  const isContractor = item.item_type === 'contractor';
   const isProposal = item.status.toLowerCase() === 'propozycja';
 
   const handleClick = () => {
-    if (item.external_url) {
+    // Products: open external URL
+    if (!isContractor && item.external_url) {
       window.open(item.external_url, '_blank', 'noopener,noreferrer');
+    }
+    // Contractors: open phone dialer if phone exists
+    if (isContractor && item.phone) {
+      window.location.href = `tel:${item.phone.replace(/\s/g, '')}`;
     }
   };
 
@@ -29,16 +46,19 @@ const ItemCardMoodboard = memo(function ItemCardMoodboard({
       <div
         onClick={handleClick}
         className={`
-          rounded-xl bg-white border border-neutral-200 overflow-hidden
+          rounded-xl bg-white border overflow-hidden
           transition-all duration-200
-          ${item.external_url ? 'cursor-pointer' : 'cursor-default'}
+          ${isContractor ? 'border-neutral-300' : 'border-neutral-200'}
+          ${(isContractor && item.phone) || (!isContractor && item.external_url) ? 'cursor-pointer' : 'cursor-default'}
           ${isDragging ? 'shadow-xl ring-2 ring-emerald-500' : 'hover:shadow-lg hover:border-neutral-300'}
           ${isProposal ? 'opacity-70' : ''}
         `}
       >
-        {/* Image */}
+        {/* Image / Contractor Icon */}
         <div className="aspect-[4/3] bg-neutral-100 overflow-hidden">
-          {item.thumbnail_url ? (
+          {isContractor ? (
+            <ContractorIconLarge />
+          ) : item.thumbnail_url ? (
             <img
               src={item.thumbnail_url}
               alt={item.name}
@@ -77,8 +97,8 @@ const ItemCardMoodboard = memo(function ItemCardMoodboard({
           </p>
         </div>
 
-        {/* External link indicator */}
-        {item.external_url && (
+        {/* External link indicator - products */}
+        {!isContractor && item.external_url && (
           <div className="absolute top-2 right-2 p-1.5 rounded-lg bg-white/90 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
             <svg
               className="w-3.5 h-3.5 text-neutral-600"
@@ -96,8 +116,29 @@ const ItemCardMoodboard = memo(function ItemCardMoodboard({
           </div>
         )}
 
-        {/* Proposal indicator */}
-        {isProposal && (
+        {/* Phone indicator - contractors */}
+        {isContractor && item.phone && (
+          <div className="absolute top-2 right-2 p-1.5 rounded-lg bg-white/90 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
+            <svg
+              className="w-3.5 h-3.5 text-neutral-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+            </svg>
+          </div>
+        )}
+
+        {/* Contractor badge */}
+        {isContractor && (
+          <div className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-neutral-200 text-neutral-600 text-[10px] font-medium uppercase tracking-wide">
+            Wykonawca
+          </div>
+        )}
+
+        {/* Proposal indicator - products only */}
+        {!isContractor && isProposal && (
           <div className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-amber-100 text-amber-700 text-[10px] font-medium uppercase tracking-wide">
             Propozycja
           </div>

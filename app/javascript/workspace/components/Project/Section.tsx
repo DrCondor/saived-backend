@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, rectSortingStrategy } from '@dnd-kit/sortable';
-import type { ProjectSection, CreateItemInput, UpdateItemInput, ViewMode } from '../../types';
+import type { ProjectSection, CreateItemInput, UpdateItemInput, ViewMode, ItemType } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
 import { shouldIncludeInSum } from '../../utils/statusHelpers';
 import { useCreateItem, useUpdateItem, useDeleteItem } from '../../hooks/useItems';
@@ -22,6 +22,7 @@ export default function Section({ section, projectId, viewMode }: SectionProps) 
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(section.name);
+  const [openForm, setOpenForm] = useState<ItemType | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const { data: user } = useCurrentUser();
@@ -239,8 +240,44 @@ export default function Section({ section, projectId, viewMode }: SectionProps) 
             )}
           </div>
 
-          {/* Add item form */}
-          <AddItemForm onSubmit={handleAddItem} isSubmitting={createItem.isPending} />
+          {/* Add item buttons / form */}
+          {openForm === null ? (
+            <div className="mt-4 flex rounded-xl border border-dashed border-neutral-300 overflow-hidden">
+              {/* Left: + Produkt */}
+              <button
+                type="button"
+                onClick={() => setOpenForm('product')}
+                className="flex-1 inline-flex items-center justify-center gap-1.5 py-3 text-sm font-medium text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Produkt
+              </button>
+
+              {/* Divider */}
+              <div className="w-px bg-neutral-300" />
+
+              {/* Right: + Wykonawca */}
+              <button
+                type="button"
+                onClick={() => setOpenForm('contractor')}
+                className="flex-1 inline-flex items-center justify-center gap-1.5 py-3 text-sm font-medium text-neutral-600 hover:text-neutral-800 hover:bg-neutral-100 transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Wykonawca
+              </button>
+            </div>
+          ) : (
+            <AddItemForm
+              itemType={openForm}
+              onSubmit={handleAddItem}
+              isSubmitting={createItem.isPending}
+              onClose={() => setOpenForm(null)}
+            />
+          )}
         </>
       )}
     </div>

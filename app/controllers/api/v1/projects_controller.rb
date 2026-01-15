@@ -1,6 +1,7 @@
 module Api
   module V1
     class ProjectsController < BaseController
+      include Rails.application.routes.url_helpers
       def index
         projects = current_user.projects
                                .includes(:sections)
@@ -28,7 +29,7 @@ module Api
 
       def show
         project = current_user.projects
-                              .includes(sections: :items)
+                              .includes(sections: { items: { attachment_attachment: :blob } })
                               .find(params[:id])
 
         render json: project_json(project)
@@ -113,7 +114,7 @@ module Api
       # Generates and returns a PDF cost estimate for the project
       def pdf
         project = current_user.projects
-                              .includes(sections: :items)
+                              .includes(sections: { items: { attachment_attachment: :blob } })
                               .find(params[:id])
 
         generator = ProjectPdfGenerator.new(project, current_user)
@@ -205,7 +206,13 @@ module Api
                   external_url: item.external_url,
                   discount_label: item.discount_label,
                   thumbnail_url: item.thumbnail_url,
-                  position: item.position
+                  position: item.position,
+                  # Contractor fields
+                  item_type: item.item_type,
+                  address: item.address,
+                  phone: item.phone,
+                  attachment_url: item.attachment.attached? ? rails_blob_url(item.attachment, only_path: true) : nil,
+                  attachment_filename: item.attachment.attached? ? item.attachment.filename.to_s : nil
                 }
               }
             }

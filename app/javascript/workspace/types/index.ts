@@ -1,6 +1,9 @@
 // Unit type for quantity measurement
 export type UnitType = 'szt' | 'kpl' | 'zestaw' | 'opak' | 'mb' | 'm2' | 'm3' | 'l' | 'kg';
 
+// Item type - product or contractor
+export type ItemType = 'product' | 'contractor';
+
 // Custom status type
 export interface CustomStatus {
   id: string;
@@ -59,6 +62,12 @@ export interface ProjectItem {
   discount_label: string | null;
   thumbnail_url: string | null;
   position: number;
+  // Contractor fields
+  item_type: ItemType;
+  address: string | null;
+  phone: string | null;
+  attachment_url: string | null;
+  attachment_filename: string | null;
 }
 
 export interface ProjectSection {
@@ -111,7 +120,7 @@ export interface UpdateSectionInput {
 export interface CreateItemInput {
   name: string;
   note?: string;
-  quantity: number;
+  quantity?: number;
   unit_type?: UnitType;
   unit_price?: number;
   currency?: string;
@@ -121,9 +130,16 @@ export interface CreateItemInput {
   external_url?: string;
   discount_label?: string;
   thumbnail_url?: string;
+  // Contractor fields
+  item_type?: ItemType;
+  address?: string;
+  phone?: string;
+  attachment?: File;
 }
 
-export interface UpdateItemInput extends Partial<CreateItemInput> {}
+export interface UpdateItemInput extends Partial<Omit<CreateItemInput, 'attachment'>> {
+  attachment?: File;
+}
 
 // Reorder types
 export interface ItemMove {
