@@ -35,6 +35,8 @@ interface SortableProjectItemProps {
   project: ProjectListItem;
   isActive: boolean;
   currentProject?: Project | null;
+  sectionsExpanded: boolean;
+  onToggleSections: () => void;
   onContextMenu: (e: React.MouseEvent, projectId: number) => void;
 }
 
@@ -42,6 +44,8 @@ function SortableProjectItem({
   project,
   isActive,
   currentProject,
+  sectionsExpanded,
+  onToggleSections,
   onContextMenu,
 }: SortableProjectItemProps) {
   const {
@@ -109,20 +113,32 @@ function SortableProjectItem({
               <span className="text-sm font-medium text-neutral-900 truncate">
                 {project.name || 'Bez nazwy'}
               </span>
-              {isActive && (
-                <svg
-                  className="w-4 h-4 text-neutral-400 shrink-0"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+              {isActive && currentProject && currentProject.sections.length > 0 && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onToggleSections();
+                  }}
+                  className="p-0.5 rounded hover:bg-neutral-100 transition-colors"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
+                  <svg
+                    className={`w-4 h-4 text-neutral-400 shrink-0 transition-transform ${
+                      !sectionsExpanded ? '-rotate-90' : ''
+                    }`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
               )}
             </div>
             <span className="text-[11px] text-neutral-400">
@@ -133,7 +149,7 @@ function SortableProjectItem({
       </div>
 
       {/* Nested sections for active project */}
-      {isActive && currentProject && currentProject.sections.length > 0 && (
+      {isActive && sectionsExpanded && currentProject && currentProject.sections.length > 0 && (
         <div className="px-3 pb-2.5 space-y-0.5">
           {currentProject.sections.map((section) => (
             <a
@@ -172,6 +188,9 @@ export default function Sidebar({
   // Local state for DnD
   const [localProjects, setLocalProjects] = useState(projects);
   const [activeProject, setActiveProject] = useState<ProjectListItem | null>(null);
+
+  // Sections expanded state (default to expanded)
+  const [sectionsExpanded, setSectionsExpanded] = useState(true);
 
   // Context menu state
   const [contextMenu, setContextMenu] = useState<ContextMenuState>({
@@ -230,6 +249,10 @@ export default function Sidebar({
       y: e.clientY,
       projectId,
     });
+  }, []);
+
+  const handleToggleSections = useCallback(() => {
+    setSectionsExpanded((prev) => !prev);
   }, []);
 
   const handleToggleFavorite = useCallback(() => {
@@ -357,6 +380,8 @@ export default function Sidebar({
                           currentProject={
                             currentProjectId === project.id ? currentProject : undefined
                           }
+                          sectionsExpanded={sectionsExpanded}
+                          onToggleSections={handleToggleSections}
                           onContextMenu={handleContextMenu}
                         />
                       ))}
@@ -384,6 +409,8 @@ export default function Sidebar({
                         currentProject={
                           currentProjectId === project.id ? currentProject : undefined
                         }
+                        sectionsExpanded={sectionsExpanded}
+                        onToggleSections={handleToggleSections}
                         onContextMenu={handleContextMenu}
                       />
                     ))}
@@ -437,10 +464,12 @@ export default function Sidebar({
                           <span className="text-sm font-medium text-neutral-900 truncate">
                             {activeProject.name || 'Bez nazwy'}
                           </span>
-                          {/* Show chevron if this is the active project */}
-                          {activeProject.id === currentProjectId && (
+                          {/* Show chevron if this is the active project with sections */}
+                          {activeProject.id === currentProjectId && currentProject && currentProject.sections.length > 0 && (
                             <svg
-                              className="w-4 h-4 text-neutral-400 shrink-0"
+                              className={`w-4 h-4 text-neutral-400 shrink-0 transition-transform ${
+                                !sectionsExpanded ? '-rotate-90' : ''
+                              }`}
                               fill="none"
                               stroke="currentColor"
                               viewBox="0 0 24 24"
@@ -461,8 +490,8 @@ export default function Sidebar({
                     </div>
                   </div>
 
-                  {/* Show sections if this is the active project */}
-                  {activeProject.id === currentProjectId && currentProject && currentProject.sections.length > 0 && (
+                  {/* Show sections if this is the active project and sections are expanded */}
+                  {activeProject.id === currentProjectId && sectionsExpanded && currentProject && currentProject.sections.length > 0 && (
                     <div className="px-3 pb-2.5 space-y-0.5">
                       {currentProject.sections.map((section) => (
                         <div
