@@ -9,6 +9,7 @@ NC='\033[0m' # No Color
 BACKEND_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 EXTENSION_DIR="$BACKEND_DIR/../saived-extension"
 VERSION_FILE="$BACKEND_DIR/config/initializers/extension_version.rb"
+ZIP_PATH="$BACKEND_DIR/public/downloads/saived-extension.zip"
 
 echo -e "${YELLOW}🔄 Aktualizacja wtyczki SAIVED${NC}"
 echo ""
@@ -19,17 +20,25 @@ if [ ! -d "$EXTENSION_DIR" ]; then
   exit 1
 fi
 
-# 2. Create ZIP
+# 2. Create ZIP with all extension files
 echo -e "${GREEN}📦 Tworzenie ZIP...${NC}"
-rm -f "$BACKEND_DIR/public/saived-extension.zip"
-zip -j "$BACKEND_DIR/public/saived-extension.zip" \
-  "$EXTENSION_DIR/manifest.json" \
-  "$EXTENSION_DIR/popup.html" \
-  "$EXTENSION_DIR/popup.js" \
-  "$EXTENSION_DIR/content-script.js" \
-  "$EXTENSION_DIR/icon48.png" \
-  "$EXTENSION_DIR/icon96.png" \
-  "$EXTENSION_DIR/icon128.png"
+rm -f "$ZIP_PATH"
+
+# Create zip from extension directory (preserves folder structure for lib/)
+cd "$EXTENSION_DIR"
+zip -r "$ZIP_PATH" \
+  manifest.json \
+  popup.html \
+  popup.js \
+  content-script.js \
+  logo.jpg \
+  icon48.png \
+  icon96.png \
+  icon128.png \
+  lib/
+
+cd "$BACKEND_DIR"
+echo "   Utworzono: $ZIP_PATH"
 echo ""
 
 # 3. Bump version
@@ -43,7 +52,7 @@ echo ""
 # 4. Commit and push
 echo -e "${GREEN}📝 Commit i push...${NC}"
 cd "$BACKEND_DIR"
-git add public/saived-extension.zip config/initializers/extension_version.rb
+git add public/downloads/saived-extension.zip config/initializers/extension_version.rb
 git commit -m "chore: update extension to v$NEW_VERSION
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)"
