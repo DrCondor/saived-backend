@@ -1,8 +1,8 @@
 // Unit type for quantity measurement
 export type UnitType = 'szt' | 'kpl' | 'zestaw' | 'opak' | 'mb' | 'm2' | 'm3' | 'l' | 'kg';
 
-// Item type - product or contractor
-export type ItemType = 'product' | 'contractor';
+// Item type - product, contractor, or note
+export type ItemType = 'product' | 'contractor' | 'note';
 
 // Custom status type
 export interface CustomStatus {

@@ -16,6 +16,17 @@ function ContractorIconSmall() {
   );
 }
 
+// Note icon - small version
+function NoteIconSmall() {
+  return (
+    <div className="h-full w-full rounded bg-amber-100 flex items-center justify-center">
+      <svg className="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+    </div>
+  );
+}
+
 interface ItemCardCompactProps {
   item: ProjectItem;
   onUpdate?: (itemId: number, input: UpdateItemInput) => void;
@@ -34,10 +45,13 @@ const ItemCardCompact = memo(function ItemCardCompact({
   customStatuses = [],
 }: ItemCardCompactProps) {
   const isContractor = item.item_type === 'contractor';
-  const isProposal = item.status.toLowerCase() === 'propozycja';
+  const isNote = item.item_type === 'note';
+  const isProduct = item.item_type === 'product';
+  const isProposal = item.status?.toLowerCase() === 'propozycja';
   const cardClasses = [
     isDragging ? 'ring-2 ring-emerald-500 shadow-lg' : '',
     isContractor ? 'border-neutral-300' : '',
+    isNote ? 'border-amber-200 bg-amber-50/50' : '',
   ].filter(Boolean).join(' ');
 
   const handleDelete = () => {
@@ -65,14 +79,19 @@ const ItemCardCompact = memo(function ItemCardCompact({
 
   return (
     <div className="group flex items-center gap-2">
-      {/* Main card - single row */}
+      {/* Main card - single row, entire card is draggable */}
       <div
+        {...dragHandleProps}
         className={`flex-1 flex items-center gap-3 rounded-lg border border-neutral-200 bg-white px-3 py-2 hover:shadow-sm hover:border-neutral-300 transition-all ${cardClasses}`}
       >
         {/* Thumbnail / Icon */}
-        <div className={`shrink-0 w-8 h-8 ${isProposal ? 'opacity-70' : ''}`}>
+        <div
+          className={`shrink-0 w-8 h-8 ${isProposal && !isNote ? 'opacity-70' : ''}`}
+        >
           {isContractor ? (
             <ContractorIconSmall />
+          ) : isNote ? (
+            <NoteIconSmall />
           ) : (
             <div className="h-full w-full rounded bg-neutral-100 overflow-hidden">
               {item.thumbnail_url ? (
@@ -102,13 +121,21 @@ const ItemCardCompact = memo(function ItemCardCompact({
           )}
         </div>
 
-        {/* Name + external link/phone (adjacent) */}
-        <div className={`flex-1 min-w-0 flex items-center gap-1 ${isProposal ? 'opacity-70' : ''}`}>
-          <span className="font-medium text-sm text-neutral-900 truncate">
-            {item.name}
-          </span>
+        {/* Name + note content (for notes) / external link/phone (adjacent) */}
+        <div className={`flex-1 min-w-0 flex items-center gap-1 ${isProposal && !isNote ? 'opacity-70' : ''}`}>
+          {isNote ? (
+            // Notes: show name (if any) + note content
+            <span className="text-sm text-neutral-700 truncate">
+              {item.name && <span className="font-medium text-neutral-900">{item.name}: </span>}
+              {item.note || <span className="text-neutral-400 italic">Pusta notatka</span>}
+            </span>
+          ) : (
+            <span className="font-medium text-sm text-neutral-900 truncate">
+              {item.name}
+            </span>
+          )}
           {/* External link - for products, next to name */}
-          {!isContractor && item.external_url && (
+          {isProduct && item.external_url && (
             <a
               href={item.external_url}
               target="_blank"
@@ -142,8 +169,8 @@ const ItemCardCompact = memo(function ItemCardCompact({
           )}
         </div>
 
-        {/* Category - select (products only) */}
-        {!isContractor && (
+        {/* Category - select (products only, not notes) */}
+        {isProduct && (
           <div className={`hidden lg:block shrink-0 ${isProposal ? 'opacity-70' : ''}`}>
             <select
               value={item.category || ''}
@@ -160,46 +187,50 @@ const ItemCardCompact = memo(function ItemCardCompact({
           </div>
         )}
 
-        {/* Price section - different for product vs contractor */}
-        <div className={`shrink-0 flex items-center gap-1.5 text-sm ${isProposal ? 'opacity-70' : ''}`}>
-          {isContractor ? (
-            // Contractor: just show total (flat price)
-            <span className="font-semibold text-neutral-900 whitespace-nowrap">
-              {formatCurrency(item.total_price)}
-            </span>
-          ) : (
-            // Product: Quantity x Unit Price = Total
-            <>
-              <span className="text-neutral-400 hidden sm:inline">
-                {item.quantity} x
-              </span>
-              <div className="hidden sm:block">
-                <EditableField
-                  value={item.unit_price}
-                  onChange={(v) => handleUpdate('unit_price', v)}
-                  type="number"
-                  placeholder="0"
-                  className="text-neutral-500 text-sm"
-                  inputClassName="w-20 text-sm"
-                />
-              </div>
-              <span className="text-neutral-400 hidden sm:inline">=</span>
+        {/* Price section - different for product vs contractor (hidden for notes) */}
+        {!isNote && (
+          <div className={`shrink-0 flex items-center gap-1.5 text-sm ${isProposal ? 'opacity-70' : ''}`}>
+            {isContractor ? (
+              // Contractor: just show total (flat price)
               <span className="font-semibold text-neutral-900 whitespace-nowrap">
                 {formatCurrency(item.total_price)}
               </span>
-            </>
-          )}
-        </div>
+            ) : (
+              // Product: Quantity x Unit Price = Total
+              <>
+                <span className="text-neutral-400 hidden sm:inline">
+                  {item.quantity} x
+                </span>
+                <div className="hidden sm:block">
+                  <EditableField
+                    value={item.unit_price}
+                    onChange={(v) => handleUpdate('unit_price', v)}
+                    type="number"
+                    placeholder="0"
+                    className="text-neutral-500 text-sm"
+                    inputClassName="w-20 text-sm"
+                  />
+                </div>
+                <span className="text-neutral-400 hidden sm:inline">=</span>
+                <span className="font-semibold text-neutral-900 whitespace-nowrap">
+                  {formatCurrency(item.total_price)}
+                </span>
+              </>
+            )}
+          </div>
+        )}
 
-        {/* Status - always full opacity */}
-        <div className="shrink-0">
-          <StatusSelect
-            value={item.status}
-            onChange={(v) => handleUpdate('status', v)}
-            compact
-            customStatuses={customStatuses}
-          />
-        </div>
+        {/* Status - for product and contractor only (hidden for notes) */}
+        {!isNote && (
+          <div className="shrink-0">
+            <StatusSelect
+              value={item.status}
+              onChange={(v) => handleUpdate('status', v)}
+              compact
+              customStatuses={customStatuses}
+            />
+          </div>
+        )}
       </div>
 
       {/* Actions - visible on hover or while dragging */}

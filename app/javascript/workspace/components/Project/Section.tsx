@@ -18,8 +18,38 @@ interface SectionProps {
   viewMode: ViewMode;
 }
 
+// Helper to get/set section collapsed state in localStorage
+const COLLAPSED_SECTIONS_KEY = 'saived_collapsed_sections';
+
+function getCollapsedSections(): Set<number> {
+  try {
+    const stored = localStorage.getItem(COLLAPSED_SECTIONS_KEY);
+    if (stored) {
+      return new Set(JSON.parse(stored));
+    }
+  } catch {
+    // Ignore localStorage errors
+  }
+  return new Set();
+}
+
+function setCollapsedSection(sectionId: number, collapsed: boolean) {
+  try {
+    const sections = getCollapsedSections();
+    if (collapsed) {
+      sections.add(sectionId);
+    } else {
+      sections.delete(sectionId);
+    }
+    localStorage.setItem(COLLAPSED_SECTIONS_KEY, JSON.stringify([...sections]));
+  } catch {
+    // Ignore localStorage errors
+  }
+}
+
 export default function Section({ section, projectId, viewMode }: SectionProps) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  // Initialize collapsed state from localStorage
+  const [isCollapsed, setIsCollapsed] = useState(() => getCollapsedSections().has(section.id));
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(section.name);
   const [openForm, setOpenForm] = useState<ItemType | null>(null);
@@ -97,7 +127,11 @@ export default function Section({ section, projectId, viewMode }: SectionProps) 
         <div className="flex items-center gap-3 flex-1">
           <button
             type="button"
-            onClick={() => setIsCollapsed(!isCollapsed)}
+            onClick={() => {
+              const newCollapsed = !isCollapsed;
+              setIsCollapsed(newCollapsed);
+              setCollapsedSection(section.id, newCollapsed);
+            }}
             className="p-1 hover:bg-neutral-100 rounded-lg transition-colors"
           >
             <svg
@@ -242,32 +276,47 @@ export default function Section({ section, projectId, viewMode }: SectionProps) 
 
           {/* Add item buttons / form */}
           {openForm === null ? (
-            <div className="mt-4 flex rounded-xl border border-dashed border-neutral-300 overflow-hidden">
+            <div className="mt-3 flex rounded-lg border border-dashed border-neutral-200 overflow-hidden">
               {/* Left: + Produkt */}
               <button
                 type="button"
                 onClick={() => setOpenForm('product')}
-                className="flex-1 inline-flex items-center justify-center gap-1.5 py-3 text-sm font-medium text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 transition-colors"
+                className="flex-1 inline-flex items-center justify-center gap-1 py-2 text-xs font-medium text-neutral-400 hover:text-neutral-700 hover:bg-neutral-50 transition-colors"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                 </svg>
                 Produkt
               </button>
 
               {/* Divider */}
-              <div className="w-px bg-neutral-300" />
+              <div className="w-px bg-neutral-200" />
 
-              {/* Right: + Wykonawca */}
+              {/* Middle: + Wykonawca */}
               <button
                 type="button"
                 onClick={() => setOpenForm('contractor')}
-                className="flex-1 inline-flex items-center justify-center gap-1.5 py-3 text-sm font-medium text-neutral-600 hover:text-neutral-800 hover:bg-neutral-100 transition-colors"
+                className="flex-1 inline-flex items-center justify-center gap-1 py-2 text-xs font-medium text-neutral-400 hover:text-neutral-700 hover:bg-neutral-50 transition-colors"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                 </svg>
                 Wykonawca
+              </button>
+
+              {/* Divider */}
+              <div className="w-px bg-neutral-200" />
+
+              {/* Right: + Notatka */}
+              <button
+                type="button"
+                onClick={() => setOpenForm('note')}
+                className="flex-1 inline-flex items-center justify-center gap-1 py-2 text-xs font-medium text-neutral-400 hover:text-neutral-700 hover:bg-neutral-50 transition-colors"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Notatka
               </button>
             </div>
           ) : (

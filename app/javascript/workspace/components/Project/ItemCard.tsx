@@ -17,6 +17,17 @@ function ContractorIcon() {
   );
 }
 
+// Note icon component
+function NoteIcon() {
+  return (
+    <div className="h-full w-full rounded-lg bg-amber-100 flex items-center justify-center">
+      <svg className="w-7 h-7 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+    </div>
+  );
+}
+
 interface ItemCardProps {
   item: ProjectItem;
   onUpdate?: (itemId: number, input: UpdateItemInput) => void;
@@ -40,11 +51,14 @@ const ItemCard = memo(function ItemCard({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isContractor = item.item_type === 'contractor';
-  const isProposal = item.status.toLowerCase() === 'propozycja';
+  const isNote = item.item_type === 'note';
+  const isProduct = item.item_type === 'product';
+  const isProposal = item.status?.toLowerCase() === 'propozycja';
   const cardClasses = [
-    isProposal ? 'opacity-70' : '',
+    isProposal && !isNote ? 'opacity-70' : '',
     isDragging ? 'ring-2 ring-emerald-500 shadow-lg' : '',
     isContractor ? 'border-neutral-300' : '',
+    isNote ? 'border-amber-200 bg-amber-50/50' : '',
   ].filter(Boolean).join(' ');
 
   const handleUpdate = (field: keyof UpdateItemInput, value: string) => {
@@ -92,16 +106,22 @@ const ItemCard = memo(function ItemCard({
 
   return (
     <div className="group flex gap-2">
-      {/* Item card */}
+      {/* Item card - entire card is draggable */}
       <div
+        {...dragHandleProps}
         className={`flex-1 rounded-xl border border-neutral-200 bg-white p-3 hover:shadow-md hover:border-neutral-300 transition-all ${cardClasses}`}
       >
         <div className="flex gap-3">
           {/* Thumbnail / Icon */}
-          <div className="shrink-0 h-14 w-14 relative group/thumb">
+          <div
+            className="shrink-0 h-14 w-14 relative group/thumb"
+          >
             {isContractor ? (
               // Contractor: static icon
               <ContractorIcon />
+            ) : isNote ? (
+              // Note: static icon
+              <NoteIcon />
             ) : (
               // Product: editable thumbnail
               <>
@@ -240,29 +260,31 @@ const ItemCard = memo(function ItemCard({
                 )}
               </div>
 
-              {/* Sum + Status (right side) */}
-              <div className="shrink-0 text-right space-y-2">
-                <div className="inline-flex items-center rounded-lg border border-neutral-200 px-3 py-1.5 bg-neutral-50">
-                  <span className="text-[10px] text-neutral-400 uppercase tracking-wide mr-2">
-                    Suma
-                  </span>
-                  <span className="font-semibold text-neutral-900">
-                    {formatCurrency(item.total_price)}
-                  </span>
-                </div>
+              {/* Sum + Status (right side) - hidden for notes */}
+              {!isNote && (
+                <div className="shrink-0 text-right space-y-2">
+                  <div className="inline-flex items-center rounded-lg border border-neutral-200 px-3 py-1.5 bg-neutral-50">
+                    <span className="text-[10px] text-neutral-400 uppercase tracking-wide mr-2">
+                      Suma
+                    </span>
+                    <span className="font-semibold text-neutral-900">
+                      {formatCurrency(item.total_price)}
+                    </span>
+                  </div>
 
-                <div>
-                  <StatusSelect
-                    value={item.status}
-                    onChange={(v) => handleUpdate('status', v)}
-                    customStatuses={customStatuses}
-                  />
+                  <div>
+                    <StatusSelect
+                      value={item.status}
+                      onChange={(v) => handleUpdate('status', v)}
+                      customStatuses={customStatuses}
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
-            {/* Details grid - conditional for contractor vs product */}
-            {isContractor ? (
+            {/* Details grid - conditional for contractor vs product (notes have no details) */}
+            {isContractor && (
               // Contractor details
               <div className="mt-2 grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-1.5 text-xs">
                 {/* Service price */}
@@ -371,7 +393,8 @@ const ItemCard = memo(function ItemCard({
                   </div>
                 </div>
               </div>
-            ) : (
+            )}
+            {isProduct && (
               // Product details
               <div className="mt-2 grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-1.5 text-xs">
                 {/* Dimensions */}

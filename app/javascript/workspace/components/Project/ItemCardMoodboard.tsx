@@ -13,6 +13,17 @@ function ContractorIconLarge() {
   );
 }
 
+// Large note icon for moodboard view
+function NoteIconLarge() {
+  return (
+    <div className="w-full h-full bg-amber-50 flex items-center justify-center">
+      <svg className="w-16 h-16 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+    </div>
+  );
+}
+
 interface ItemCardMoodboardProps {
   item: ProjectItem;
   dragHandleProps?: React.HTMLAttributes<HTMLDivElement>;
@@ -25,11 +36,15 @@ const ItemCardMoodboard = memo(function ItemCardMoodboard({
   isDragging,
 }: ItemCardMoodboardProps) {
   const isContractor = item.item_type === 'contractor';
-  const isProposal = item.status.toLowerCase() === 'propozycja';
+  const isNote = item.item_type === 'note';
+  const isProduct = item.item_type === 'product';
+  const isProposal = item.status?.toLowerCase() === 'propozycja';
 
   const handleClick = () => {
+    // Notes: no click action
+    if (isNote) return;
     // Products: open external URL
-    if (!isContractor && item.external_url) {
+    if (isProduct && item.external_url) {
       window.open(item.external_url, '_blank', 'noopener,noreferrer');
     }
     // Contractors: open phone dialer if phone exists
@@ -41,23 +56,25 @@ const ItemCardMoodboard = memo(function ItemCardMoodboard({
   return (
     <div
       className={`group relative ${isDragging ? 'z-50' : ''}`}
-      {...dragHandleProps}
     >
       <div
+        {...dragHandleProps}
         onClick={handleClick}
         className={`
           rounded-xl bg-white border overflow-hidden
           transition-all duration-200
-          ${isContractor ? 'border-neutral-300' : 'border-neutral-200'}
-          ${(isContractor && item.phone) || (!isContractor && item.external_url) ? 'cursor-pointer' : 'cursor-default'}
+          ${isContractor ? 'border-neutral-300' : isNote ? 'border-amber-200' : 'border-neutral-200'}
+          ${(isContractor && item.phone) || (isProduct && item.external_url) ? 'cursor-pointer' : ''}
           ${isDragging ? 'shadow-xl ring-2 ring-emerald-500' : 'hover:shadow-lg hover:border-neutral-300'}
-          ${isProposal ? 'opacity-70' : ''}
+          ${isProposal && !isNote ? 'opacity-70' : ''}
         `}
       >
-        {/* Image / Contractor Icon */}
+        {/* Image / Contractor Icon / Note Icon */}
         <div className="aspect-[4/3] bg-neutral-100 overflow-hidden">
           {isContractor ? (
             <ContractorIconLarge />
+          ) : isNote ? (
+            <NoteIconLarge />
           ) : item.thumbnail_url ? (
             <img
               src={item.thumbnail_url}
@@ -86,19 +103,33 @@ const ItemCardMoodboard = memo(function ItemCardMoodboard({
 
         {/* Content */}
         <div className="p-3">
-          {/* Name */}
-          <h3 className="text-sm font-medium text-neutral-900 line-clamp-2 leading-snug">
-            {item.name}
-          </h3>
-
-          {/* Price */}
-          <p className="mt-1.5 text-sm text-neutral-500">
-            {formatCurrency(item.total_price)}
-          </p>
+          {isNote ? (
+            // Note content
+            <>
+              {item.name && (
+                <h3 className="text-sm font-medium text-neutral-900 line-clamp-1 leading-snug">
+                  {item.name}
+                </h3>
+              )}
+              <p className={`text-sm text-neutral-500 line-clamp-2 ${item.name ? 'mt-1' : ''}`}>
+                {item.note || <span className="italic text-neutral-400">Pusta notatka</span>}
+              </p>
+            </>
+          ) : (
+            // Product/Contractor content
+            <>
+              <h3 className="text-sm font-medium text-neutral-900 line-clamp-2 leading-snug">
+                {item.name}
+              </h3>
+              <p className="mt-1.5 text-sm text-neutral-500">
+                {formatCurrency(item.total_price)}
+              </p>
+            </>
+          )}
         </div>
 
-        {/* External link indicator - products */}
-        {!isContractor && item.external_url && (
+        {/* External link indicator - products only */}
+        {isProduct && item.external_url && (
           <div className="absolute top-2 right-2 p-1.5 rounded-lg bg-white/90 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
             <svg
               className="w-3.5 h-3.5 text-neutral-600"
@@ -137,8 +168,15 @@ const ItemCardMoodboard = memo(function ItemCardMoodboard({
           </div>
         )}
 
+        {/* Note badge */}
+        {isNote && (
+          <div className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-amber-100 text-amber-700 text-[10px] font-medium uppercase tracking-wide">
+            Notatka
+          </div>
+        )}
+
         {/* Proposal indicator - products only */}
-        {!isContractor && isProposal && (
+        {isProduct && isProposal && (
           <div className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-amber-100 text-amber-700 text-[10px] font-medium uppercase tracking-wide">
             Propozycja
           </div>

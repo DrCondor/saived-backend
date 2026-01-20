@@ -81,6 +81,11 @@ export default function ProjectView({ project }: ProjectViewProps) {
   const [editName, setEditName] = useState(project.name);
   const nameInputRef = useRef<HTMLInputElement>(null);
 
+  // Project description editing state
+  const [isEditingDescription, setIsEditingDescription] = useState(false);
+  const [editDescription, setEditDescription] = useState(project.description || '');
+  const descriptionInputRef = useRef<HTMLTextAreaElement>(null);
+
   // Local state for real-time DnD updates (enables cross-section animations)
   const [localSections, setLocalSections] = useState<ProjectSection[]>(project.sections || []);
   const [activeItem, setActiveItem] = useState<ProjectItem | null>(null);
@@ -115,6 +120,12 @@ export default function ProjectView({ project }: ProjectViewProps) {
     setIsEditingName(false);
   }, [project.name, project.id]);
 
+  // Sync editDescription when project changes
+  useEffect(() => {
+    setEditDescription(project.description || '');
+    setIsEditingDescription(false);
+  }, [project.description, project.id]);
+
   // Auto-focus name input when editing
   useEffect(() => {
     if (isEditingName && nameInputRef.current) {
@@ -122,6 +133,14 @@ export default function ProjectView({ project }: ProjectViewProps) {
       nameInputRef.current.select();
     }
   }, [isEditingName]);
+
+  // Auto-focus description textarea when editing
+  useEffect(() => {
+    if (isEditingDescription && descriptionInputRef.current) {
+      descriptionInputRef.current.focus();
+      descriptionInputRef.current.select();
+    }
+  }, [isEditingDescription]);
 
   // Project name edit handlers
   const handleNameSubmit = () => {
@@ -139,6 +158,27 @@ export default function ProjectView({ project }: ProjectViewProps) {
     } else if (e.key === 'Escape') {
       setEditName(project.name);
       setIsEditingName(false);
+    }
+  };
+
+  // Project description edit handlers
+  const handleDescriptionSubmit = () => {
+    const trimmed = editDescription.trim();
+    if (trimmed !== (project.description || '')) {
+      updateProject.mutate({ id: project.id, input: { description: trimmed || null } });
+    } else {
+      setEditDescription(project.description || '');
+    }
+    setIsEditingDescription(false);
+  };
+
+  const handleDescriptionKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleDescriptionSubmit();
+    } else if (e.key === 'Escape') {
+      setEditDescription(project.description || '');
+      setIsEditingDescription(false);
     }
   };
 
@@ -502,6 +542,49 @@ export default function ProjectView({ project }: ProjectViewProps) {
                 {project.name}
                 <svg
                   className="w-4 h-4 text-neutral-300 opacity-0 group-hover/name:opacity-100 transition-opacity"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                  />
+                </svg>
+              </button>
+            )}
+
+            {/* Project description (for PDF Notatka) */}
+            {isEditingDescription ? (
+              <textarea
+                ref={descriptionInputRef}
+                value={editDescription}
+                onChange={(e) => setEditDescription(e.target.value)}
+                onBlur={handleDescriptionSubmit}
+                onKeyDown={handleDescriptionKeyDown}
+                placeholder="Dodaj opis projektu (opcjonalnie)..."
+                rows={2}
+                className="mt-1 text-sm text-neutral-600 bg-transparent border-0 p-0 focus:ring-0 focus:outline-none w-full resize-none"
+              />
+            ) : (
+              <button
+                type="button"
+                onClick={() => setIsEditingDescription(true)}
+                className="group/desc mt-1 text-sm text-left flex items-center gap-1.5"
+              >
+                {project.description ? (
+                  <span className="text-neutral-600 hover:text-neutral-800 transition-colors">
+                    {project.description}
+                  </span>
+                ) : (
+                  <span className="text-neutral-400 hover:text-neutral-600 transition-colors">
+                    + Dodaj opis projektu
+                  </span>
+                )}
+                <svg
+                  className="w-3 h-3 text-neutral-300 opacity-0 group-hover/desc:opacity-100 transition-opacity shrink-0"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"

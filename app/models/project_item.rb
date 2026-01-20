@@ -4,7 +4,7 @@ class ProjectItem < ApplicationRecord
   has_one_attached :attachment
 
   # Item types
-  ITEM_TYPES = %w[product contractor].freeze
+  ITEM_TYPES = %w[product contractor note].freeze
 
   validates :name, presence: true
   validates :quantity, numericality: { greater_than: 0 }, if: :product?
@@ -14,14 +14,23 @@ class ProjectItem < ApplicationRecord
   # Default status for new items
   attribute :status, :string, default: "bez_statusu"
 
-  # Set position to end of list when creating new item
-  before_create :set_position_at_end
+  # Set position based on item type:
+  # - Contractors go to the BEGINNING of the list
+  # - Products go to the END of the list
+  before_create :set_position
 
-  def set_position_at_end
-    return if position.present? && position > 0
+  def set_position
+    return if position.present? && position != 0
 
-    max_position = project_section.items.maximum(:position) || -1
-    self.position = max_position + 1
+    if contractor?
+      # Contractors: insert at beginning (before all existing items)
+      min_position = project_section.items.minimum(:position) || 0
+      self.position = min_position - 1
+    else
+      # Products & Notes: insert at end (after all existing items)
+      max_position = project_section.items.maximum(:position) || -1
+      self.position = max_position + 1
+    end
   end
 
   # -------------------------
@@ -34,6 +43,10 @@ class ProjectItem < ApplicationRecord
 
   def contractor?
     item_type == "contractor"
+  end
+
+  def note?
+    item_type == "note"
   end
 
   # Unit types for quantity measurement
@@ -82,6 +95,9 @@ class ProjectItem < ApplicationRecord
   end
 
   def total_price
+    # Notes don't have a price - they don't affect the sum
+    return 0 if note?
+
     return nil unless unit_price_cents
     if contractor?
       # Contractors have a flat price (no quantity multiplication)
