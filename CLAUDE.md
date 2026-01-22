@@ -52,10 +52,12 @@ User
            └── ProjectSection (ordered by position)
                 ├── name, position
                 └── ProjectItem (ordered by position)
+                     ├── item_type: product | contractor | note
                      ├── name, note, quantity
                      ├── unit_price_cents, currency (PLN default)
                      ├── category, dimensions, status
                      ├── external_url, thumbnail_url, discount_label
+                     ├── phone, address, attachment_url (contractor fields)
                      └── ProductCaptureSample (for learning)
                           ├── raw_payload (scraped data)
                           ├── final_payload (user-corrected data)
@@ -70,6 +72,15 @@ DomainSelector (global learning)
 ```
 
 **Price Storage**: All prices stored as cents (`unit_price_cents`). Use `unit_price` getter/setter for decimal values.
+
+**Item Types** (`ProjectItem.item_type`):
+| Type | Purpose | Fields Used | Counts in Sum |
+|------|---------|-------------|---------------|
+| `product` | Furniture, materials from e-commerce | All fields, captured via extension | Yes |
+| `contractor` | Service providers (painters, electricians) | name, phone, address, unit_price, attachment_url | Yes |
+| `note` | Text annotations for client communication | name (optional title), note (content) | No |
+
+Notes are for informing clients about additional context, e.g., "Below are 3 tile options for the bathroom walls..."
 
 ## API Endpoints
 
@@ -163,10 +174,13 @@ app/javascript/workspace/
 │   │   ├── Header.tsx       # Top header with user dropdown
 │   │   └── Sidebar.tsx      # Projects list sidebar
 │   └── Project/
-│       ├── ProjectView.tsx  # Full project view with sections
-│       ├── Section.tsx      # Section with inline name editing
-│       ├── ItemCard.tsx     # Product item card
-│       └── AddItemForm.tsx  # Form for adding items
+│       ├── ProjectView.tsx       # Full project view with sections
+│       ├── Section.tsx           # Section with inline name editing
+│       ├── ItemCard.tsx          # Item card (grid view)
+│       ├── ItemCardCompact.tsx   # Item card (list view)
+│       ├── ItemCardMoodboard.tsx # Item card (moodboard view)
+│       ├── SortableItemCard*.tsx # Drag-wrapper components (dnd-kit)
+│       └── AddItemForm.tsx       # Form for adding product/contractor/note
 ├── pages/
 │   ├── WorkspacePage.tsx    # Main workspace page
 │   └── NewProjectPage.tsx   # New project form
@@ -196,18 +210,21 @@ app/javascript/workspace/
 **Working**:
 - User registration/login
 - React SPA workspace with full CRUD for projects, sections, items
+- Three item types: product, contractor, note
+- Drag & drop reordering (items within/across sections) via dnd-kit
 - Account dropdown with settings, API token copy, logout
 - Account settings page (change email/password)
 - Inline section name editing
 - Item creation and deletion (web UI + extension)
 - Product capture sample logging
 - API supports both session auth (SPA) and Bearer token (extension)
+- Section collapsed state persisted in localStorage
+- Three view modes: grid, list (compact), moodboard
 
 **Missing/TODO**:
-- Drag & drop reordering (sections, items)
-- Item editing in web UI
+- Item editing in web UI (currently only via extension re-capture)
+- Drag & drop reordering for sections
 - Role-based authorization enforcement
-- Production deployment configuration
 - Bundle size optimization (currently 1.2MB unminified)
 
 **Future Plans**:
