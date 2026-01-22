@@ -435,6 +435,29 @@ Both repos have GitHub Actions CI:
 - Jest tests with coverage
 - Syntax validation
 
+## Current Work (updated 2026-01-22)
+
+**Recently completed & deployed**:
+- NOTATKA (note) - third item type for text-only annotations
+- Wykonawca (contractor) - item type with phone, address fields
+- Drag & drop items (within/across sections) via dnd-kit
+- Section collapsed state (persisted in localStorage)
+- Editable project description (for PDF "Notatka" field)
+- Three view modes: grid, list, moodboard
+
+**In testing (Martyna)**:
+- All above features are on production, Martyna is testing
+- Trello cards moved to "W testach (Marti)" column
+
+**Pending/TODO from Trello**:
+- PDF export needs update to render notes as text blocks (not in price table)
+- Check Trello board for new tickets after Martyna's testing
+
+**Technical notes**:
+- Notes use existing `name` and `note` fields, no migration needed
+- `total_price` returns 0 for notes (doesn't affect sums)
+- Contractors insert at beginning of section, products/notes at end
+
 ## Trello Integration
 
 Project board: https://trello.com/b/KOH1DLOH/saived
