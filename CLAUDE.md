@@ -435,6 +435,36 @@ Both repos have GitHub Actions CI:
 - Jest tests with coverage
 - Syntax validation
 
+## Trello Integration
+
+Project board: https://trello.com/b/KOH1DLOH/saived
+
+**API Credentials**: Stored in `~/.trello_credentials` (not in repo)
+
+**Common operations**:
+```bash
+# Load credentials
+source ~/.trello_credentials  # exports TRELLO_KEY and TRELLO_TOKEN
+
+# List boards
+curl "https://api.trello.com/1/members/me/boards?key=$TRELLO_KEY&token=$TRELLO_TOKEN"
+
+# Get lists on SAIVED board
+curl "https://api.trello.com/1/boards/KOH1DLOH/lists?key=$TRELLO_KEY&token=$TRELLO_TOKEN"
+
+# Get cards in a list
+curl "https://api.trello.com/1/lists/LIST_ID/cards?key=$TRELLO_KEY&token=$TRELLO_TOKEN"
+
+# Move card to list and assign member
+curl -X PUT "https://api.trello.com/1/cards/CARD_ID?idList=LIST_ID&idMembers=MEMBER_ID&key=$TRELLO_KEY&token=$TRELLO_TOKEN"
+```
+
+**Key list IDs**:
+- "W testach (Marti)": `6964dd6e9d788f26972164d7`
+
+**Member IDs**:
+- Martyna Budnik: `6963aca15b7fa5b787bf2e9c`
+
 ## Polish Language
 
 - UI is in Polish (target market)
