@@ -122,7 +122,7 @@ const ItemCardMoodboard = memo(function ItemCardMoodboard({
                 {item.name}
               </h3>
               <div className="mt-1.5 flex items-center gap-2">
-                {item.original_unit_price && item.discount_percent && item.discount_percent > 0 && (
+                {item.original_unit_price && (
                   <span className="text-xs text-neutral-400 line-through">
                     {formatCurrency(item.original_unit_price * item.quantity)}
                   </span>
@@ -190,9 +190,9 @@ const ItemCardMoodboard = memo(function ItemCardMoodboard({
         )}
 
         {/* Discount badge - products only */}
-        {isProduct && item.discount_percent && item.discount_percent > 0 && (
+        {isProduct && item.discount_label && (
           <div className="absolute bottom-[60px] right-2 px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-700 text-[10px] font-medium">
-            -{item.discount_percent}%
+            {item.discount_label}
           </div>
         )}
       </div>
