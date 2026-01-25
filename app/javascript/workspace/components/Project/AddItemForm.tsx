@@ -19,7 +19,8 @@ const getDefaultFormData = (itemType: ItemType): CreateItemInput => ({
   unit_price: undefined,
   dimensions: '',
   category: '',
-  discount_label: '',
+  discount_percent: undefined,
+  discount_code: '',
   thumbnail_url: '',
   external_url: '',
   note: '',
@@ -235,15 +236,31 @@ export default function AddItemForm({ onSubmit, isSubmitting, itemType, onClose 
 
               <div>
                 <label className="block text-xs font-medium text-neutral-600 mb-1">
-                  Rabat / kod
+                  Rabat (%)
+                </label>
+                <input
+                  type="number"
+                  name="discount_percent"
+                  value={formData.discount_percent ?? ''}
+                  onChange={handleChange}
+                  min={0}
+                  max={100}
+                  className="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm placeholder-neutral-400 focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+                  placeholder="np. 10"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-neutral-600 mb-1">
+                  Kod rabatowy
                 </label>
                 <input
                   type="text"
-                  name="discount_label"
-                  value={formData.discount_label}
+                  name="discount_code"
+                  value={formData.discount_code}
                   onChange={handleChange}
                   className="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm placeholder-neutral-400 focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900"
-                  placeholder="-5% (KOD: MAJ24)"
+                  placeholder="np. PROMO10"
                 />
               </div>
 

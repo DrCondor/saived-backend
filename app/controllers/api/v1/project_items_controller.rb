@@ -9,6 +9,13 @@ module Api
       def create
         item = @section.items.new(item_params)
 
+        # Apply manual discount if present, otherwise try automatic discount
+        if item.discount_percent.present? && item.discount_percent > 0
+          apply_manual_discount(item)
+        else
+          apply_discount_if_applicable(item)
+        end
+
         if item.save
           create_capture_sample(item)
           render json: item_json(item), status: :created
@@ -19,7 +26,12 @@ module Api
 
       # PATCH /api/v1/project_sections/:section_id/items/:id
       def update
-        if @item.update(item_params)
+        @item.assign_attributes(item_params)
+
+        # Handle discount changes
+        handle_discount_update(@item)
+
+        if @item.save
           render json: item_json(@item)
         else
           render json: { errors: @item.errors.full_messages }, status: :unprocessable_entity
@@ -65,6 +77,9 @@ module Api
           status: item.status,
           external_url: item.external_url,
           discount_label: item.discount_label,
+          discount_percent: item.discount_percent,
+          discount_code: item.discount_code,
+          original_unit_price: item.original_unit_price_cents ? item.original_unit_price_cents / 100.0 : nil,
           thumbnail_url: item.thumbnail_url,
           # Contractor fields
           item_type: item.item_type,
@@ -89,6 +104,8 @@ module Api
           :status,
           :external_url,
           :discount_label,
+          :discount_percent,
+          :discount_code,
           :thumbnail_url,
           # Contractor fields
           :item_type,
@@ -96,6 +113,94 @@ module Api
           :phone,
           :attachment
         )
+      end
+
+      def apply_manual_discount(item)
+        return unless item.discount_percent.present? && item.discount_percent > 0
+
+        # Use original price or current price as base
+        base_price = item.original_unit_price_cents || item.unit_price_cents
+        return unless base_price && base_price > 0
+
+        # Store original price if not already stored
+        item.original_unit_price_cents ||= item.unit_price_cents
+
+        # Calculate discounted price
+        item.unit_price_cents = (base_price * (100 - item.discount_percent) / 100.0).round
+
+        # Generate label
+        if item.discount_code.present?
+          item.discount_label = "-#{item.discount_percent}% (#{item.discount_code})"
+        else
+          item.discount_label = "-#{item.discount_percent}%"
+        end
+      end
+
+      def remove_manual_discount(item)
+        return unless item.original_unit_price_cents.present?
+
+        # Restore original price
+        item.unit_price_cents = item.original_unit_price_cents
+        item.original_unit_price_cents = nil
+        item.discount_label = nil
+        item.discount_code = nil
+        item.discount_percent = nil
+      end
+
+      def handle_discount_update(item)
+        # Check if discount_percent changed
+        if item.discount_percent_changed? || item.discount_code_changed?
+          if item.discount_percent.present? && item.discount_percent > 0
+            apply_manual_discount(item)
+          elsif item.discount_percent_was.present? && item.discount_percent_was > 0
+            # Manual discount was removed - restore original price
+            remove_manual_discount(item)
+            # Try to re-apply automatic discount from settings (if exists for this domain)
+            apply_discount_if_applicable(item)
+          elsif item.discount_code_changed? && item.discount_percent.present? && item.discount_percent > 0
+            # Only discount_code changed (cleared or updated), but discount_percent stays
+            # Regenerate the label
+            apply_manual_discount(item)
+          end
+        end
+      end
+
+      def apply_discount_if_applicable(item)
+        return unless item.external_url.present?
+        return unless item.unit_price_cents.present? && item.unit_price_cents > 0
+
+        domain = extract_domain(item.external_url)
+        return unless domain
+
+        discount = current_user.discount_for_domain(domain)
+        return unless discount
+
+        percentage = discount["percentage"].to_i
+        return if percentage <= 0
+
+        # Store original price before applying discount
+        item.original_unit_price_cents = item.unit_price_cents
+
+        # Calculate discounted price
+        discounted_cents = (item.original_unit_price_cents * (100 - percentage) / 100.0).round
+        item.unit_price_cents = discounted_cents
+
+        # Set discount label only (NOT discount_percent/discount_code - those are for manual overrides)
+        # This way the input fields stay empty, showing user that this is an automatic discount
+        code = discount["code"]
+        if code.present?
+          item.discount_label = "-#{percentage}% (#{code})"
+        else
+          item.discount_label = "-#{percentage}%"
+        end
+      end
+
+      def extract_domain(url)
+        uri = URI.parse(url)
+        host = uri.host.to_s.downcase
+        host.gsub(/^www\./, "")
+      rescue URI::InvalidURIError
+        nil
       end
 
       def create_capture_sample(item)

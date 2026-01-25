@@ -1,5 +1,5 @@
 import { apiClient } from './client';
-import type { User, UpdateProfileInput, UpdatePasswordInput, CustomStatus } from '../types';
+import type { User, UpdateProfileInput, UpdatePasswordInput, CustomStatus, Discount } from '../types';
 
 export async function fetchCurrentUser(): Promise<User> {
   return apiClient<User>('/me');
@@ -83,6 +83,15 @@ export async function updateCustomStatuses(
   return apiClient<{ custom_statuses: CustomStatus[] }>('/me/statuses', {
     method: 'PATCH',
     json: { custom_statuses: customStatuses },
+  });
+}
+
+export async function updateDiscounts(
+  discounts: Discount[]
+): Promise<{ discounts: Discount[] }> {
+  return apiClient<{ discounts: Discount[] }>('/me/discounts', {
+    method: 'PATCH',
+    json: { discounts },
   });
 }
 

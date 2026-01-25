@@ -64,7 +64,7 @@ const ItemCard = memo(function ItemCard({
   const handleUpdate = (field: keyof UpdateItemInput, value: string) => {
     if (!onUpdate) return;
 
-    let processedValue: string | number | undefined = value;
+    let processedValue: string | number | null | undefined = value;
 
     // Convert numeric fields
     if (field === 'quantity') {
@@ -73,11 +73,24 @@ const ItemCard = memo(function ItemCard({
     } else if (field === 'unit_price') {
       const num = parseFloat(value.replace(',', '.'));
       processedValue = isNaN(num) ? undefined : num;
+    } else if (field === 'discount_percent') {
+      const num = parseInt(value, 10);
+      // Empty string or 0 = remove discount → send null to trigger removal
+      if (value === '' || num === 0) {
+        processedValue = null;
+      } else {
+        processedValue = isNaN(num) ? null : Math.max(1, Math.min(100, num));
+      }
     }
 
-    // Don't send empty strings for optional fields
-    if (value === '' && field !== 'name') {
+    // Don't send empty strings for optional fields (except discount fields which need explicit null)
+    if (value === '' && field !== 'name' && field !== 'discount_percent' && field !== 'discount_code') {
       processedValue = undefined;
+    }
+
+    // discount_code when cleared should send null (not empty string)
+    if (field === 'discount_code' && value === '') {
+      processedValue = null;
     }
 
     onUpdate(item.id, { [field]: processedValue });
@@ -267,9 +280,21 @@ const ItemCard = memo(function ItemCard({
                     <span className="text-[10px] text-neutral-400 uppercase tracking-wide mr-2">
                       Suma
                     </span>
-                    <span className="font-semibold text-neutral-900">
-                      {formatCurrency(item.total_price)}
-                    </span>
+                    <div className="flex flex-col items-end">
+                      {item.original_unit_price && item.discount_percent && item.discount_percent > 0 && (
+                        <span className="text-xs text-neutral-400 line-through">
+                          {formatCurrency(item.original_unit_price * item.quantity)}
+                        </span>
+                      )}
+                      <span className="font-semibold text-neutral-900">
+                        {formatCurrency(item.total_price)}
+                      </span>
+                    </div>
+                    {item.discount_label && (
+                      <span className="ml-2 text-xs text-emerald-600 font-medium">
+                        {item.discount_label}
+                      </span>
+                    )}
                   </div>
 
                   <div>
@@ -482,16 +507,35 @@ const ItemCard = memo(function ItemCard({
                   />
                 </div>
 
-                {/* Discount label */}
+                {/* Discount percent */}
                 <div>
                   <span className="text-neutral-400 uppercase tracking-wide text-[10px] block mb-0.5">
-                    Rabat
+                    Rabat (%)
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <EditableField
+                      value={item.discount_percent}
+                      onChange={(v) => handleUpdate('discount_percent', v)}
+                      type="number"
+                      placeholder="0"
+                      className={item.discount_percent ? 'text-emerald-600 font-medium' : 'text-neutral-700 font-medium'}
+                      inputClassName="w-16"
+                    />
+                    <span className="text-neutral-500">%</span>
+                  </div>
+                </div>
+
+                {/* Discount code */}
+                <div>
+                  <span className="text-neutral-400 uppercase tracking-wide text-[10px] block mb-0.5">
+                    Kod rabatowy
                   </span>
                   <EditableField
-                    value={item.discount_label}
-                    onChange={(v) => handleUpdate('discount_label', v)}
-                    placeholder="np. -20%"
-                    className={item.discount_label ? 'text-emerald-600 font-medium' : 'text-neutral-700 font-medium'}
+                    value={item.discount_code}
+                    onChange={(v) => handleUpdate('discount_code', v)}
+                    placeholder="np. PROMO10"
+                    className="text-neutral-700 font-medium"
+                    inputClassName="w-24"
                   />
                 </div>
 

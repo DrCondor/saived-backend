@@ -36,6 +36,7 @@ Rails.application.routes.draw do
       patch "me", to: "users#update"
       patch "me/password", to: "users#update_password"
       patch "me/statuses", to: "users#update_statuses"
+      patch "me/discounts", to: "users#update_discounts"
       patch "me/dismiss-extension-update", to: "users#dismiss_extension_update"
       post "me/avatar", to: "users#upload_avatar"
       delete "me/avatar", to: "users#destroy_avatar"

@@ -205,6 +205,9 @@ module Api
                   status: item.status,
                   external_url: item.external_url,
                   discount_label: item.discount_label,
+                  discount_percent: item.discount_percent,
+                  discount_code: item.discount_code,
+                  original_unit_price: item.original_unit_price_cents ? item.original_unit_price_cents / 100.0 : nil,
                   thumbnail_url: item.thumbnail_url,
                   position: item.position,
                   # Contractor fields

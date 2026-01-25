@@ -116,6 +116,65 @@ module Api
         end
       end
 
+      # PATCH /api/v1/me/discounts
+      def update_discounts
+        permitted = params.permit(discounts: [ :id, :domain, :percentage, :code ])
+        discounts_data = permitted[:discounts] || []
+
+        # Validate max 20 discounts
+        if discounts_data.length > 20
+          render json: { errors: [ "Maksymalnie 20 rabatów" ] }, status: :unprocessable_entity
+          return
+        end
+
+        # Validate and normalize each discount
+        normalized_discounts = []
+        domains_seen = Set.new
+
+        discounts_data.each do |discount|
+          # Validate required fields
+          unless discount[:id].present? && discount[:domain].present? && discount[:percentage].present?
+            render json: { errors: [ "Każdy rabat musi mieć id, domenę i procent" ] }, status: :unprocessable_entity
+            return
+          end
+
+          # Validate percentage
+          percentage = discount[:percentage].to_i
+          unless percentage >= 0 && percentage <= 100
+            render json: { errors: [ "Procent rabatu musi być między 0 a 100" ] }, status: :unprocessable_entity
+            return
+          end
+
+          # Normalize domain (lowercase, remove www.)
+          normalized_domain = discount[:domain].to_s.strip.downcase
+            .gsub(%r{^https?://}, "")
+            .gsub(/^www\./, "")
+            .split("/").first
+
+          # Check for duplicate domains
+          if domains_seen.include?(normalized_domain)
+            render json: { errors: [ "Duplikat domeny: #{normalized_domain}" ] }, status: :unprocessable_entity
+            return
+          end
+          domains_seen.add(normalized_domain)
+
+          normalized_discounts << {
+            "id" => discount[:id],
+            "domain" => normalized_domain,
+            "percentage" => percentage,
+            "code" => discount[:code].presence
+          }
+        end
+
+        if current_user.update_discounts(normalized_discounts)
+          # Apply discounts to all existing items
+          current_user.apply_discounts_to_existing_items
+          render json: { discounts: current_user.discounts }
+        else
+          render json: { errors: current_user.errors.full_messages }, status: :unprocessable_entity
+        end
+      end
+
       # PATCH /api/v1/me/dismiss-extension-update
       def dismiss_extension_update
         version = params[:version].to_i
@@ -145,6 +204,7 @@ module Api
           company_logo_url: company_logo_url(user),
           api_token: user.api_token,
           custom_statuses: user.custom_statuses,
+          discounts: user.discounts,
           seen_extension_version: user.seen_extension_version
         }
       end

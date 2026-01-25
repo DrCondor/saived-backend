@@ -36,6 +36,7 @@
           company_logo_url: current_user.company_logo.attached? ? rails_blob_path(current_user.company_logo, only_path: true) : nil,
           api_token: current_user.api_token,
           custom_statuses: current_user.custom_statuses,
+          discounts: current_user.discounts,
           seen_extension_version: current_user.seen_extension_version
         }
       }

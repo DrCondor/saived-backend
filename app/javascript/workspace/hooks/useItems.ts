@@ -100,8 +100,42 @@ export function useUpdateItem(projectId: number, sectionId: number) {
       }
     },
 
-    // No need to invalidate - optimistic update is enough
-    // Server response confirms success, and we already updated the cache
+    // Merge API response to get server-calculated values (especially for discounts)
+    onSuccess: (updatedItem, { itemId }) => {
+      queryClient.setQueryData<Project>(['project', projectId], (oldProject) => {
+        if (!oldProject) return oldProject;
+
+        const updatedProject = {
+          ...oldProject,
+          sections: oldProject.sections.map((section) => {
+            if (section.id !== sectionId) return section;
+
+            return {
+              ...section,
+              items: section.items?.map((item) => {
+                if (item.id !== itemId) return item;
+                // Merge all fields from the API response
+                return { ...item, ...updatedItem };
+              }),
+            };
+          }),
+        };
+
+        // Recalculate section totals
+        updatedProject.sections = updatedProject.sections.map((section) => ({
+          ...section,
+          total_price: section.items?.reduce((sum, item) => sum + (item.total_price || 0), 0) || 0,
+        }));
+
+        // Recalculate project total
+        updatedProject.total_price = updatedProject.sections.reduce(
+          (sum, section) => sum + (section.total_price || 0),
+          0
+        );
+
+        return updatedProject;
+      });
+    },
   });
 }
 

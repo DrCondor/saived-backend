@@ -212,9 +212,19 @@ const ItemCardCompact = memo(function ItemCardCompact({
                   />
                 </div>
                 <span className="text-neutral-400 hidden sm:inline">=</span>
+                {item.original_unit_price && item.discount_percent && item.discount_percent > 0 && (
+                  <span className="text-neutral-400 line-through text-xs hidden sm:inline whitespace-nowrap">
+                    {formatCurrency(item.original_unit_price * item.quantity)}
+                  </span>
+                )}
                 <span className="font-semibold text-neutral-900 whitespace-nowrap">
                   {formatCurrency(item.total_price)}
                 </span>
+                {item.discount_percent && item.discount_percent > 0 && (
+                  <span className="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 text-[10px] font-medium whitespace-nowrap">
+                    -{item.discount_percent}%
+                  </span>
+                )}
               </>
             )}
           </div>

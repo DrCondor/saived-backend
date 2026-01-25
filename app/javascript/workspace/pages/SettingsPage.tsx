@@ -3,6 +3,7 @@ import { useCurrentUser } from '../hooks/useUser';
 import AccountSettings from '../components/Settings/AccountSettings';
 import DocumentSettings from '../components/Settings/DocumentSettings';
 import StatusSettings from '../components/Settings/StatusSettings';
+import DiscountSettings from '../components/Settings/DiscountSettings';
 
 type SettingsTab = 'account' | 'documents' | 'personalization';
 
@@ -110,6 +111,14 @@ export default function SettingsPage() {
                   Statusy pomagaja organizowac produkty w projektach. Mozesz dodac do 3 wlasnych statusow.
                 </p>
                 <StatusSettings />
+              </section>
+
+              <section className="rounded-2xl border border-neutral-200 bg-white p-6">
+                <h2 className="text-lg font-semibold text-neutral-900 mb-4">Rabaty</h2>
+                <p className="text-sm text-neutral-500 mb-6">
+                  Zdefiniuj rabaty dla wybranych sklepow. Przy dodawaniu produktow z tych domen rabat zostanie automatycznie naliczony.
+                </p>
+                <DiscountSettings />
               </section>
             </div>
           )}

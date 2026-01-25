@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_15_133916) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_25_165441) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -145,6 +145,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_15_133916) do
     t.string "item_type", default: "product", null: false
     t.string "address"
     t.string "phone"
+    t.integer "original_unit_price_cents"
+    t.integer "discount_percent"
+    t.string "discount_code"
     t.index ["item_type"], name: "index_project_items_on_item_type"
     t.index ["project_section_id"], name: "index_project_items_on_project_section_id"
   end

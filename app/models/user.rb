@@ -60,6 +60,70 @@ class User < ApplicationRecord
     update(preferences: (preferences || {}).merge("custom_statuses" => statuses))
   end
 
+  # Discounts helpers
+  def discounts
+    preferences&.dig("discounts") || []
+  end
+
+  def update_discounts(discounts_data)
+    update(preferences: (preferences || {}).merge("discounts" => discounts_data))
+  end
+
+  def discount_for_domain(domain)
+    normalized = normalize_domain(domain)
+    discounts.find { |d| d["domain"] == normalized }
+  end
+
+  # Apply discounts to all existing items for this user
+  def apply_discounts_to_existing_items
+    # Build a hash of domain -> discount for quick lookup
+    discount_map = discounts.each_with_object({}) do |d, hash|
+      hash[d["domain"]] = d
+    end
+
+    # Get all items from user's owned projects
+    items = ProjectItem.joins(project_section: :project)
+                       .where(projects: { owner_id: id })
+                       .where.not(external_url: [ nil, "" ])
+                       .where(item_type: "product")
+
+    items.find_each do |item|
+      domain = extract_domain_from_url(item.external_url)
+      next unless domain
+
+      discount = discount_map[domain]
+
+      if discount
+        # Apply discount
+        percentage = discount["percentage"].to_i
+        next if percentage <= 0
+
+        # Use original price if available, otherwise current price
+        original_cents = item.original_unit_price_cents || item.unit_price_cents
+        next unless original_cents && original_cents > 0
+
+        # Store original if not already stored
+        item.original_unit_price_cents ||= item.unit_price_cents
+
+        # Calculate new price
+        discounted_cents = (original_cents * (100 - percentage) / 100.0).round
+        item.unit_price_cents = discounted_cents
+
+        # Set discount label
+        code = discount["code"]
+        item.discount_label = code.present? ? "-#{percentage}% (#{code})" : "-#{percentage}%"
+
+        item.save!
+      elsif item.original_unit_price_cents.present?
+        # No discount for this domain but item had discount before - restore original price
+        item.unit_price_cents = item.original_unit_price_cents
+        item.original_unit_price_cents = nil
+        item.discount_label = nil
+        item.save!
+      end
+    end
+  end
+
   # Extension update notification helpers
   def seen_extension_version
     preferences&.dig("seen_extension_version") || 0
@@ -67,5 +131,19 @@ class User < ApplicationRecord
 
   def dismiss_extension_update(version)
     update(preferences: (preferences || {}).merge("seen_extension_version" => version))
+  end
+
+  private
+
+  def normalize_domain(domain)
+    domain.to_s.downcase.gsub(/^www\./, "")
+  end
+
+  def extract_domain_from_url(url)
+    uri = URI.parse(url)
+    host = uri.host.to_s.downcase
+    host.gsub(/^www\./, "")
+  rescue URI::InvalidURIError
+    nil
   end
 end

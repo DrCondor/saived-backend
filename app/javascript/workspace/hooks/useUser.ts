@@ -8,9 +8,10 @@ import {
   uploadCompanyLogo,
   deleteCompanyLogo,
   updateCustomStatuses,
+  updateDiscounts,
   dismissExtensionUpdate,
 } from '../api/user';
-import type { User, UpdateProfileInput, UpdatePasswordInput, CustomStatus } from '../types';
+import type { User, UpdateProfileInput, UpdatePasswordInput, CustomStatus, Discount } from '../types';
 
 export function useCurrentUser() {
   return useQuery({
@@ -121,6 +122,23 @@ export function useUpdateCustomStatuses() {
         return { ...old, custom_statuses: data.custom_statuses };
       });
       // Invalidate projects to recalculate totals
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      queryClient.invalidateQueries({ queryKey: ['project'] });
+    },
+  });
+}
+
+export function useUpdateDiscounts() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (discounts: Discount[]) => updateDiscounts(discounts),
+    onSuccess: (data) => {
+      queryClient.setQueryData<User | undefined>(['currentUser'], (old) => {
+        if (!old) return old;
+        return { ...old, discounts: data.discounts };
+      });
+      // Invalidate projects so new items can pick up updated discount settings
       queryClient.invalidateQueries({ queryKey: ['projects'] });
       queryClient.invalidateQueries({ queryKey: ['project'] });
     },

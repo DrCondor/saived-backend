@@ -12,6 +12,14 @@ export interface CustomStatus {
   include_in_sum: boolean;
 }
 
+// Discount type for domain-based discounts
+export interface Discount {
+  id: string;
+  domain: string;
+  percentage: number;
+  code: string | null;
+}
+
 // User types
 export interface User {
   id: number;
@@ -28,6 +36,7 @@ export interface User {
   company_logo_url: string | null;
   api_token: string;
   custom_statuses: CustomStatus[];
+  discounts: Discount[];
   seen_extension_version: number;
 }
 
@@ -60,6 +69,9 @@ export interface ProjectItem {
   status: string;
   external_url: string | null;
   discount_label: string | null;
+  discount_percent: number | null;
+  discount_code: string | null;
+  original_unit_price: number | null;
   thumbnail_url: string | null;
   position: number;
   // Contractor fields
@@ -129,6 +141,8 @@ export interface CreateItemInput {
   status: string;
   external_url?: string;
   discount_label?: string;
+  discount_percent?: number;
+  discount_code?: string;
   thumbnail_url?: string;
   // Contractor fields
   item_type?: ItemType;
