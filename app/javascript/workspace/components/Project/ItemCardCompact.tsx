@@ -169,13 +169,13 @@ const ItemCardCompact = memo(function ItemCardCompact({
           )}
         </div>
 
-        {/* Category - select (products only, not notes) */}
+        {/* Category - select (products only, not notes) - fixed width for column alignment */}
         {isProduct && (
-          <div className={`hidden lg:block shrink-0 ${isProposal ? 'opacity-70' : ''}`}>
+          <div className={`hidden lg:flex shrink-0 w-20 justify-end ${isProposal ? 'opacity-70' : ''}`}>
             <select
               value={item.category || ''}
               onChange={(e) => handleUpdate('category', e.target.value)}
-              className="text-[11px] text-neutral-500 bg-transparent border-0 p-0 pr-3 cursor-pointer hover:text-neutral-700 focus:outline-none focus:ring-0 appearance-none max-w-[80px] truncate"
+              className="text-[11px] text-neutral-500 bg-transparent border-0 p-0 pr-3 cursor-pointer hover:text-neutral-700 focus:outline-none focus:ring-0 appearance-none truncate"
               style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 20 20\'%3E%3Cpath stroke=\'%236b7280\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'1.5\' d=\'m6 8 4 4 4-4\'/%3E%3C/svg%3E")', backgroundPosition: 'right 0 center', backgroundRepeat: 'no-repeat', backgroundSize: '12px' }}
             >
               {CATEGORIES.map((cat) => (
@@ -186,10 +186,14 @@ const ItemCardCompact = memo(function ItemCardCompact({
             </select>
           </div>
         )}
+        {/* Empty placeholder for non-products to maintain column alignment */}
+        {!isProduct && !isNote && (
+          <div className="hidden lg:block shrink-0 w-20" />
+        )}
 
-        {/* Price section - different for product vs contractor (hidden for notes) */}
+        {/* Price section - different for product vs contractor (hidden for notes) - fixed width for column alignment */}
         {!isNote && (
-          <div className={`shrink-0 flex items-center justify-end gap-1 text-sm ${isProposal ? 'opacity-70' : ''}`}>
+          <div className={`shrink-0 w-44 flex items-center justify-end gap-1 text-sm ${isProposal ? 'opacity-70' : ''}`}>
             {isContractor ? (
               // Contractor: just show total (flat price)
               <span className="font-semibold text-neutral-900 whitespace-nowrap">
@@ -230,9 +234,9 @@ const ItemCardCompact = memo(function ItemCardCompact({
           </div>
         )}
 
-        {/* Status - for product and contractor only (hidden for notes) */}
+        {/* Status - for product and contractor only (hidden for notes) - fixed width for column alignment */}
         {!isNote && (
-          <div className="shrink-0">
+          <div className="shrink-0 w-24">
             <StatusSelect
               value={item.status}
               onChange={(v) => handleUpdate('status', v)}
