@@ -70,7 +70,7 @@ const ItemCardMoodboard = memo(function ItemCardMoodboard({
         `}
       >
         {/* Image / Contractor Icon / Note Icon */}
-        <div className="aspect-[4/3] bg-neutral-100 overflow-hidden">
+        <div className="aspect-[4/3] bg-neutral-100 overflow-hidden relative">
           {isContractor ? (
             <ContractorIconLarge />
           ) : isNote ? (
@@ -97,6 +97,12 @@ const ItemCardMoodboard = memo(function ItemCardMoodboard({
                   d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                 />
               </svg>
+            </div>
+          )}
+          {/* Discount badge - positioned inside image area */}
+          {isProduct && item.discount_label && (
+            <div className="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-emerald-500 text-white text-[10px] font-semibold shadow-sm">
+              {item.discount_label.split(' ')[0]}
             </div>
           )}
         </div>
@@ -189,12 +195,6 @@ const ItemCardMoodboard = memo(function ItemCardMoodboard({
           </div>
         )}
 
-        {/* Discount badge - products only */}
-        {isProduct && item.discount_label && (
-          <div className="absolute bottom-[60px] right-2 px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-700 text-[10px] font-medium">
-            {item.discount_label}
-          </div>
-        )}
       </div>
     </div>
   );
