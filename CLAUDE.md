@@ -460,7 +460,8 @@ Both repos have GitHub Actions CI:
 
 ## Trello Integration
 
-Project board: https://trello.com/b/KOH1DLOH/saived
+Project board: https://trello.com/b/RcSFyPfW/saived-trello
+Board ID: `6963562a6d9c4475295fc205`
 
 **API Credentials**: Stored in `~/.trello_credentials` (not in repo)
 
@@ -483,7 +484,11 @@ curl -X PUT "https://api.trello.com/1/cards/CARD_ID?idList=LIST_ID&idMembers=MEM
 ```
 
 **Key list IDs**:
+- "To Do": `6963562a6d9c4475295fc1fc`
+- "In Progress": `6963562a6d9c4475295fc1fa`
 - "W testach (Marti)": `6964dd6e9d788f26972164d7`
+- "Done": `6963562a6d9c4475295fc1f8`
+- "Sugestie": `6963562a6d9c4475295fc1ff`
 
 **Member IDs**:
 - Martyna Budnik: `6963aca15b7fa5b787bf2e9c`
