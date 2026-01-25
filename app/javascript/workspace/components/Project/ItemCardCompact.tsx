@@ -122,7 +122,7 @@ const ItemCardCompact = memo(function ItemCardCompact({
         </div>
 
         {/* Name + note content (for notes) / external link/phone (adjacent) */}
-        <div className={`flex-1 min-w-0 flex items-center gap-1 ${isProposal && !isNote ? 'opacity-70' : ''}`}>
+        <div className={`flex-1 min-w-0 max-w-[45%] flex items-center gap-1 ${isProposal && !isNote ? 'opacity-70' : ''}`}>
           {isNote ? (
             // Notes: show name (if any) + note content
             <span className="text-sm text-neutral-700 truncate">
@@ -169,82 +169,85 @@ const ItemCardCompact = memo(function ItemCardCompact({
           )}
         </div>
 
-        {/* Category - select (products only, not notes) - fixed width for column alignment */}
-        {isProduct && (
-          <div className={`hidden lg:flex shrink-0 w-20 justify-end ${isProposal ? 'opacity-70' : ''}`}>
-            <select
-              value={item.category || ''}
-              onChange={(e) => handleUpdate('category', e.target.value)}
-              className="text-[11px] text-neutral-500 bg-transparent border-0 p-0 pr-3 cursor-pointer hover:text-neutral-700 focus:outline-none focus:ring-0 appearance-none truncate"
-              style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 20 20\'%3E%3Cpath stroke=\'%236b7280\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'1.5\' d=\'m6 8 4 4 4-4\'/%3E%3C/svg%3E")', backgroundPosition: 'right 0 center', backgroundRepeat: 'no-repeat', backgroundSize: '12px' }}
-            >
-              {CATEGORIES.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-        {/* Empty placeholder for non-products to maintain column alignment */}
-        {!isProduct && !isNote && (
-          <div className="hidden lg:block shrink-0 w-20" />
-        )}
+        {/* Right-aligned columns container */}
+        <div className="ml-auto shrink-0 flex items-center gap-3">
+          {/* Category - select (products only, not notes) */}
+          {isProduct && (
+            <div className={`hidden lg:flex w-20 justify-end ${isProposal ? 'opacity-70' : ''}`}>
+              <select
+                value={item.category || ''}
+                onChange={(e) => handleUpdate('category', e.target.value)}
+                className="text-[11px] text-neutral-500 bg-transparent border-0 p-0 pr-3 cursor-pointer hover:text-neutral-700 focus:outline-none focus:ring-0 appearance-none truncate"
+                style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 20 20\'%3E%3Cpath stroke=\'%236b7280\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'1.5\' d=\'m6 8 4 4 4-4\'/%3E%3C/svg%3E")', backgroundPosition: 'right 0 center', backgroundRepeat: 'no-repeat', backgroundSize: '12px' }}
+              >
+                {CATEGORIES.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+          {/* Empty placeholder for non-products to maintain column alignment */}
+          {!isProduct && !isNote && (
+            <div className="hidden lg:block w-20" />
+          )}
 
-        {/* Price section - different for product vs contractor (hidden for notes) - fixed width for column alignment */}
-        {!isNote && (
-          <div className={`shrink-0 w-52 flex items-center justify-end gap-1 text-sm ${isProposal ? 'opacity-70' : ''}`}>
-            {isContractor ? (
-              // Contractor: just show total (flat price)
-              <span className="font-semibold text-neutral-900 whitespace-nowrap">
-                {formatCurrency(item.total_price)}
-              </span>
-            ) : (
-              // Product: Quantity x Unit Price = Total
-              <>
-                <span className="text-neutral-400 hidden sm:inline text-xs">
-                  {item.quantity} x
-                </span>
-                <div className="hidden sm:block">
-                  <EditableField
-                    value={item.unit_price}
-                    onChange={(v) => handleUpdate('unit_price', v)}
-                    type="number"
-                    placeholder="0"
-                    className="text-neutral-500 text-xs"
-                    inputClassName="w-16 text-xs"
-                  />
-                </div>
-                <span className="text-neutral-400 hidden sm:inline text-xs">=</span>
-                {item.original_unit_price && (
-                  <span className="text-neutral-400 line-through text-[10px] hidden sm:inline whitespace-nowrap">
-                    {formatCurrency(item.original_unit_price * item.quantity)}
-                  </span>
-                )}
+          {/* Price section - different for product vs contractor (hidden for notes) */}
+          {!isNote && (
+            <div className={`w-56 flex items-center justify-end gap-1 text-sm ${isProposal ? 'opacity-70' : ''}`}>
+              {isContractor ? (
+                // Contractor: just show total (flat price)
                 <span className="font-semibold text-neutral-900 whitespace-nowrap">
                   {formatCurrency(item.total_price)}
                 </span>
-                {item.discount_label && (
-                  <span className="px-1 py-0.5 rounded bg-emerald-100 text-emerald-700 text-[10px] font-medium whitespace-nowrap">
-                    {item.discount_label.split(' ')[0]}
+              ) : (
+                // Product: Quantity x Unit Price = Total
+                <>
+                  <span className="text-neutral-400 hidden sm:inline text-xs">
+                    {item.quantity} x
                   </span>
-                )}
-              </>
-            )}
-          </div>
-        )}
+                  <div className="hidden sm:block">
+                    <EditableField
+                      value={item.unit_price}
+                      onChange={(v) => handleUpdate('unit_price', v)}
+                      type="number"
+                      placeholder="0"
+                      className="text-neutral-500 text-xs"
+                      inputClassName="w-16 text-xs"
+                    />
+                  </div>
+                  <span className="text-neutral-400 hidden sm:inline text-xs">=</span>
+                  {item.original_unit_price && (
+                    <span className="text-neutral-400 line-through text-[10px] hidden sm:inline whitespace-nowrap">
+                      {formatCurrency(item.original_unit_price * item.quantity)}
+                    </span>
+                  )}
+                  <span className="font-semibold text-neutral-900 whitespace-nowrap">
+                    {formatCurrency(item.total_price)}
+                  </span>
+                  {item.discount_label && (
+                    <span className="px-1 py-0.5 rounded bg-emerald-100 text-emerald-700 text-[10px] font-medium whitespace-nowrap">
+                      {item.discount_label.split(' ')[0]}
+                    </span>
+                  )}
+                </>
+              )}
+            </div>
+          )}
 
-        {/* Status - for product and contractor only (hidden for notes) - fixed width for column alignment */}
-        {!isNote && (
-          <div className="shrink-0 w-24">
-            <StatusSelect
-              value={item.status}
-              onChange={(v) => handleUpdate('status', v)}
-              compact
-              customStatuses={customStatuses}
-            />
-          </div>
-        )}
+          {/* Status - for product and contractor only (hidden for notes) */}
+          {!isNote && (
+            <div className="w-24">
+              <StatusSelect
+                value={item.status}
+                onChange={(v) => handleUpdate('status', v)}
+                compact
+                customStatuses={customStatuses}
+              />
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Actions - visible on hover or while dragging */}
