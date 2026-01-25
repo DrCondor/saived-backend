@@ -122,7 +122,7 @@ const ItemCardCompact = memo(function ItemCardCompact({
         </div>
 
         {/* Name + note content (for notes) / external link/phone (adjacent) */}
-        <div className={`flex-1 min-w-0 max-w-[45%] flex items-center gap-1 ${isProposal && !isNote ? 'opacity-70' : ''}`}>
+        <div className={`flex-1 min-w-0 flex items-center gap-1 ${isProposal && !isNote ? 'opacity-70' : ''}`}>
           {isNote ? (
             // Notes: show name (if any) + note content
             <span className="text-sm text-neutral-700 truncate">
