@@ -78,11 +78,11 @@ const ItemCardCompact = memo(function ItemCardCompact({
   };
 
   return (
-    <div className="group flex items-center gap-2">
+    <div className="group flex items-center gap-2 w-full min-w-0">
       {/* Main card - single row, entire card is draggable */}
       <div
         {...dragHandleProps}
-        className={`flex-1 flex items-center gap-3 rounded-lg border border-neutral-200 bg-white px-3 py-2 hover:shadow-sm hover:border-neutral-300 transition-all ${cardClasses}`}
+        className={`flex-1 min-w-0 flex items-center gap-3 rounded-lg border border-neutral-200 bg-white px-3 py-2 hover:shadow-sm hover:border-neutral-300 transition-all overflow-hidden ${cardClasses}`}
       >
         {/* Thumbnail / Icon */}
         <div
