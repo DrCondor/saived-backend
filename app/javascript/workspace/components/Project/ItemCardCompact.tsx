@@ -195,7 +195,7 @@ const ItemCardCompact = memo(function ItemCardCompact({
 
           {/* Price section - different for product vs contractor (hidden for notes) */}
           {!isNote && (
-            <div className={`w-56 flex items-center justify-end gap-1 text-sm ${isProposal ? 'opacity-70' : ''}`}>
+            <div className={`w-64 flex items-center justify-end gap-1 text-sm ${isProposal ? 'opacity-70' : ''}`}>
               {isContractor ? (
                 // Contractor: just show total (flat price)
                 <span className="font-semibold text-neutral-900 whitespace-nowrap">
@@ -204,7 +204,7 @@ const ItemCardCompact = memo(function ItemCardCompact({
               ) : (
                 // Product: Quantity x Unit Price = Total
                 <>
-                  <span className="text-neutral-400 hidden sm:inline text-xs">
+                  <span className="text-neutral-400 hidden sm:inline text-xs whitespace-nowrap">
                     {item.quantity} x
                   </span>
                   <div className="hidden sm:block">
