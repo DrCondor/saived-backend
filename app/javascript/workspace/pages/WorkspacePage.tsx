@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
 import { useProjects } from '../hooks/useProjects';
 import { useProject } from '../hooks/useProject';
 import Sidebar from '../components/Layout/Sidebar';
@@ -8,6 +8,7 @@ import ProjectView from '../components/Project/ProjectView';
 export default function WorkspacePage() {
   const { projectId } = useParams<{ projectId?: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const currentProjectId = projectId ? parseInt(projectId, 10) : null;
 
   const { data: projects = [], isLoading: projectsLoading } = useProjects();
@@ -19,6 +20,20 @@ export default function WorkspacePage() {
       navigate(`/workspace/projects/${projects[0].id}`, { replace: true });
     }
   }, [currentProjectId, projects, projectsLoading, navigate]);
+
+  // Scroll to section when URL has hash (e.g., #section-123)
+  useEffect(() => {
+    if (location.hash && currentProject) {
+      // Small delay to ensure DOM is ready
+      const timer = setTimeout(() => {
+        const element = document.querySelector(location.hash);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [location.hash, currentProject]);
 
   // Show loading state when projects are loading on /workspace route
   const isRedirecting = !currentProjectId && projects.length > 0 && !projectsLoading;

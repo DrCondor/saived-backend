@@ -24,6 +24,29 @@ import type { ProjectListItem, Project } from '../../types';
 import { useToggleFavorite, useReorderProjects, useDeleteProject } from '../../hooks/useProjects';
 import { formatCurrency } from '../../utils/formatters';
 
+// localStorage functions for expanded projects state
+const EXPANDED_SIDEBAR_PROJECTS_KEY = 'saived_sidebar_expanded_projects';
+
+function getExpandedProjects(): Set<number> {
+  try {
+    const stored = localStorage.getItem(EXPANDED_SIDEBAR_PROJECTS_KEY);
+    if (stored) {
+      return new Set(JSON.parse(stored));
+    }
+  } catch {
+    // Ignore localStorage errors
+  }
+  return new Set();
+}
+
+function saveExpandedProjects(projectIds: Set<number>) {
+  try {
+    localStorage.setItem(EXPANDED_SIDEBAR_PROJECTS_KEY, JSON.stringify([...projectIds]));
+  } catch {
+    // Ignore localStorage errors
+  }
+}
+
 interface SidebarProps {
   projects: ProjectListItem[];
   currentProjectId: number | null;
@@ -34,20 +57,19 @@ interface SidebarProps {
 interface SortableProjectItemProps {
   project: ProjectListItem;
   isActive: boolean;
-  currentProject?: Project | null;
-  sectionsExpanded: boolean;
-  onToggleSections: () => void;
+  isSectionsExpanded: boolean;
+  onToggleSections: (projectId: number) => void;
   onContextMenu: (e: React.MouseEvent, projectId: number) => void;
 }
 
 function SortableProjectItem({
   project,
   isActive,
-  currentProject,
-  sectionsExpanded,
+  isSectionsExpanded,
   onToggleSections,
   onContextMenu,
 }: SortableProjectItemProps) {
+  const navigate = useNavigate();
   const {
     attributes,
     listeners,
@@ -62,6 +84,15 @@ function SortableProjectItem({
     transition: transition || 'transform 200ms cubic-bezier(0.25, 1, 0.5, 1)',
     opacity: isDragging ? 0.5 : 1,
     zIndex: isDragging ? 10 : undefined,
+  };
+
+  const handleSectionClick = (e: React.MouseEvent, sectionId: number) => {
+    if (isActive) {
+      // For active project, anchor link works normally
+      return;
+    }
+    e.preventDefault();
+    navigate(`/workspace/projects/${project.id}#section-${sectionId}`);
   };
 
   return (
@@ -113,19 +144,20 @@ function SortableProjectItem({
               <span className="text-sm font-medium text-neutral-900 truncate">
                 {project.name || 'Bez nazwy'}
               </span>
-              {isActive && currentProject && currentProject.sections.length > 0 && (
+              {/* Chevron button - show for ANY project with sections */}
+              {project.sections.length > 0 && (
                 <button
                   type="button"
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    onToggleSections();
+                    onToggleSections(project.id);
                   }}
                   className="p-0.5 rounded hover:bg-neutral-100 transition-colors"
                 >
                   <svg
                     className={`w-4 h-4 text-neutral-400 shrink-0 transition-transform ${
-                      !sectionsExpanded ? '-rotate-90' : ''
+                      !isSectionsExpanded ? '-rotate-90' : ''
                     }`}
                     fill="none"
                     stroke="currentColor"
@@ -148,16 +180,21 @@ function SortableProjectItem({
         </Link>
       </div>
 
-      {/* Nested sections for active project */}
-      {isActive && sectionsExpanded && currentProject && currentProject.sections.length > 0 && (
+      {/* Nested sections - show for ANY expanded project */}
+      {isSectionsExpanded && project.sections.length > 0 && (
         <div className="px-3 pb-2.5 space-y-0.5">
-          {currentProject.sections.map((section) => (
+          {project.sections.map((section) => (
             <a
               key={section.id}
               href={`#section-${section.id}`}
-              className="flex items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 transition-colors"
+              onClick={(e) => handleSectionClick(e, section.id)}
+              className={`flex items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs transition-colors ${
+                isActive
+                  ? 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
+                  : 'text-neutral-500 hover:bg-neutral-100/50 hover:text-neutral-700'
+              }`}
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-neutral-300" />
+              <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-neutral-300' : 'bg-neutral-300/70'}`} />
               <span className="truncate">{section.name}</span>
             </a>
           ))}
@@ -190,8 +227,8 @@ export default function Sidebar({
   const [localProjects, setLocalProjects] = useState(projects);
   const [activeProject, setActiveProject] = useState<ProjectListItem | null>(null);
 
-  // Sections expanded state (default to expanded)
-  const [sectionsExpanded, setSectionsExpanded] = useState(true);
+  // Expanded projects state (which projects have their sections visible)
+  const [expandedProjects, setExpandedProjects] = useState<Set<number>>(() => getExpandedProjects());
 
   // Context menu state
   const [contextMenu, setContextMenu] = useState<ContextMenuState>({
@@ -252,8 +289,17 @@ export default function Sidebar({
     });
   }, []);
 
-  const handleToggleSections = useCallback(() => {
-    setSectionsExpanded((prev) => !prev);
+  const handleToggleSections = useCallback((projectId: number) => {
+    setExpandedProjects((prev) => {
+      const next = new Set(prev);
+      if (next.has(projectId)) {
+        next.delete(projectId);
+      } else {
+        next.add(projectId);
+      }
+      saveExpandedProjects(next);
+      return next;
+    });
   }, []);
 
   const handleToggleFavorite = useCallback(() => {
@@ -378,10 +424,7 @@ export default function Sidebar({
                           key={project.id}
                           project={project}
                           isActive={currentProjectId === project.id}
-                          currentProject={
-                            currentProjectId === project.id ? currentProject : undefined
-                          }
-                          sectionsExpanded={sectionsExpanded}
+                          isSectionsExpanded={expandedProjects.has(project.id)}
                           onToggleSections={handleToggleSections}
                           onContextMenu={handleContextMenu}
                         />
@@ -407,10 +450,7 @@ export default function Sidebar({
                         key={project.id}
                         project={project}
                         isActive={currentProjectId === project.id}
-                        currentProject={
-                          currentProjectId === project.id ? currentProject : undefined
-                        }
-                        sectionsExpanded={sectionsExpanded}
+                        isSectionsExpanded={expandedProjects.has(project.id)}
                         onToggleSections={handleToggleSections}
                         onContextMenu={handleContextMenu}
                       />
@@ -465,11 +505,11 @@ export default function Sidebar({
                           <span className="text-sm font-medium text-neutral-900 truncate">
                             {activeProject.name || 'Bez nazwy'}
                           </span>
-                          {/* Show chevron if this is the active project with sections */}
-                          {activeProject.id === currentProjectId && currentProject && currentProject.sections.length > 0 && (
+                          {/* Show chevron if project has sections */}
+                          {activeProject.sections.length > 0 && (
                             <svg
                               className={`w-4 h-4 text-neutral-400 shrink-0 transition-transform ${
-                                !sectionsExpanded ? '-rotate-90' : ''
+                                !expandedProjects.has(activeProject.id) ? '-rotate-90' : ''
                               }`}
                               fill="none"
                               stroke="currentColor"
@@ -491,10 +531,10 @@ export default function Sidebar({
                     </div>
                   </div>
 
-                  {/* Show sections if this is the active project and sections are expanded */}
-                  {activeProject.id === currentProjectId && sectionsExpanded && currentProject && currentProject.sections.length > 0 && (
+                  {/* Show sections if expanded */}
+                  {expandedProjects.has(activeProject.id) && activeProject.sections.length > 0 && (
                     <div className="px-3 pb-2.5 space-y-0.5">
-                      {currentProject.sections.map((section) => (
+                      {activeProject.sections.map((section) => (
                         <div
                           key={section.id}
                           className="flex items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs text-neutral-600"
