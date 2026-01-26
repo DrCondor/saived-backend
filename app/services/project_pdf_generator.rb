@@ -397,7 +397,6 @@ class ProjectPdfGenerator
     # Header row with thumbnail column
     table_data << [
       { content: "", font_style: :bold },  # Thumbnail column
-      { content: "#", font_style: :bold },
       { content: "Nazwa produktu", font_style: :bold },
       { content: "Ilość", font_style: :bold },
       { content: "Cena", font_style: :bold },
@@ -428,7 +427,6 @@ class ProjectPdfGenerator
 
       table_data << [
         thumbnail_cell,
-        { content: (index + 1).to_s },
         name_cell,
         { content: "#{item.quantity} #{item.unit_type_label}" },
         { content: format_currency(item.unit_price) },
@@ -450,18 +448,16 @@ class ProjectPdfGenerator
 
       # Column widths - with thumbnail column
       t.column(0).width = 35   # Thumbnail
-      t.column(1).width = 25   # #
-      t.column(2).width = 235  # Nazwa (reduced to fit thumbnail)
-      t.column(3).width = 55   # Ilość
-      t.column(4).width = 85   # Cena
-      t.column(5).width = 100  # Suma
+      t.column(1).width = 260  # Nazwa
+      t.column(2).width = 55   # Ilość
+      t.column(3).width = 85   # Cena
+      t.column(4).width = 100  # Suma
 
       # Alignments
       t.column(0).align = :center
-      t.column(1).align = :center
-      t.column(3).align = :center
+      t.column(2).align = :center
+      t.column(3).align = :right
       t.column(4).align = :right
-      t.column(5).align = :right
 
       # Last row no bottom border
       t.row(-1).borders = []
