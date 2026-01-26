@@ -1,6 +1,7 @@
 class ProjectItem < ApplicationRecord
   belongs_to :project_section
   has_many :product_capture_samples, dependent: :nullify
+  has_many :item_favorites, dependent: :destroy
   has_one_attached :attachment
 
   # Item types

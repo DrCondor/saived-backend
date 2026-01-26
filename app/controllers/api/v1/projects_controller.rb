@@ -176,6 +176,10 @@ module Api
         params.require(:project).permit(:name, :description, :favorite, :position)
       end
 
+      def favorite_item_ids
+        @favorite_item_ids ||= current_user.item_favorites.pluck(:project_item_id).to_set
+      end
+
       def project_json(project)
         {
           id: project.id,
@@ -215,7 +219,9 @@ module Api
                   address: item.address,
                   phone: item.phone,
                   attachment_url: item.attachment.attached? ? rails_blob_url(item.attachment, only_path: true) : nil,
-                  attachment_filename: item.attachment.attached? ? item.attachment.filename.to_s : nil
+                  attachment_filename: item.attachment.attached? ? item.attachment.filename.to_s : nil,
+                  # Favorite
+                  favorite: favorite_item_ids.include?(item.id)
                 }
               }
             }

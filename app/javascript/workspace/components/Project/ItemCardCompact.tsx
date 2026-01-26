@@ -31,6 +31,7 @@ interface ItemCardCompactProps {
   item: ProjectItem;
   onUpdate?: (itemId: number, input: UpdateItemInput) => void;
   onDelete?: (itemId: number) => void;
+  onToggleFavorite?: (itemId: number, favorite: boolean) => void;
   dragHandleProps?: React.HTMLAttributes<HTMLDivElement>;
   isDragging?: boolean;
   customStatuses?: CustomStatus[];
@@ -40,6 +41,7 @@ const ItemCardCompact = memo(function ItemCardCompact({
   item,
   onUpdate,
   onDelete,
+  onToggleFavorite,
   dragHandleProps,
   isDragging,
   customStatuses = [],
@@ -266,6 +268,24 @@ const ItemCardCompact = memo(function ItemCardCompact({
             <path d="M8 6a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM8 12a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM6 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM14 6a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM14 18a2 2 0 1 1-4 0 2 2 0 0 1 4 0z" />
           </svg>
         </div>
+
+        {/* Favorite button */}
+        {onToggleFavorite && (
+          <button
+            type="button"
+            onClick={() => onToggleFavorite(item.id, item.favorite ?? false)}
+            className={`p-1 rounded transition-colors active:scale-125 ${
+              item.favorite
+                ? 'text-rose-500 hover:text-rose-600'
+                : 'text-neutral-300 hover:text-rose-400'
+            }`}
+            title={item.favorite ? 'Usuń z ulubionych' : 'Dodaj do ulubionych'}
+          >
+            <svg className="w-3.5 h-3.5 transition-transform duration-200" fill={item.favorite ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+          </button>
+        )}
 
         {/* Delete button */}
         {onDelete && (

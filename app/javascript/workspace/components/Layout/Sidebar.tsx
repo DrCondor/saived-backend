@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { flushSync } from 'react-dom';
 import {
   DndContext,
@@ -181,6 +181,7 @@ export default function Sidebar({
   onCreateProject,
 }: SidebarProps) {
   const navigate = useNavigate();
+  const location = useLocation();
   const toggleFavorite = useToggleFavorite();
   const reorderProjects = useReorderProjects();
   const deleteProject = useDeleteProject();
@@ -508,6 +509,23 @@ export default function Sidebar({
               ) : null}
             </DragOverlay>
           </DndContext>
+
+          {/* Favorites link */}
+          <div className="mt-6 pt-4 border-t border-neutral-200/50">
+            <Link
+              to="/workspace/favorites"
+              className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm transition-all ${
+                location.pathname === '/workspace/favorites'
+                  ? 'bg-white shadow-sm text-rose-600 font-medium'
+                  : 'text-neutral-500 hover:bg-white/50 hover:text-neutral-700'
+              }`}
+            >
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+              Ulubione
+            </Link>
+          </div>
         </div>
       </div>
 

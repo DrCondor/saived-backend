@@ -80,6 +80,22 @@ export interface ProjectItem {
   phone: string | null;
   attachment_url: string | null;
   attachment_filename: string | null;
+  // Favorites
+  favorite?: boolean;
+}
+
+// Favorite item (for favorites page)
+export interface FavoriteItem {
+  id: number;
+  name: string;
+  thumbnail_url: string | null;
+  total_price: number | null;
+  currency: string;
+  external_url: string | null;
+  item_type: ItemType;
+  project_id: number;
+  project_name: string;
+  section_name: string;
 }
 
 export interface ProjectSection {

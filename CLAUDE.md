@@ -44,7 +44,8 @@ yarn test:run     # Run React tests (single run)
 User
  ├── api_token (for extension auth)
  ├── owned_projects (as owner)
- └── projects (via ProjectMembership)
+ ├── projects (via ProjectMembership)
+ └── item_favorites → ItemFavorite → ProjectItem (favorite items)
       └── Project
            ├── owner_id → User
            ├── name, description
@@ -101,6 +102,9 @@ API supports both Bearer token (extension) and session auth (SPA).
 | PATCH | `/api/v1/project_sections/:id/items/:id` | Update item |
 | DELETE | `/api/v1/project_sections/:id/items/:id` | Delete item |
 | GET | `/api/v1/selectors?domain=...` | Get learned selectors for domain |
+| GET | `/api/v1/favorites` | List user's favorite items |
+| POST | `/api/v1/favorites/:project_item_id` | Add item to favorites |
+| DELETE | `/api/v1/favorites/:project_item_id` | Remove item from favorites |
 
 **POST Item Payload**:
 ```json
@@ -161,12 +165,14 @@ app/javascript/workspace/
 │   ├── client.ts            # Fetch wrapper with CSRF + session auth
 │   ├── projects.ts          # Project API functions
 │   ├── sections.ts          # Section API functions
-│   └── items.ts             # Item API functions
+│   ├── items.ts             # Item API functions
+│   └── favorites.ts         # Favorites API functions
 ├── hooks/
 │   ├── useProjects.ts       # TanStack Query hooks for projects
 │   ├── useProject.ts        # Single project hook
 │   ├── useSections.ts       # Section mutations
 │   ├── useItems.ts          # Item mutations
+│   ├── useFavorites.ts      # Favorites query + toggle mutation
 │   └── useCurrentUser.ts    # Current user from window.__INITIAL_DATA__
 ├── components/
 │   ├── Layout/
@@ -183,7 +189,8 @@ app/javascript/workspace/
 │       └── AddItemForm.tsx       # Form for adding product/contractor/note
 ├── pages/
 │   ├── WorkspacePage.tsx    # Main workspace page
-│   └── NewProjectPage.tsx   # New project form
+│   ├── NewProjectPage.tsx   # New project form
+│   └── FavoritesPage.tsx    # Favorites page (grid of favorited items)
 ├── types/
 │   └── index.ts             # TypeScript interfaces
 └── utils/
@@ -198,6 +205,7 @@ app/javascript/workspace/
 | `/workspace` | `WorkspacePage` | Main workspace (redirects to first project) |
 | `/workspace/projects/new` | `NewProjectPage` | Create new project form |
 | `/workspace/projects/:id` | `WorkspacePage` | View specific project |
+| `/workspace/favorites` | `FavoritesPage` | View all favorited items |
 
 ### Rails Routes
 | Helper | Path | Purpose |
@@ -220,6 +228,7 @@ app/javascript/workspace/
 - API supports both session auth (SPA) and Bearer token (extension)
 - Section collapsed state persisted in localStorage
 - Three view modes: grid, list (compact), moodboard
+- **Favorites** - add items to favorites via heart icon, view on `/workspace/favorites` page
 
 **Missing/TODO**:
 - Item editing in web UI (currently only via extension re-capture)
@@ -379,12 +388,11 @@ app/javascript/workspace/
 
 | Suite | Tests | Coverage |
 |-------|-------|----------|
-| Rails Models | 106 | ~20% |
-| Rails API | 80 | ~20% |
-| React Components | 12 | - |
+| Rails (all) | 224 | ~7% |
+| React Components | 13 | - |
 | React Hooks | 5 | - |
-| React Utils | 17 | - |
-| **Total** | **220** | - |
+| React Utils | 19 | - |
+| **Total** | **261** | - |
 
 ### Writing Tests
 
@@ -435,19 +443,22 @@ Both repos have GitHub Actions CI:
 - Jest tests with coverage
 - Syntax validation
 
-## Current Work (updated 2026-01-22)
+## Current Work (updated 2026-01-26)
 
-**Recently completed & deployed**:
+**Recently completed (ready to deploy)**:
+- **Ulubione (Favorites)** - heart icon on item cards to add/remove favorites
+  - Backend: `ItemFavorite` model, `item_favorites` table, `FavoritesController`
+  - Frontend: heart button on all 3 card views, `/workspace/favorites` page, sidebar link
+  - API: GET/POST/DELETE `/api/v1/favorites/:project_item_id`
+
+**Previously completed & deployed**:
 - NOTATKA (note) - third item type for text-only annotations
 - Wykonawca (contractor) - item type with phone, address fields
 - Drag & drop items (within/across sections) via dnd-kit
 - Section collapsed state (persisted in localStorage)
 - Editable project description (for PDF "Notatka" field)
 - Three view modes: grid, list, moodboard
-
-**In testing (Martyna)**:
-- All above features are on production, Martyna is testing
-- Trello cards moved to "W testach (Marti)" column
+- List view layout fixes (price column width, quantity nowrap, category width)
 
 **Pending/TODO from Trello**:
 - PDF export needs update to render notes as text blocks (not in price table)
@@ -457,6 +468,7 @@ Both repos have GitHub Actions CI:
 - Notes use existing `name` and `note` fields, no migration needed
 - `total_price` returns 0 for notes (doesn't affect sums)
 - Contractors insert at beginning of section, products/notes at end
+- Favorites use join table `item_favorites` (user_id, project_item_id)
 
 ## Trello Integration
 

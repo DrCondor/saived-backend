@@ -7,6 +7,7 @@ import { shouldIncludeInSum } from '../../utils/statusHelpers';
 import { useCreateItem, useUpdateItem, useDeleteItem } from '../../hooks/useItems';
 import { useUpdateSection, useDeleteSection } from '../../hooks/useSections';
 import { useCurrentUser } from '../../hooks/useUser';
+import { useToggleFavorite } from '../../hooks/useFavorites';
 import SortableItemCard from './SortableItemCard';
 import SortableItemCardCompact from './SortableItemCardCompact';
 import SortableItemCardMoodboard from './SortableItemCardMoodboard';
@@ -63,6 +64,7 @@ export default function Section({ section, projectId, viewMode }: SectionProps) 
   const createItem = useCreateItem(projectId, section.id);
   const updateItem = useUpdateItem(projectId, section.id);
   const deleteItem = useDeleteItem(projectId, section.id);
+  const toggleFavorite = useToggleFavorite();
 
   // Droppable zone for cross-section item moves
   const { setNodeRef, isOver } = useDroppable({
@@ -109,6 +111,10 @@ export default function Section({ section, projectId, viewMode }: SectionProps) 
   const handleDeleteItem = useCallback((itemId: number) => {
     deleteItem.mutate(itemId);
   }, [deleteItem]);
+
+  const handleToggleFavorite = useCallback((itemId: number, favorite: boolean) => {
+    toggleFavorite.mutate({ itemId, favorite });
+  }, [toggleFavorite]);
 
   const items = section.items || [];
 
@@ -239,6 +245,7 @@ export default function Section({ section, projectId, viewMode }: SectionProps) 
                     <SortableItemCardMoodboard
                       key={item.id}
                       item={item}
+                      onToggleFavorite={handleToggleFavorite}
                     />
                   );
                 }
@@ -249,6 +256,7 @@ export default function Section({ section, projectId, viewMode }: SectionProps) 
                       item={item}
                       onUpdate={handleUpdateItem}
                       onDelete={handleDeleteItem}
+                      onToggleFavorite={handleToggleFavorite}
                       customStatuses={customStatuses}
                     />
                   );
@@ -259,6 +267,7 @@ export default function Section({ section, projectId, viewMode }: SectionProps) 
                     item={item}
                     onUpdate={handleUpdateItem}
                     onDelete={handleDeleteItem}
+                    onToggleFavorite={handleToggleFavorite}
                     customStatuses={customStatuses}
                   />
                 );

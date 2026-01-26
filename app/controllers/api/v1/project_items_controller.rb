@@ -86,7 +86,9 @@ module Api
           address: item.address,
           phone: item.phone,
           attachment_url: item.attachment.attached? ? rails_blob_url(item.attachment, only_path: true) : nil,
-          attachment_filename: item.attachment.attached? ? item.attachment.filename.to_s : nil
+          attachment_filename: item.attachment.attached? ? item.attachment.filename.to_s : nil,
+          # Favorite
+          favorite: current_user.item_favorites.exists?(project_item_id: item.id)
         }
       end
 

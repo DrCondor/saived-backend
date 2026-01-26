@@ -5,6 +5,7 @@ import WorkspacePage from './pages/WorkspacePage';
 import NewProjectPage from './pages/NewProjectPage';
 import SettingsPage from './pages/SettingsPage';
 import ExtensionPage from './pages/ExtensionPage';
+import FavoritesPage from './pages/FavoritesPage';
 import ExtensionUpdateModal from './components/shared/ExtensionUpdateModal';
 import { useCurrentUser, useDismissExtensionUpdate } from './hooks/useUser';
 
@@ -36,6 +37,7 @@ function AppContent() {
           <Route index element={<WorkspacePage />} />
           <Route path="projects/new" element={<NewProjectPage />} />
           <Route path="projects/:projectId" element={<WorkspacePage />} />
+          <Route path="favorites" element={<FavoritesPage />} />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="extension" element={<ExtensionPage />} />
         </Route>

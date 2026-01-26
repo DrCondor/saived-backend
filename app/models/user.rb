@@ -23,6 +23,9 @@ class User < ApplicationRecord
 
   has_many :product_capture_samples, dependent: :destroy
 
+  has_many :item_favorites, dependent: :destroy
+  has_many :favorite_items, through: :item_favorites, source: :project_item
+
   has_many :owned_projects,
            class_name: "Project",
            foreign_key: :owner_id,

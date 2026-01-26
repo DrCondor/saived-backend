@@ -7,13 +7,14 @@ interface SortableItemCardCompactProps {
   item: ProjectItem;
   onUpdate?: (itemId: number, input: UpdateItemInput) => void;
   onDelete?: (itemId: number) => void;
+  onToggleFavorite?: (itemId: number, favorite: boolean) => void;
   customStatuses?: CustomStatus[];
 }
 
 // Always animate for smooth transitions
 const animateLayoutChanges: AnimateLayoutChanges = () => true;
 
-export default function SortableItemCardCompact({ item, onUpdate, onDelete, customStatuses }: SortableItemCardCompactProps) {
+export default function SortableItemCardCompact({ item, onUpdate, onDelete, onToggleFavorite, customStatuses }: SortableItemCardCompactProps) {
   const {
     attributes,
     listeners,
@@ -46,6 +47,7 @@ export default function SortableItemCardCompact({ item, onUpdate, onDelete, cust
         item={item}
         onUpdate={onUpdate}
         onDelete={onDelete}
+        onToggleFavorite={onToggleFavorite}
         dragHandleProps={{ ...attributes, ...listeners }}
         isDragging={isDragging}
         customStatuses={customStatuses}

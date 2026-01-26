@@ -26,12 +26,14 @@ function NoteIconLarge() {
 
 interface ItemCardMoodboardProps {
   item: ProjectItem;
+  onToggleFavorite?: (itemId: number, favorite: boolean) => void;
   dragHandleProps?: React.HTMLAttributes<HTMLDivElement>;
   isDragging?: boolean;
 }
 
 const ItemCardMoodboard = memo(function ItemCardMoodboard({
   item,
+  onToggleFavorite,
   dragHandleProps,
   isDragging,
 }: ItemCardMoodboardProps) {
@@ -172,6 +174,34 @@ const ItemCardMoodboard = memo(function ItemCardMoodboard({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
             </svg>
           </div>
+        )}
+
+        {/* Favorite button */}
+        {onToggleFavorite && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleFavorite(item.id, item.favorite ?? false);
+            }}
+            className={`absolute top-2 p-1.5 rounded-lg bg-white/90 backdrop-blur-sm shadow-sm transition-all active:scale-110 ${
+              isProduct && item.external_url ? 'right-10' : isContractor && item.phone ? 'right-10' : 'right-2'
+            } ${
+              item.favorite
+                ? 'opacity-100 text-rose-500'
+                : 'opacity-0 group-hover:opacity-100 text-neutral-400 hover:text-rose-400'
+            }`}
+            title={item.favorite ? 'Usuń z ulubionych' : 'Dodaj do ulubionych'}
+          >
+            <svg
+              className="w-3.5 h-3.5 transition-transform duration-200"
+              fill={item.favorite ? 'currentColor' : 'none'}
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+          </button>
         )}
 
         {/* Contractor badge */}

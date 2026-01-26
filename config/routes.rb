@@ -64,6 +64,11 @@ Rails.application.routes.draw do
         resources :items, controller: "project_items", path: "items", only: [ :create, :update, :destroy ]
       end
 
+      # Item favorites
+      get "favorites", to: "favorites#index"
+      post "favorites/:project_item_id", to: "favorites#create"
+      delete "favorites/:project_item_id", to: "favorites#destroy"
+
       # Learning system: fetch best selectors for a domain
       resources :selectors, only: [ :index ]
 

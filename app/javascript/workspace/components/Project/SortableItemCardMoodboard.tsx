@@ -5,12 +5,13 @@ import ItemCardMoodboard from './ItemCardMoodboard';
 
 interface SortableItemCardMoodboardProps {
   item: ProjectItem;
+  onToggleFavorite?: (itemId: number, favorite: boolean) => void;
 }
 
 // Always animate for smooth transitions
 const animateLayoutChanges: AnimateLayoutChanges = () => true;
 
-export default function SortableItemCardMoodboard({ item }: SortableItemCardMoodboardProps) {
+export default function SortableItemCardMoodboard({ item, onToggleFavorite }: SortableItemCardMoodboardProps) {
   const {
     attributes,
     listeners,
@@ -41,6 +42,7 @@ export default function SortableItemCardMoodboard({ item }: SortableItemCardMood
     <div ref={setNodeRef} style={style}>
       <ItemCardMoodboard
         item={item}
+        onToggleFavorite={onToggleFavorite}
         dragHandleProps={{ ...attributes, ...listeners }}
         isDragging={isDragging}
       />
