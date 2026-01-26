@@ -121,10 +121,10 @@ const ItemCard = memo(function ItemCard({
 
   return (
     <div className="group flex gap-2">
-      {/* Item card - entire card is draggable */}
+      {/* Item card - entire card is draggable (Trello-style) */}
       <div
         {...dragHandleProps}
-        className={`flex-1 rounded-xl border border-neutral-200 bg-white p-3 hover:shadow-md hover:border-neutral-300 transition-all ${cardClasses}`}
+        className={`flex-1 rounded-xl border border-neutral-200 bg-white p-3 hover:shadow-md hover:border-neutral-300 transition-all touch-none ${cardClasses}`}
       >
         <div className="flex gap-3">
           {/* Thumbnail / Icon */}
@@ -445,6 +445,7 @@ const ItemCard = memo(function ItemCard({
                   <select
                     value={item.category || ''}
                     onChange={(e) => handleUpdate('category', e.target.value)}
+                    onPointerDown={(e) => e.stopPropagation()}
                     className="text-xs text-neutral-700 font-medium bg-transparent border-0 p-0 pr-4 cursor-pointer hover:text-neutral-900 focus:outline-none focus:ring-0 appearance-none"
                     style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 20 20\'%3E%3Cpath stroke=\'%236b7280\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'1.5\' d=\'m6 8 4 4 4-4\'/%3E%3C/svg%3E")', backgroundPosition: 'right 0 center', backgroundRepeat: 'no-repeat', backgroundSize: '16px' }}
                   >
@@ -584,17 +585,6 @@ const ItemCard = memo(function ItemCard({
       <div className={`w-7 shrink-0 flex flex-col items-center gap-0.5 pt-3 transition-opacity ${
         isDragging ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
       }`}>
-        {/* Drag handle */}
-        <div
-          {...dragHandleProps}
-          className="p-1.5 rounded text-neutral-300 hover:text-neutral-500 cursor-grab active:cursor-grabbing touch-none"
-          title="Przeciągnij"
-        >
-          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M8 6a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM8 12a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM6 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM14 6a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM14 18a2 2 0 1 1-4 0 2 2 0 0 1 4 0z" />
-          </svg>
-        </div>
-
         {/* Favorite button */}
         {onToggleFavorite && (
           <button

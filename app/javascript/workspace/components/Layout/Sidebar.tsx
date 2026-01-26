@@ -81,8 +81,11 @@ function SortableProjectItem({
 
   const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
-    transition: transition || 'transform 200ms cubic-bezier(0.25, 1, 0.5, 1)',
+    // Always use our transition, include opacity for smooth fade on drop
+    transition: 'transform 200ms cubic-bezier(0.25, 1, 0.5, 1), opacity 150ms ease-out',
     opacity: isDragging ? 0.5 : 1,
+    // Always hint to browser for GPU acceleration
+    willChange: 'transform',
     zIndex: isDragging ? 10 : undefined,
   };
 
@@ -99,31 +102,16 @@ function SortableProjectItem({
     <div
       ref={setNodeRef}
       style={style}
-      className={`group rounded-xl ${
+      {...attributes}
+      {...listeners}
+      className={`group rounded-xl touch-none ${
         isActive
           ? 'bg-white shadow-sm border border-neutral-200/80'
           : 'hover:bg-white/60'
       } transition-all`}
       onContextMenu={(e) => onContextMenu(e, project.id)}
     >
-      <div className="flex items-center gap-1 px-1 py-2.5">
-        {/* Drag handle */}
-        <button
-          type="button"
-          className="shrink-0 p-1.5 rounded-lg text-neutral-300 opacity-0 group-hover:opacity-100 hover:text-neutral-500 hover:bg-neutral-200/50 transition-all cursor-grab active:cursor-grabbing"
-          {...attributes}
-          {...listeners}
-        >
-          <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="currentColor">
-            <circle cx="4" cy="3" r="1.5" />
-            <circle cx="4" cy="8" r="1.5" />
-            <circle cx="4" cy="13" r="1.5" />
-            <circle cx="10" cy="3" r="1.5" />
-            <circle cx="10" cy="8" r="1.5" />
-            <circle cx="10" cy="13" r="1.5" />
-          </svg>
-        </button>
-
+      <div className="flex items-center gap-1 px-3 py-2.5">
         <Link
           to={`/workspace/projects/${project.id}`}
           className="flex items-center gap-2 flex-1 min-w-0 px-2"
@@ -262,9 +250,7 @@ export default function Sidebar({
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
+      activationConstraint: { distance: 8 },
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
@@ -475,20 +461,8 @@ export default function Sidebar({
             >
               {activeProject ? (
                 <div className="rounded-xl bg-white shadow-2xl border border-neutral-200 rotate-2 scale-105 w-64">
-                  <div className="flex items-center gap-1 px-1 py-2.5">
-                    {/* Drag handle */}
-                    <div className="shrink-0 p-1.5 rounded-lg text-neutral-400 cursor-grabbing">
-                      <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="currentColor">
-                        <circle cx="4" cy="3" r="1.5" />
-                        <circle cx="4" cy="8" r="1.5" />
-                        <circle cx="4" cy="13" r="1.5" />
-                        <circle cx="10" cy="3" r="1.5" />
-                        <circle cx="10" cy="8" r="1.5" />
-                        <circle cx="10" cy="13" r="1.5" />
-                      </svg>
-                    </div>
-
-                    <div className="flex items-center gap-2 flex-1 min-w-0 px-2">
+                  <div className="flex items-center gap-1 px-3 py-2.5">
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
                       {/* Favorite star */}
                       {activeProject.favorite && (
                         <svg

@@ -294,7 +294,8 @@ export default function ProjectView({ project }: ProjectViewProps) {
     filters.statuses.length > 0 ||
     filters.categories.length > 0;
 
-  // DnD sensors with activation constraint to prevent accidental drags
+  // DnD sensors with distance-based activation (Trello-style)
+  // Drag activates after 8px movement - clicks without movement work normally
   // Disable DnD when filters/search are active (reordering filtered results is confusing)
   const isDnDEnabled = !hasActiveFilters;
   const sensors = useSensors(

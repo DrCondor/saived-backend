@@ -77,6 +77,7 @@ export default function StatusSelect({
         ref={buttonRef}
         type="button"
         onClick={() => !disabled && setIsOpen(!isOpen)}
+        onPointerDown={(e) => e.stopPropagation()}
         disabled={disabled}
         className={`inline-flex items-center gap-1 rounded-full ${buttonSizeClasses} font-semibold tracking-wide transition-all ${currentStatus.bgColor} ${currentStatus.textColor} ${!disabled ? 'hover:opacity-80 cursor-pointer' : 'cursor-default'}`}
       >

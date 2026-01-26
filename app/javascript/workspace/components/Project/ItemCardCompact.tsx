@@ -81,10 +81,10 @@ const ItemCardCompact = memo(function ItemCardCompact({
 
   return (
     <div className="group flex items-center gap-2 w-full min-w-0">
-      {/* Main card - single row, entire card is draggable */}
+      {/* Main card - single row, entire card is draggable (Trello-style) */}
       <div
         {...dragHandleProps}
-        className={`flex-1 min-w-0 flex items-center gap-3 rounded-lg border border-neutral-200 bg-white px-3 py-2 hover:shadow-sm hover:border-neutral-300 transition-all overflow-hidden ${cardClasses}`}
+        className={`flex-1 min-w-0 flex items-center gap-3 rounded-lg border border-neutral-200 bg-white px-3 py-2 hover:shadow-sm hover:border-neutral-300 transition-all overflow-hidden touch-none ${cardClasses}`}
       >
         {/* Thumbnail / Icon */}
         <div
@@ -179,6 +179,7 @@ const ItemCardCompact = memo(function ItemCardCompact({
               <select
                 value={item.category || ''}
                 onChange={(e) => handleUpdate('category', e.target.value)}
+                onPointerDown={(e) => e.stopPropagation()}
                 className="text-[11px] text-neutral-500 bg-transparent border-0 p-0 pr-3 cursor-pointer hover:text-neutral-700 focus:outline-none focus:ring-0 appearance-none truncate"
                 style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 20 20\'%3E%3Cpath stroke=\'%236b7280\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'1.5\' d=\'m6 8 4 4 4-4\'/%3E%3C/svg%3E")', backgroundPosition: 'right 0 center', backgroundRepeat: 'no-repeat', backgroundSize: '12px' }}
               >
@@ -258,17 +259,6 @@ const ItemCardCompact = memo(function ItemCardCompact({
           isDragging ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
         }`}
       >
-        {/* Drag handle */}
-        <div
-          {...dragHandleProps}
-          className="p-1 rounded text-neutral-300 hover:text-neutral-500 cursor-grab active:cursor-grabbing touch-none"
-          title="Przeciagnij"
-        >
-          <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M8 6a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM8 12a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM6 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM14 6a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM14 18a2 2 0 1 1-4 0 2 2 0 0 1 4 0z" />
-          </svg>
-        </div>
-
         {/* Favorite button */}
         {onToggleFavorite && (
           <button

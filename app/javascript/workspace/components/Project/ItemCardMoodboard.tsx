@@ -180,6 +180,7 @@ const ItemCardMoodboard = memo(function ItemCardMoodboard({
         {onToggleFavorite && (
           <button
             type="button"
+            onPointerDown={(e) => e.stopPropagation()}
             onClick={(e) => {
               e.stopPropagation();
               onToggleFavorite(item.id, item.favorite ?? false);
