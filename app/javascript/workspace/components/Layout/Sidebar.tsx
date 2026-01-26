@@ -1,25 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { flushSync } from 'react-dom';
-import {
-  DndContext,
-  DragOverlay,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  type DragStartEvent,
-  type DragEndEvent,
-} from '@dnd-kit/core';
-import {
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-  useSortable,
-  arrayMove,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
+import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
 import type { ProjectListItem, Project } from '../../types';
 import { useToggleFavorite, useReorderProjects, useDeleteProject } from '../../hooks/useProjects';
 import { formatCurrency } from '../../utils/formatters';
@@ -54,40 +35,24 @@ interface SidebarProps {
   onCreateProject?: () => void;
 }
 
-interface SortableProjectItemProps {
+interface ProjectItemProps {
   project: ProjectListItem;
   isActive: boolean;
   isSectionsExpanded: boolean;
   onToggleSections: (projectId: number) => void;
   onContextMenu: (e: React.MouseEvent, projectId: number) => void;
+  isDragging?: boolean;
 }
 
-function SortableProjectItem({
+function ProjectItem({
   project,
   isActive,
   isSectionsExpanded,
   onToggleSections,
   onContextMenu,
-}: SortableProjectItemProps) {
+  isDragging = false,
+}: ProjectItemProps) {
   const navigate = useNavigate();
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: project.id });
-
-  const style: React.CSSProperties = {
-    transform: CSS.Transform.toString(transform),
-    // Always use our transition, include opacity for smooth fade on drop
-    transition: 'transform 200ms cubic-bezier(0.25, 1, 0.5, 1), opacity 150ms ease-out',
-    opacity: isDragging ? 0.5 : 1,
-    // Always hint to browser for GPU acceleration
-    willChange: 'transform',
-    zIndex: isDragging ? 10 : undefined,
-  };
 
   const handleSectionClick = (e: React.MouseEvent, sectionId: number) => {
     if (isActive) {
@@ -100,21 +65,18 @@ function SortableProjectItem({
 
   return (
     <div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
-      className={`group rounded-xl touch-none ${
+      className={`group rounded-xl ${
         isActive
           ? 'bg-white shadow-sm border border-neutral-200/80'
           : 'hover:bg-white/60'
-      } transition-all`}
+      } ${isDragging ? 'shadow-lg ring-2 ring-emerald-300' : ''} transition-all`}
       onContextMenu={(e) => onContextMenu(e, project.id)}
     >
       <div className="flex items-center gap-1 px-3 py-2.5">
         <Link
           to={`/workspace/projects/${project.id}`}
           className="flex items-center gap-2 flex-1 min-w-0 px-2"
+          onClick={(e) => isDragging && e.preventDefault()}
         >
           {/* Favorite star */}
           {project.favorite && (
@@ -213,7 +175,6 @@ export default function Sidebar({
 
   // Local state for DnD
   const [localProjects, setLocalProjects] = useState(projects);
-  const [activeProject, setActiveProject] = useState<ProjectListItem | null>(null);
 
   // Expanded projects state (which projects have their sections visible)
   const [expandedProjects, setExpandedProjects] = useState<Set<number>>(() => getExpandedProjects());
@@ -229,10 +190,8 @@ export default function Sidebar({
 
   // Sync local state with props
   useEffect(() => {
-    if (!activeProject) {
-      setLocalProjects(projects);
-    }
-  }, [projects, activeProject]);
+    setLocalProjects(projects);
+  }, [projects]);
 
   // Close context menu on outside click
   useEffect(() => {
@@ -247,15 +206,6 @@ export default function Sidebar({
       return () => document.removeEventListener('mousedown', handleClickOutside);
     }
   }, [contextMenu.visible]);
-
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: { distance: 8 },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
 
   const handleNewProject = () => {
     if (onCreateProject) {
@@ -313,36 +263,69 @@ export default function Sidebar({
     setContextMenu((prev) => ({ ...prev, visible: false }));
   }, [contextMenu.projectId, projects, deleteProject, currentProjectId, navigate]);
 
-  const handleDragStart = useCallback((event: DragStartEvent) => {
-    const project = localProjects.find((p) => p.id === event.active.id);
-    if (project) {
-      setActiveProject(project);
-    }
-  }, [localProjects]);
+  const handleDragEnd = useCallback((result: DropResult) => {
+    const { destination, source, draggableId } = result;
 
-  const handleDragEnd = useCallback((event: DragEndEvent) => {
-    const { active, over } = event;
+    // Dropped outside a droppable area
+    if (!destination) return;
 
-    if (!over || active.id === over.id) {
-      setActiveProject(null);
+    // Dropped in same position
+    if (
+      destination.droppableId === source.droppableId &&
+      destination.index === source.index
+    ) {
       return;
     }
 
-    const oldIndex = localProjects.findIndex((p) => p.id === active.id);
-    const newIndex = localProjects.findIndex((p) => p.id === over.id);
+    const projectId = parseInt(draggableId.replace('project-', ''), 10);
+    const project = localProjects.find((p) => p.id === projectId);
+    if (!project) return;
 
-    if (oldIndex !== newIndex) {
-      const newOrder = arrayMove(localProjects, oldIndex, newIndex);
+    // Determine if moving between favorites and regular lists
+    const sourceIsFavorites = source.droppableId === 'favorites';
+    const destIsFavorites = destination.droppableId === 'favorites';
 
-      flushSync(() => {
-        setLocalProjects(newOrder);
-      });
+    // Get current lists
+    const favoriteProjects = localProjects.filter((p) => p.favorite);
+    const regularProjects = localProjects.filter((p) => !p.favorite);
 
-      reorderProjects.mutate(newOrder.map((p) => p.id));
+    let newOrder: ProjectListItem[];
+
+    if (sourceIsFavorites && destIsFavorites) {
+      // Reorder within favorites
+      const newFavorites = [...favoriteProjects];
+      newFavorites.splice(source.index, 1);
+      newFavorites.splice(destination.index, 0, project);
+      newOrder = [...newFavorites, ...regularProjects];
+    } else if (!sourceIsFavorites && !destIsFavorites) {
+      // Reorder within regular
+      const newRegular = [...regularProjects];
+      newRegular.splice(source.index, 1);
+      newRegular.splice(destination.index, 0, project);
+      newOrder = [...favoriteProjects, ...newRegular];
+    } else if (sourceIsFavorites && !destIsFavorites) {
+      // Move from favorites to regular (unfavorite)
+      const updatedProject = { ...project, favorite: false };
+      const newFavorites = favoriteProjects.filter((p) => p.id !== projectId);
+      const newRegular = [...regularProjects];
+      newRegular.splice(destination.index, 0, updatedProject);
+      newOrder = [...newFavorites, ...newRegular];
+      // Also toggle favorite on backend
+      toggleFavorite.mutate(projectId);
+    } else {
+      // Move from regular to favorites (favorite)
+      const updatedProject = { ...project, favorite: true };
+      const newRegular = regularProjects.filter((p) => p.id !== projectId);
+      const newFavorites = [...favoriteProjects];
+      newFavorites.splice(destination.index, 0, updatedProject);
+      newOrder = [...newFavorites, ...newRegular];
+      // Also toggle favorite on backend
+      toggleFavorite.mutate(projectId);
     }
 
-    setActiveProject(null);
-  }, [localProjects, reorderProjects]);
+    setLocalProjects(newOrder);
+    reorderProjects.mutate(newOrder.map((p) => p.id));
+  }, [localProjects, reorderProjects, toggleFavorite]);
 
   // Split projects into favorites and regular
   const favoriteProjects = localProjects.filter((p) => p.favorite);
@@ -379,12 +362,7 @@ export default function Sidebar({
             </button>
           </div>
 
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
-          >
+          <DragDropContext onDragEnd={handleDragEnd}>
             <div className="space-y-6">
               {/* Favorites section */}
               {favoriteProjects.length > 0 && (
@@ -400,23 +378,47 @@ export default function Sidebar({
                     Ulubione
                   </p>
 
-                  <SortableContext
-                    items={favoriteProjects.map((p) => p.id)}
-                    strategy={verticalListSortingStrategy}
-                  >
-                    <div className="space-y-1">
-                      {favoriteProjects.map((project) => (
-                        <SortableProjectItem
-                          key={project.id}
-                          project={project}
-                          isActive={currentProjectId === project.id}
-                          isSectionsExpanded={expandedProjects.has(project.id)}
-                          onToggleSections={handleToggleSections}
-                          onContextMenu={handleContextMenu}
-                        />
-                      ))}
-                    </div>
-                  </SortableContext>
+                  <Droppable droppableId="favorites">
+                    {(provided, snapshot) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.droppableProps}
+                        className={`space-y-1 min-h-[40px] rounded-xl transition-colors ${
+                          snapshot.isDraggingOver ? 'bg-amber-50' : ''
+                        }`}
+                      >
+                        {favoriteProjects.map((project, index) => (
+                          <Draggable
+                            key={project.id}
+                            draggableId={`project-${project.id}`}
+                            index={index}
+                          >
+                            {(provided, snapshot) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                                style={{
+                                  ...provided.draggableProps.style,
+                                  cursor: 'default',
+                                }}
+                              >
+                                <ProjectItem
+                                  project={project}
+                                  isActive={currentProjectId === project.id}
+                                  isSectionsExpanded={expandedProjects.has(project.id)}
+                                  onToggleSections={handleToggleSections}
+                                  onContextMenu={handleContextMenu}
+                                  isDragging={snapshot.isDragging}
+                                />
+                              </div>
+                            )}
+                          </Draggable>
+                        ))}
+                        {provided.placeholder}
+                      </div>
+                    )}
+                  </Droppable>
                 </div>
               )}
 
@@ -426,23 +428,43 @@ export default function Sidebar({
                   Projekty
                 </p>
 
-                <SortableContext
-                  items={regularProjects.map((p) => p.id)}
-                  strategy={verticalListSortingStrategy}
-                >
-                  <div className="space-y-1">
-                    {regularProjects.map((project) => (
-                      <SortableProjectItem
-                        key={project.id}
-                        project={project}
-                        isActive={currentProjectId === project.id}
-                        isSectionsExpanded={expandedProjects.has(project.id)}
-                        onToggleSections={handleToggleSections}
-                        onContextMenu={handleContextMenu}
-                      />
-                    ))}
-                  </div>
-                </SortableContext>
+                <Droppable droppableId="projects">
+                  {(provided, snapshot) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.droppableProps}
+                      className={`space-y-1 min-h-[40px] rounded-xl transition-colors ${
+                        snapshot.isDraggingOver ? 'bg-emerald-50' : ''
+                      }`}
+                    >
+                      {regularProjects.map((project, index) => (
+                        <Draggable
+                          key={project.id}
+                          draggableId={`project-${project.id}`}
+                          index={index}
+                        >
+                          {(provided, snapshot) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                            >
+                              <ProjectItem
+                                project={project}
+                                isActive={currentProjectId === project.id}
+                                isSectionsExpanded={expandedProjects.has(project.id)}
+                                onToggleSections={handleToggleSections}
+                                onContextMenu={handleContextMenu}
+                                isDragging={snapshot.isDragging}
+                              />
+                            </div>
+                          )}
+                        </Draggable>
+                      ))}
+                      {provided.placeholder}
+                    </div>
+                  )}
+                </Droppable>
 
                 {localProjects.length === 0 && (
                   <p className="px-3 py-2 text-xs text-neutral-400">
@@ -451,78 +473,7 @@ export default function Sidebar({
                 )}
               </div>
             </div>
-
-            {/* Drag overlay - matches the sidebar item appearance 1:1 */}
-            <DragOverlay
-              dropAnimation={{
-                duration: 200,
-                easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
-              }}
-            >
-              {activeProject ? (
-                <div className="rounded-xl bg-white shadow-2xl border border-neutral-200 rotate-2 scale-105 w-64">
-                  <div className="flex items-center gap-1 px-3 py-2.5">
-                    <div className="flex items-center gap-2 flex-1 min-w-0">
-                      {/* Favorite star */}
-                      {activeProject.favorite && (
-                        <svg
-                          className="w-3.5 h-3.5 text-amber-400 shrink-0"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                      )}
-
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="text-sm font-medium text-neutral-900 truncate">
-                            {activeProject.name || 'Bez nazwy'}
-                          </span>
-                          {/* Show chevron if project has sections */}
-                          {activeProject.sections.length > 0 && (
-                            <svg
-                              className={`w-4 h-4 text-neutral-400 shrink-0 transition-transform ${
-                                !expandedProjects.has(activeProject.id) ? '-rotate-90' : ''
-                              }`}
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M19 9l-7 7-7-7"
-                              />
-                            </svg>
-                          )}
-                        </div>
-                        <span className="text-[11px] text-neutral-400">
-                          {formatCurrency(activeProject.total_price)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Show sections if expanded */}
-                  {expandedProjects.has(activeProject.id) && activeProject.sections.length > 0 && (
-                    <div className="px-3 pb-2.5 space-y-0.5">
-                      {activeProject.sections.map((section) => (
-                        <div
-                          key={section.id}
-                          className="flex items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs text-neutral-600"
-                        >
-                          <span className="w-1.5 h-1.5 rounded-full bg-neutral-300" />
-                          <span className="truncate">{section.name}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ) : null}
-            </DragOverlay>
-          </DndContext>
+          </DragDropContext>
 
           {/* Favorites link */}
           <div className="mt-6 pt-4 border-t border-neutral-200/50">

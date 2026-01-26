@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import { useDroppable } from '@dnd-kit/core';
-import { SortableContext, verticalListSortingStrategy, rectSortingStrategy } from '@dnd-kit/sortable';
+import { Droppable, Draggable } from '@hello-pangea/dnd';
 import type { ProjectSection, CreateItemInput, UpdateItemInput, ViewMode, ItemType } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
 import { shouldIncludeInSum } from '../../utils/statusHelpers';
@@ -8,15 +7,16 @@ import { useCreateItem, useUpdateItem, useDeleteItem } from '../../hooks/useItem
 import { useUpdateSection, useDeleteSection } from '../../hooks/useSections';
 import { useCurrentUser } from '../../hooks/useUser';
 import { useToggleFavorite } from '../../hooks/useFavorites';
-import SortableItemCard from './SortableItemCard';
-import SortableItemCardCompact from './SortableItemCardCompact';
-import SortableItemCardMoodboard from './SortableItemCardMoodboard';
+import ItemCard from './ItemCard';
+import ItemCardCompact from './ItemCardCompact';
+import ItemCardMoodboard from './ItemCardMoodboard';
 import AddItemForm from './AddItemForm';
 
 interface SectionProps {
   section: ProjectSection;
   projectId: number;
   viewMode: ViewMode;
+  isDnDEnabled: boolean;
 }
 
 // Helper to get/set section collapsed state in localStorage
@@ -48,7 +48,7 @@ function setCollapsedSection(sectionId: number, collapsed: boolean) {
   }
 }
 
-export default function Section({ section, projectId, viewMode }: SectionProps) {
+export default function Section({ section, projectId, viewMode, isDnDEnabled }: SectionProps) {
   // Initialize collapsed state from localStorage
   const [isCollapsed, setIsCollapsed] = useState(() => getCollapsedSections().has(section.id));
   const [isEditing, setIsEditing] = useState(false);
@@ -65,15 +65,6 @@ export default function Section({ section, projectId, viewMode }: SectionProps) 
   const updateItem = useUpdateItem(projectId, section.id);
   const deleteItem = useDeleteItem(projectId, section.id);
   const toggleFavorite = useToggleFavorite();
-
-  // Droppable zone for cross-section item moves
-  const { setNodeRef, isOver } = useDroppable({
-    id: `section-${section.id}`,
-    data: {
-      type: 'section',
-      sectionId: section.id,
-    },
-  });
 
   useEffect(() => {
     if (isEditing && inputRef.current) {
@@ -125,6 +116,40 @@ export default function Section({ section, projectId, viewMode }: SectionProps) 
       .filter((item) => shouldIncludeInSum(item.status, customStatuses))
       .reduce((sum, item) => sum + (item.total_price || 0), 0);
   }, [items, customStatuses]);
+
+  // Render item based on view mode
+  const renderItem = (item: typeof items[0], isDragging: boolean = false) => {
+    if (viewMode === 'moodboard') {
+      return (
+        <ItemCardMoodboard
+          item={item}
+          onToggleFavorite={handleToggleFavorite}
+        />
+      );
+    }
+    if (viewMode === 'list') {
+      return (
+        <ItemCardCompact
+          item={item}
+          onUpdate={handleUpdateItem}
+          onDelete={handleDeleteItem}
+          onToggleFavorite={handleToggleFavorite}
+          customStatuses={customStatuses}
+          isDragging={isDragging}
+        />
+      );
+    }
+    return (
+      <ItemCard
+        item={item}
+        onUpdate={handleUpdateItem}
+        onDelete={handleDeleteItem}
+        onToggleFavorite={handleToggleFavorite}
+        customStatuses={customStatuses}
+        isDragging={isDragging}
+      />
+    );
+  };
 
   return (
     <div id={`section-${section.id}`} className="mb-6 scroll-mt-4">
@@ -225,63 +250,66 @@ export default function Section({ section, projectId, viewMode }: SectionProps) 
       {!isCollapsed && (
         <>
           {/* Items list - droppable zone */}
-          <div
-            ref={setNodeRef}
-            className={`min-h-[40px] rounded-xl transition-colors ${
-              isOver && items.length === 0 ? 'bg-emerald-50 ring-2 ring-emerald-300 ring-dashed' : ''
-            } ${
-              viewMode === 'moodboard'
-                ? 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4'
-                : 'space-y-2'
-            }`}
-          >
-            <SortableContext
-              items={items.map((item) => item.id)}
-              strategy={viewMode === 'moodboard' ? rectSortingStrategy : verticalListSortingStrategy}
+          {viewMode === 'moodboard' ? (
+            // Moodboard: No DnD, just render items in grid
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 min-h-[40px]">
+              {items.map((item) => (
+                <div key={item.id}>
+                  {renderItem(item)}
+                </div>
+              ))}
+              {items.length === 0 && (
+                <div className="col-span-full rounded-2xl border-2 border-dashed border-neutral-200 py-8 text-center">
+                  <p className="text-sm text-neutral-400">Brak pozycji w tej sekcji</p>
+                </div>
+              )}
+            </div>
+          ) : (
+            // Grid/List view: With DnD
+            <Droppable
+              droppableId={`section-${section.id}`}
+              isDropDisabled={!isDnDEnabled}
             >
-              {items.map((item) => {
-                if (viewMode === 'moodboard') {
-                  return (
-                    <SortableItemCardMoodboard
+              {(provided, snapshot) => (
+                <div
+                  ref={provided.innerRef}
+                  {...provided.droppableProps}
+                  className={`min-h-[40px] rounded-xl transition-colors space-y-2 ${
+                    snapshot.isDraggingOver ? 'bg-emerald-50 ring-2 ring-emerald-300 ring-dashed' : ''
+                  }`}
+                >
+                  {items.map((item, index) => (
+                    <Draggable
                       key={item.id}
-                      item={item}
-                      onToggleFavorite={handleToggleFavorite}
-                    />
-                  );
-                }
-                if (viewMode === 'list') {
-                  return (
-                    <SortableItemCardCompact
-                      key={item.id}
-                      item={item}
-                      onUpdate={handleUpdateItem}
-                      onDelete={handleDeleteItem}
-                      onToggleFavorite={handleToggleFavorite}
-                      customStatuses={customStatuses}
-                    />
-                  );
-                }
-                return (
-                  <SortableItemCard
-                    key={item.id}
-                    item={item}
-                    onUpdate={handleUpdateItem}
-                    onDelete={handleDeleteItem}
-                    onToggleFavorite={handleToggleFavorite}
-                    customStatuses={customStatuses}
-                  />
-                );
-              })}
-            </SortableContext>
-
-            {items.length === 0 && !isOver && (
-              <div className={`rounded-2xl border-2 border-dashed border-neutral-200 py-8 text-center ${
-                viewMode === 'moodboard' ? 'col-span-full' : ''
-              }`}>
-                <p className="text-sm text-neutral-400">Brak pozycji w tej sekcji</p>
-              </div>
-            )}
-          </div>
+                      draggableId={`item-${item.id}`}
+                      index={index}
+                      isDragDisabled={!isDnDEnabled}
+                    >
+                      {(provided, snapshot) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          style={{
+                            ...provided.draggableProps.style,
+                            cursor: 'default',
+                          }}
+                        >
+                          {renderItem(item, snapshot.isDragging)}
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                  {items.length === 0 && !snapshot.isDraggingOver && (
+                    <div className="rounded-2xl border-2 border-dashed border-neutral-200 py-8 text-center">
+                      <p className="text-sm text-neutral-400">Brak pozycji w tej sekcji</p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </Droppable>
+          )}
 
           {/* Add item buttons / form */}
           {openForm === null ? (
