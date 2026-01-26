@@ -1,5 +1,5 @@
 import { apiClient } from './client';
-import type { User, UpdateProfileInput, UpdatePasswordInput, CustomStatus, Discount } from '../types';
+import type { User, UpdateProfileInput, UpdatePasswordInput, UpdateOrganizationInput, CustomStatus, Discount } from '../types';
 
 export async function fetchCurrentUser(): Promise<User> {
   return apiClient<User>('/me');
@@ -74,6 +74,13 @@ export async function uploadCompanyLogo(file: File): Promise<{ company_logo_url:
 export async function deleteCompanyLogo(): Promise<{ message: string }> {
   return apiClient<{ message: string }>('/me/company_logo', {
     method: 'DELETE',
+  });
+}
+
+export async function updateOrganization(input: UpdateOrganizationInput): Promise<User> {
+  return apiClient<User>('/me/organization', {
+    method: 'PATCH',
+    json: { organization: input },
   });
 }
 

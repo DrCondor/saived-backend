@@ -42,6 +42,7 @@ Rails.application.routes.draw do
       delete "me/avatar", to: "users#destroy_avatar"
       post "me/company_logo", to: "users#upload_company_logo"
       delete "me/company_logo", to: "users#destroy_company_logo"
+      patch "me/organization", to: "users#update_organization"
 
       # Projects CRUD
       resources :projects, only: [ :index, :show, :create, :update, :destroy ] do

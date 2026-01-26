@@ -159,10 +159,8 @@ class ProjectPdfGenerator
   # === HEADER ===
   def render_header
     header_start_y = cursor
-    has_company_logo = @user.company_logo.attached?
-
-    # Calculate header height based on whether company logo exists
-    header_height = has_company_logo ? 110 : 45
+    org = @user.organization
+    has_company_logo = org&.logo&.attached?
 
     # Right side: Document title and number
     fill_color BRAND_PRIMARY
@@ -176,35 +174,76 @@ class ProjectPdfGenerator
     font_size 8
     draw_text format_date(@generated_at), at: [ CONTENT_WIDTH - 85, header_start_y - 32 ]
 
-    # Company logo and name - prominent, left-aligned
+    # Left side: Organization info - track actual height used
+    left_y = header_start_y
+
+    # Company logo
     if has_company_logo
       begin
-        logo_data = download_image(@user.company_logo)
+        logo_data = download_image(org.logo)
         if logo_data
           # Optimize: resize to max 400px and convert to JPEG
           optimized_logo = optimize_image(logo_data, max_size: LOGO_MAX_SIZE)
           if optimized_logo
             logo_io = StringIO.new(optimized_logo)
             # Large company logo - prominent placement
-            image logo_io, at: [ 0, header_start_y ], fit: [ 180, 70 ]
+            image logo_io, at: [ 0, left_y ], fit: [ 180, 70 ]
           end
         end
       rescue StandardError => e
         Rails.logger.warn "Failed to render company logo in PDF: #{e.message}"
       end
-
-      # Company name below logo
-      if @user.company_name.present?
-        fill_color BRAND_PRIMARY
-        font_size 14
-        text_box @user.company_name,
-                 at: [ 0, header_start_y - 75 ],
-                 width: 300,
-                 height: 20,
-                 align: :left,
-                 style: :bold
-      end
+      left_y -= 75
     end
+
+    # Company name
+    company_name = org&.name || @user.company_name
+    if company_name.present?
+      fill_color BRAND_PRIMARY
+      font_size 14
+      text_box company_name,
+               at: [ 0, left_y ],
+               width: 300,
+               height: 20,
+               align: :left,
+               style: :bold
+      left_y -= 18
+    end
+
+    # NIP
+    if org&.nip.present?
+      fill_color BRAND_SECONDARY
+      font_size 9
+      text_box "NIP: #{org.nip}",
+               at: [ 0, left_y ],
+               width: 300,
+               height: 12,
+               align: :left
+      left_y -= 12
+    end
+
+    # Phone
+    if org&.phone.present?
+      fill_color BRAND_SECONDARY
+      font_size 9
+      text_box "Tel: #{org.phone}",
+               at: [ 0, left_y ],
+               width: 300,
+               height: 12,
+               align: :left
+      left_y -= 12
+    end
+
+    # Company info (formatted text)
+    company_info_height = 0
+    if org&.company_info.present?
+      left_y -= 4
+      company_info_height = render_formatted_text(org.company_info, at: [ 0, left_y ], width: 350)
+      left_y -= company_info_height
+    end
+
+    # Calculate actual header height from content rendered
+    header_height = header_start_y - left_y + 15  # +15 for padding
 
     # Move cursor down past the header
     move_down header_height
@@ -215,6 +254,58 @@ class ProjectPdfGenerator
     stroke_horizontal_line 0, CONTENT_WIDTH, at: cursor
 
     move_down 15
+  end
+
+  # Convert HTML from rich text editor to Prawn-compatible format and render
+  # Returns the height used by the content (for header_height calculation)
+  def render_formatted_text(html, at:, width:)
+    return 0 if html.blank?
+
+    prawn_text = html.dup
+
+    # 1. Convert <font color="#hex"> to <color rgb="hex"> (execCommand generates this)
+    prawn_text.gsub!(/<font[^>]*color=["']#?([0-9a-fA-F]{6})["'][^>]*>/i, '<color rgb="\1">')
+    prawn_text.gsub!(/<\/font>/i, "</color>")
+
+    # 2. Convert <span style="font-size: Xpx"> to <font size="Y">
+    prawn_text.gsub!(/<span[^>]*style=["'][^"']*font-size:\s*10px[^"']*["'][^>]*>/i, '<font size="8">')
+    prawn_text.gsub!(/<span[^>]*style=["'][^"']*font-size:\s*12px[^"']*["'][^>]*>/i, '<font size="9">')
+    prawn_text.gsub!(/<span[^>]*style=["'][^"']*font-size:\s*14px[^"']*["'][^>]*>/i, '<font size="10">')
+    prawn_text.gsub!(/<\/span>/i, "</font>")
+
+    # 3. Convert block elements to newlines
+    prawn_text.gsub!(/<div>/i, "")
+    prawn_text.gsub!(/<\/div>/i, "\n")
+    prawn_text.gsub!(/<br\s*\/?>/i, "\n")
+    prawn_text.gsub!(/<p>/i, "")
+    prawn_text.gsub!(/<\/p>/i, "\n")
+
+    # 4. Strip any remaining unrecognized tags but keep their content
+    prawn_text.gsub!(/<(?!\/?(?:b|i|color|font)\b)[^>]*>/i, "")
+
+    # 5. Clean up consecutive/empty closing tags
+    prawn_text.gsub!(/<\/font>\s*<\/font>/i, "</font>")
+    prawn_text.gsub!(/<\/color>\s*<\/color>/i, "</color>")
+
+    # 6. Trim trailing newlines
+    prawn_text.strip!
+
+    # Calculate height based on content
+    line_count = prawn_text.count("\n") + 1
+    line_height = 11  # font_size 8 + spacing
+    content_height = [ line_count * line_height, 120 ].min  # max 120pt (~10 lines)
+
+    font_size 8
+    fill_color BRAND_SECONDARY
+    text_box prawn_text,
+             at: at,
+             width: width,
+             height: content_height,
+             align: :left,
+             inline_format: true,
+             overflow: :truncate
+
+    content_height
   end
 
   # === PROJECT INFO ===

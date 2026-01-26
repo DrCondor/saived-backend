@@ -7,11 +7,12 @@ import {
   deleteAvatar,
   uploadCompanyLogo,
   deleteCompanyLogo,
+  updateOrganization,
   updateCustomStatuses,
   updateDiscounts,
   dismissExtensionUpdate,
 } from '../api/user';
-import type { User, UpdateProfileInput, UpdatePasswordInput, CustomStatus, Discount } from '../types';
+import type { User, UpdateProfileInput, UpdatePasswordInput, UpdateOrganizationInput, CustomStatus, Discount } from '../types';
 
 export function useCurrentUser() {
   return useQuery({
@@ -107,6 +108,17 @@ export function useDeleteCompanyLogo() {
         if (!old) return old;
         return { ...old, company_logo_url: null };
       });
+    },
+  });
+}
+
+export function useUpdateOrganization() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (input: UpdateOrganizationInput) => updateOrganization(input),
+    onSuccess: (data) => {
+      queryClient.setQueryData(['currentUser'], data);
     },
   });
 }

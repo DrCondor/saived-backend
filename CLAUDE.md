@@ -41,8 +41,16 @@ yarn test:run     # Run React tests (single run)
 ## Data Model
 
 ```
+Organization
+ ├── name (company name)
+ ├── nip (tax ID)
+ ├── phone (company phone)
+ ├── company_info (rich text HTML for PDF header)
+ └── logo (ActiveStorage attachment)
+
 User
  ├── api_token (for extension auth)
+ ├── organization_id → Organization (company data for PDFs)
  ├── owned_projects (as owner)
  ├── projects (via ProjectMembership)
  └── item_favorites → ItemFavorite → ProjectItem (favorite items)
@@ -89,7 +97,8 @@ API supports both Bearer token (extension) and session auth (SPA).
 
 | Method | Endpoint | Purpose |
 |--------|----------|---------|
-| GET | `/api/v1/me` | Current user info |
+| GET | `/api/v1/me` | Current user info (includes organization) |
+| PATCH | `/api/v1/me/organization` | Update organization data (name, nip, phone, company_info) |
 | GET | `/api/v1/projects` | List user's projects with sections |
 | GET | `/api/v1/projects/:id` | Get project with sections and items |
 | POST | `/api/v1/projects` | Create project |
@@ -328,6 +337,31 @@ RAILS_ENV=development
 ```
 
 ## Testing
+
+### MANDATORY: Always Write Tests
+
+**CRITICAL RULE**: When implementing new features, ALWAYS write tests:
+
+1. **API Endpoints (Rails)**: Every new endpoint MUST have tests covering:
+   - Success cases (200/201)
+   - Authentication (401 without auth)
+   - Authorization (403 for wrong user)
+   - Validation errors (422)
+   - Not found cases (404)
+
+2. **Frontend Components (React)**: New components MUST have tests for:
+   - Basic rendering
+   - User interactions (clicks, inputs)
+   - Edge cases (empty states, loading states)
+
+3. **Hooks (React)**: New hooks MUST have tests for:
+   - Initial state
+   - State changes after actions
+   - Error handling
+
+4. **Use TDD when possible**: Use `superpowers:test-driven-development` skill - write tests BEFORE implementation.
+
+5. **Don't skip tests "for speed"**: Technical debt from missing tests WILL bite us later.
 
 ### Running Tests
 

@@ -6,6 +6,8 @@ class User < ApplicationRecord
 
   has_secure_token :api_token
 
+  belongs_to :organization, optional: true
+
   # Ransack whitelist for ActiveAdmin (exclude sensitive fields)
   def self.ransackable_attributes(auth_object = nil)
     %w[id email first_name last_name company_name phone title created_at updated_at invitation_sent_at invitation_accepted_at]

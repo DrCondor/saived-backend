@@ -20,6 +20,23 @@ export interface Discount {
   code: string | null;
 }
 
+// Organization type
+export interface Organization {
+  id: number;
+  name: string | null;
+  nip: string | null;
+  phone: string | null;
+  company_info: string | null;
+  logo_url: string | null;
+}
+
+export interface UpdateOrganizationInput {
+  name?: string;
+  nip?: string;
+  phone?: string;
+  company_info?: string;
+}
+
 // User types
 export interface User {
   id: number;
@@ -38,6 +55,7 @@ export interface User {
   custom_statuses: CustomStatus[];
   discounts: Discount[];
   seen_extension_version: number;
+  organization: Organization | null;
 }
 
 export interface UpdateProfileInput {

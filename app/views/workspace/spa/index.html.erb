@@ -19,6 +19,7 @@
 
     <%# Pass initial data to React %>
     <%
+      org = current_user.organization
       initial_data = {
         extensionVersion: EXTENSION_VERSION,
         currentUser: {
@@ -29,15 +30,23 @@
           full_name: current_user.full_name,
           display_name: current_user.display_name,
           initials: current_user.initials,
-          company_name: current_user.company_name,
+          company_name: org&.name || current_user.company_name,
           phone: current_user.phone,
           title: current_user.title,
           avatar_url: current_user.avatar.attached? ? rails_blob_path(current_user.avatar, only_path: true) : nil,
-          company_logo_url: current_user.company_logo.attached? ? rails_blob_path(current_user.company_logo, only_path: true) : nil,
+          company_logo_url: org&.logo&.attached? ? rails_blob_path(org.logo, only_path: true) : nil,
           api_token: current_user.api_token,
           custom_statuses: current_user.custom_statuses,
           discounts: current_user.discounts,
-          seen_extension_version: current_user.seen_extension_version
+          seen_extension_version: current_user.seen_extension_version,
+          organization: org ? {
+            id: org.id,
+            name: org.name,
+            nip: org.nip,
+            phone: org.phone,
+            company_info: org.company_info,
+            logo_url: org.logo.attached? ? rails_blob_path(org.logo, only_path: true) : nil
+          } : nil
         }
       }
     %>

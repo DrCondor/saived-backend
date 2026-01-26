@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_26_104138) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_26_140000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -119,6 +119,15 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_26_104138) do
     t.index ["user_id"], name: "index_item_favorites_on_user_id"
   end
 
+  create_table "organizations", force: :cascade do |t|
+    t.string "name"
+    t.string "nip"
+    t.string "phone"
+    t.text "company_info"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "product_capture_samples", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "project_item_id"
@@ -216,10 +225,12 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_26_104138) do
     t.bigint "invited_by_id"
     t.integer "invitations_count", default: 0
     t.jsonb "preferences", default: {}, null: false
+    t.bigint "organization_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
     t.index ["invited_by_id"], name: "index_users_on_invited_by_id"
     t.index ["invited_by_type", "invited_by_id"], name: "index_users_on_invited_by"
+    t.index ["organization_id"], name: "index_users_on_organization_id"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
@@ -234,4 +245,5 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_26_104138) do
   add_foreign_key "project_memberships", "users"
   add_foreign_key "project_sections", "projects"
   add_foreign_key "projects", "users", column: "owner_id"
+  add_foreign_key "users", "organizations"
 end

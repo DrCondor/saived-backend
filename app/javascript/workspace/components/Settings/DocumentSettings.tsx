@@ -1,18 +1,22 @@
 import { useState, useRef, useEffect } from 'react';
 import {
   useCurrentUser,
-  useUpdateProfile,
+  useUpdateOrganization,
   useUploadCompanyLogo,
   useDeleteCompanyLogo,
 } from '../../hooks/useUser';
+import RichTextEditor from './RichTextEditor';
 
 export default function DocumentSettings() {
   const { data: user } = useCurrentUser();
-  const updateProfile = useUpdateProfile();
+  const updateOrganization = useUpdateOrganization();
   const uploadCompanyLogo = useUploadCompanyLogo();
   const deleteCompanyLogo = useDeleteCompanyLogo();
 
   const [companyName, setCompanyName] = useState('');
+  const [nip, setNip] = useState('');
+  const [phone, setPhone] = useState('');
+  const [companyInfo, setCompanyInfo] = useState('');
   const [initialized, setInitialized] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
@@ -21,7 +25,11 @@ export default function DocumentSettings() {
   // Initialize form when user data loads
   useEffect(() => {
     if (user && !initialized) {
-      setCompanyName(user.company_name || '');
+      const org = user.organization;
+      setCompanyName(org?.name || user.company_name || '');
+      setNip(org?.nip || '');
+      setPhone(org?.phone || '');
+      setCompanyInfo(org?.company_info || '');
       setInitialized(true);
     }
   }, [user, initialized]);
@@ -47,13 +55,18 @@ export default function DocumentSettings() {
     }
   };
 
-  const handleSaveCompanyName = async (e: React.FormEvent) => {
+  const handleSaveOrganization = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage(null);
 
     try {
-      await updateProfile.mutateAsync({ company_name: companyName });
-      setMessage({ type: 'success', text: 'Nazwa firmy zostala zapisana' });
+      await updateOrganization.mutateAsync({
+        name: companyName,
+        nip: nip,
+        phone: phone,
+        company_info: companyInfo,
+      });
+      setMessage({ type: 'success', text: 'Dane organizacji zostaly zapisane' });
     } catch (error: any) {
       setMessage({ type: 'error', text: error.message || 'Wystapil blad' });
     }
@@ -134,14 +147,15 @@ export default function DocumentSettings() {
         </p>
       </section>
 
-      {/* Company Name Section */}
+      {/* Organization Details Section */}
       <section className="rounded-2xl border border-neutral-200 bg-white p-6">
-        <h2 className="text-lg font-semibold text-neutral-900 mb-4">Nazwa firmy</h2>
+        <h2 className="text-lg font-semibold text-neutral-900 mb-4">Dane organizacji</h2>
 
-        <form onSubmit={handleSaveCompanyName} className="space-y-4">
+        <form onSubmit={handleSaveOrganization} className="space-y-6">
+          {/* Company Name */}
           <div>
             <label htmlFor="company_name" className="block text-sm font-medium text-neutral-700 mb-1">
-              Nazwa wyswietlana na dokumentach
+              Nazwa firmy
             </label>
             <input
               type="text"
@@ -150,6 +164,59 @@ export default function DocumentSettings() {
               onChange={(e) => setCompanyName(e.target.value)}
               className="w-full rounded-xl border border-neutral-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
               placeholder="np. Studio Wnetrz ABC"
+            />
+          </div>
+
+          {/* NIP */}
+          <div>
+            <label htmlFor="nip" className="block text-sm font-medium text-neutral-700 mb-1">
+              NIP
+            </label>
+            <input
+              type="text"
+              id="nip"
+              value={nip}
+              onChange={(e) => setNip(e.target.value)}
+              className="w-full rounded-xl border border-neutral-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              placeholder="np. 123-456-78-90"
+              maxLength={13}
+            />
+            <p className="mt-1 text-xs text-neutral-500">
+              Numer identyfikacji podatkowej wyswietlany na dokumentach.
+            </p>
+          </div>
+
+          {/* Phone */}
+          <div>
+            <label htmlFor="org_phone" className="block text-sm font-medium text-neutral-700 mb-1">
+              Telefon firmowy
+            </label>
+            <input
+              type="tel"
+              id="org_phone"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="w-full rounded-xl border border-neutral-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              placeholder="np. +48 123 456 789"
+            />
+            <p className="mt-1 text-xs text-neutral-500">
+              Numer telefonu wyswietlany na dokumentach PDF.
+            </p>
+          </div>
+
+          {/* Company Info (Rich Text) */}
+          <div>
+            <label className="block text-sm font-medium text-neutral-700 mb-1">
+              Dodatkowe informacje
+            </label>
+            <p className="text-xs text-neutral-500 mb-2">
+              Dodatkowy tekst widoczny w naglowku dokumentow. Mozesz uzywac formatowania.
+            </p>
+            <RichTextEditor
+              value={companyInfo}
+              onChange={setCompanyInfo}
+              maxLength={500}
+              placeholder="np. adres siedziby, godziny pracy, strona www..."
             />
           </div>
 
@@ -165,10 +232,10 @@ export default function DocumentSettings() {
 
           <button
             type="submit"
-            disabled={updateProfile.isPending}
+            disabled={updateOrganization.isPending}
             className="inline-flex items-center gap-2 rounded-full bg-neutral-900 px-6 py-2.5 text-sm font-medium text-white hover:bg-neutral-800 transition-colors disabled:opacity-50"
           >
-            {updateProfile.isPending ? 'Zapisywanie...' : 'Zapisz'}
+            {updateOrganization.isPending ? 'Zapisywanie...' : 'Zapisz dane organizacji'}
           </button>
         </form>
       </section>

@@ -72,10 +72,11 @@ module Api
           return
         end
 
-        current_user.company_logo.attach(params[:company_logo])
+        ensure_organization!
+        current_user.organization.logo.attach(params[:company_logo])
 
-        if current_user.company_logo.attached?
-          render json: { company_logo_url: company_logo_url(current_user) }
+        if current_user.organization.logo.attached?
+          render json: { company_logo_url: organization_logo_url(current_user.organization) }
         else
           render json: { errors: [ "Nie udało się przesłać pliku" ] }, status: :unprocessable_entity
         end
@@ -83,10 +84,22 @@ module Api
 
       # DELETE /api/v1/me/company_logo
       def destroy_company_logo
-        if current_user.company_logo.attached?
-          current_user.company_logo.purge
+        if current_user.organization&.logo&.attached?
+          current_user.organization.logo.purge
         end
         render json: { message: "Logo firmy zostało usunięte" }
+      end
+
+      # PATCH /api/v1/me/organization
+      def update_organization
+        ensure_organization!
+        org = current_user.organization
+
+        if org.update(organization_params)
+          render json: user_json(current_user)
+        else
+          render json: { errors: org.errors.full_messages }, status: :unprocessable_entity
+        end
       end
 
       # PATCH /api/v1/me/statuses
@@ -184,8 +197,18 @@ module Api
 
       private
 
+      def ensure_organization!
+        return if current_user.organization.present?
+        org = Organization.create!
+        current_user.update!(organization: org)
+      end
+
       def profile_params
         params.require(:user).permit(:first_name, :last_name, :company_name, :phone, :title)
+      end
+
+      def organization_params
+        params.require(:organization).permit(:name, :nip, :phone, :company_info)
       end
 
       def user_json(user)
@@ -197,15 +220,28 @@ module Api
           full_name: user.full_name,
           display_name: user.display_name,
           initials: user.initials,
-          company_name: user.company_name,
+          company_name: user.organization&.name || user.company_name,
           phone: user.phone,
           title: user.title,
           avatar_url: avatar_url(user),
-          company_logo_url: company_logo_url(user),
+          company_logo_url: organization_logo_url(user.organization),
           api_token: user.api_token,
           custom_statuses: user.custom_statuses,
           discounts: user.discounts,
-          seen_extension_version: user.seen_extension_version
+          seen_extension_version: user.seen_extension_version,
+          organization: organization_json(user.organization)
+        }
+      end
+
+      def organization_json(org)
+        return nil unless org
+        {
+          id: org.id,
+          name: org.name,
+          nip: org.nip,
+          phone: org.phone,
+          company_info: org.company_info,
+          logo_url: organization_logo_url(org)
         }
       end
 
@@ -219,11 +255,11 @@ module Api
         )
       end
 
-      def company_logo_url(user)
-        return nil unless user.company_logo.attached?
+      def organization_logo_url(org)
+        return nil unless org&.logo&.attached?
 
         Rails.application.routes.url_helpers.rails_blob_url(
-          user.company_logo,
+          org.logo,
           only_path: true
         )
       end
