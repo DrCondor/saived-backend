@@ -173,7 +173,7 @@ const ItemCardCompact = memo(function ItemCardCompact({
         <div className="ml-auto shrink-0 flex items-center gap-3">
           {/* Category - select (products only, not notes) */}
           {isProduct && (
-            <div className={`hidden lg:flex w-20 justify-end ${isProposal ? 'opacity-70' : ''}`}>
+            <div className={`hidden lg:flex w-28 justify-end ${isProposal ? 'opacity-70' : ''}`}>
               <select
                 value={item.category || ''}
                 onChange={(e) => handleUpdate('category', e.target.value)}
@@ -190,7 +190,7 @@ const ItemCardCompact = memo(function ItemCardCompact({
           )}
           {/* Empty placeholder for non-products to maintain column alignment */}
           {!isProduct && !isNote && (
-            <div className="hidden lg:block w-20" />
+            <div className="hidden lg:block w-28" />
           )}
 
           {/* Price section - different for product vs contractor (hidden for notes) */}
