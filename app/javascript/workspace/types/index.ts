@@ -123,10 +123,17 @@ export interface FavoriteItem {
   section_name: string;
 }
 
+export interface SectionGroup {
+  id: number;
+  name: string;
+  position: number;
+}
+
 export interface ProjectSection {
   id: number;
   name: string;
   position: number;
+  section_group_id: number | null;
   total_price?: number;
   items?: ProjectItem[];
 }
@@ -138,6 +145,7 @@ export interface Project {
   favorite: boolean;
   position: number;
   total_price: number;
+  section_groups: SectionGroup[];
   sections: ProjectSection[];
 }
 
@@ -147,7 +155,8 @@ export interface ProjectListItem {
   favorite: boolean;
   position: number;
   total_price: number;
-  sections: Array<{ id: number; name: string; position: number }>;
+  section_groups: SectionGroup[];
+  sections: Array<{ id: number; name: string; position: number; section_group_id: number | null }>;
 }
 
 // Form input types
@@ -163,6 +172,16 @@ export interface UpdateProjectInput {
 
 export interface CreateSectionInput {
   name?: string;
+  section_group_id?: number | null;
+}
+
+export interface CreateSectionGroupInput {
+  name?: string;
+}
+
+export interface UpdateSectionGroupInput {
+  name?: string;
+  position?: number;
 }
 
 export interface UpdateSectionInput {
@@ -203,9 +222,17 @@ export interface ItemMove {
   position: number;
 }
 
+export interface SectionMove {
+  section_id: number;
+  group_id: number | null;
+  position: number;
+}
+
 export interface ReorderInput {
   item_moves?: ItemMove[];
   section_order?: number[];
+  group_order?: number[];
+  section_moves?: SectionMove[];
 }
 
 // View mode type

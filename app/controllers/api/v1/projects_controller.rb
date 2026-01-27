@@ -4,7 +4,7 @@ module Api
       include Rails.application.routes.url_helpers
       def index
         projects = current_user.projects
-                               .includes(:sections)
+                               .includes(:sections, :section_groups)
                                .order(:position, :created_at)
 
         render json: {
@@ -15,11 +15,19 @@ module Api
               favorite: project.favorite,
               position: project.position,
               total_price: project.total_price,
+              section_groups: project.section_groups.order(:position, :created_at).map { |group|
+                {
+                  id: group.id,
+                  name: group.name,
+                  position: group.position
+                }
+              },
               sections: project.sections.order(:position, :created_at).map { |section|
                 {
                   id: section.id,
                   name: section.name,
-                  position: section.position
+                  position: section.position,
+                  section_group_id: section.section_group_id
                 }
               }
             }
@@ -29,7 +37,7 @@ module Api
 
       def show
         project = current_user.projects
-                              .includes(sections: { items: { attachment_attachment: :blob } })
+                              .includes(:section_groups, sections: { items: { attachment_attachment: :blob } })
                               .find(params[:id])
 
         render json: project_json(project)
@@ -114,7 +122,7 @@ module Api
       # Generates and returns a PDF cost estimate for the project
       def pdf
         project = current_user.projects
-                              .includes(sections: { items: { attachment_attachment: :blob } })
+                              .includes(:section_groups, sections: { items: { attachment_attachment: :blob } })
                               .find(params[:id])
 
         generator = ProjectPdfGenerator.new(project, current_user)
@@ -161,6 +169,25 @@ module Api
               section.update!(position: index)
             end
           end
+
+          # Handle group reordering
+          if params[:group_order].present?
+            params[:group_order].each_with_index do |group_id, index|
+              group = project.section_groups.find(group_id)
+              group.update!(position: index)
+            end
+          end
+
+          # Handle section moves between groups
+          if params[:section_moves].present?
+            params[:section_moves].each do |move|
+              section = project.sections.find(move[:section_id])
+              section.update!(
+                section_group_id: move[:group_id],
+                position: move[:position]
+              )
+            end
+          end
         end
 
         render json: project_json(project.reload)
@@ -188,11 +215,19 @@ module Api
           favorite: project.favorite,
           position: project.position,
           total_price: project.total_price,
+          section_groups: project.section_groups.order(:position, :created_at).map { |group|
+            {
+              id: group.id,
+              name: group.name,
+              position: group.position
+            }
+          },
           sections: project.sections.order(:position, :created_at).map { |section|
             {
               id: section.id,
               name: section.name,
               position: section.position,
+              section_group_id: section.section_group_id,
               total_price: section.total_price,
               items: section.items.order(:position, :created_at).map { |item|
                 {

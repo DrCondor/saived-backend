@@ -44,7 +44,7 @@ module Api
 
       def section_params
         # Use fetch instead of require to handle empty section hash
-        params.fetch(:section, {}).permit(:name, :position)
+        params.fetch(:section, {}).permit(:name, :position, :section_group_id)
       end
 
       def section_json(section)

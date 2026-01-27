@@ -10,6 +10,8 @@ class Project < ApplicationRecord
            class_name: "ProjectSection",
            dependent: :destroy
 
+  has_many :section_groups, dependent: :destroy
+
   validates :name, presence: true
 
   after_create :create_default_section

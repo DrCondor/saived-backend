@@ -343,11 +343,54 @@ class ProjectPdfGenerator
 
   # === SECTIONS ===
   def render_sections
-    sections = @project.sections.includes(:items).order(:position, :created_at)
+    groups = @project.section_groups.order(:position, :created_at)
+    all_sections = @project.sections.includes(:items).order(:position, :created_at)
+    grouped_section_ids = Set.new
 
-    sections.each_with_index do |section, index|
-      render_section(section, index + 1)
+    # Build ordered entries: groups + standalone sections by position
+    entries = []
+
+    groups.each do |group|
+      group_sections = all_sections.select { |s| s.section_group_id == group.id }
+      group_sections.each { |s| grouped_section_ids.add(s.id) }
+      entries << { type: :group, group: group, sections: group_sections, position: group.position }
     end
+
+    all_sections.reject { |s| grouped_section_ids.include?(s.id) }.each do |section|
+      entries << { type: :section, section: section, position: section.position }
+    end
+
+    entries.sort_by! { |e| e[:position] }
+
+    section_number = 0
+    entries.each do |entry|
+      if entry[:type] == :group
+        render_group_header(entry[:group])
+        entry[:sections].each do |section|
+          section_number += 1
+          render_section(section, section_number)
+        end
+      else
+        section_number += 1
+        render_section(entry[:section], section_number)
+      end
+    end
+  end
+
+  def render_group_header(group)
+    start_new_page if cursor < 60
+
+    fill_color BRAND_PRIMARY
+    font_size 11
+    text group.name.upcase, style: :bold
+
+    move_down 2
+
+    stroke_color BRAND_PRIMARY
+    line_width 1
+    stroke_horizontal_line 0, CONTENT_WIDTH, at: cursor
+
+    move_down 10
   end
 
   def render_section(section, section_number)

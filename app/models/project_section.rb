@@ -1,5 +1,6 @@
 class ProjectSection < ApplicationRecord
   belongs_to :project
+  belongs_to :section_group, optional: true
 
   has_many :items,
            -> { order(position: :asc) },

@@ -1,13 +1,15 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { DragDropContext, type DropResult } from '@hello-pangea/dnd';
-import type { Project, ProjectItem, ProjectSection, ItemMove, SortOption, FilterState, ViewMode } from '../../types';
+import type { Project, ProjectItem, ProjectSection, SectionGroup, ItemMove, SortOption, FilterState, ViewMode } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
 import { shouldIncludeInSum } from '../../utils/statusHelpers';
 import { useCreateSection } from '../../hooks/useSections';
+import { useCreateSectionGroup } from '../../hooks/useSectionGroups';
 import { useUpdateProject } from '../../hooks/useProjects';
 import { useReorderProject } from '../../hooks/useReorderProject';
 import { useCurrentUser } from '../../hooks/useUser';
 import Section from './Section';
+import SectionGroupBlock from './SectionGroupBlock';
 import ProjectToolbar from './ProjectToolbar';
 
 interface ProjectViewProps {
@@ -28,6 +30,7 @@ export default function ProjectView({ project }: ProjectViewProps) {
   const customCategories = user?.custom_categories || [];
 
   const createSection = useCreateSection(project.id);
+  const createSectionGroup = useCreateSectionGroup(project.id);
   const reorderProject = useReorderProject(project.id);
   const updateProject = useUpdateProject();
 
@@ -249,6 +252,37 @@ export default function ProjectView({ project }: ProjectViewProps) {
   const handleAddSection = () => {
     createSection.mutate({});
   };
+
+  const handleAddGroup = () => {
+    createSectionGroup.mutate({});
+  };
+
+  // Build top-level entries: groups (with their sections) + standalone sections
+  type TopLevelEntry =
+    | { type: 'group'; group: SectionGroup; sections: ProjectSection[] }
+    | { type: 'section'; section: ProjectSection };
+
+  const topLevelEntries = useMemo((): TopLevelEntry[] => {
+    const groups = project.section_groups || [];
+    const groupedSectionIds = new Set<number>();
+
+    const groupEntries: TopLevelEntry[] = groups.map((group) => {
+      const groupSections = localSections.filter((s) => s.section_group_id === group.id);
+      groupSections.forEach((s) => groupedSectionIds.add(s.id));
+      return { type: 'group' as const, group, sections: groupSections };
+    });
+
+    const standaloneSections: TopLevelEntry[] = localSections
+      .filter((s) => !groupedSectionIds.has(s.id))
+      .map((section) => ({ type: 'section' as const, section }));
+
+    // Interleave by position: groups use group.position, standalone sections use section.position
+    return [...groupEntries, ...standaloneSections].sort((a, b) => {
+      const posA = a.type === 'group' ? a.group.position : a.section.position;
+      const posB = b.type === 'group' ? b.group.position : b.section.position;
+      return posA - posB;
+    });
+  }, [project.section_groups, localSections]);
 
   // Handle drag end - @hello-pangea/dnd style
   const handleDragEnd = useCallback(
@@ -496,35 +530,68 @@ export default function ProjectView({ project }: ProjectViewProps) {
           </div>
         )}
 
-        {processedSections.map((section) => (
-          <Section
-            key={section.id}
-            section={section}
-            projectId={project.id}
-            viewMode={viewMode}
-            isDnDEnabled={isDnDEnabled}
-          />
-        ))}
+        {topLevelEntries.map((entry) =>
+          entry.type === 'group' ? (
+            <SectionGroupBlock
+              key={`group-${entry.group.id}`}
+              group={entry.group}
+              sections={entry.sections.map((s) => {
+                const processed = processedSections.find((ps) => ps.id === s.id);
+                return processed || s;
+              }).filter((s) => {
+                const hasFiltersActive = searchQuery.trim() || filters.statuses.length > 0 || filters.categories.length > 0;
+                return !hasFiltersActive || (s.items && s.items.length > 0);
+              })}
+              projectId={project.id}
+              viewMode={viewMode}
+              isDnDEnabled={isDnDEnabled}
+            />
+          ) : (
+            (() => {
+              const processed = processedSections.find((ps) => ps.id === entry.section.id);
+              const section = processed || entry.section;
+              const hasFiltersActive = searchQuery.trim() || filters.statuses.length > 0 || filters.categories.length > 0;
+              if (hasFiltersActive && (!section.items || section.items.length === 0)) return null;
+              return (
+                <Section
+                  key={section.id}
+                  section={section}
+                  projectId={project.id}
+                  viewMode={viewMode}
+                  isDnDEnabled={isDnDEnabled}
+                />
+              );
+            })()
+          )
+        )}
       </DragDropContext>
 
-      {/* Add section button */}
-      <div className="mt-4 mb-8">
+      {/* Add section / group buttons */}
+      <div className="mt-4 mb-8 flex gap-3">
         <button
           type="button"
           onClick={handleAddSection}
           disabled={createSection.isPending}
-          className="flex items-center justify-center gap-2 w-full rounded-xl border-2 border-dashed border-neutral-300 py-4 text-neutral-500 hover:border-neutral-400 hover:text-neutral-600 hover:bg-neutral-50 transition-colors disabled:opacity-50"
+          className="flex items-center justify-center gap-2 flex-1 rounded-xl border-2 border-dashed border-neutral-300 py-4 text-neutral-500 hover:border-neutral-400 hover:text-neutral-600 hover:bg-neutral-50 transition-colors disabled:opacity-50"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 4v16m8-8H4"
-            />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
           <span className="font-medium">
-            {createSection.isPending ? 'Dodawanie...' : 'Dodaj sekcje'}
+            {createSection.isPending ? 'Dodawanie...' : 'Dodaj sekcję'}
+          </span>
+        </button>
+        <button
+          type="button"
+          onClick={handleAddGroup}
+          disabled={createSectionGroup.isPending}
+          className="flex items-center justify-center gap-2 flex-1 rounded-xl border-2 border-dashed border-neutral-300 py-4 text-neutral-500 hover:border-neutral-400 hover:text-neutral-600 hover:bg-neutral-50 transition-colors disabled:opacity-50"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+          </svg>
+          <span className="font-medium">
+            {createSectionGroup.isPending ? 'Dodawanie...' : 'Dodaj grupę'}
           </span>
         </button>
       </div>

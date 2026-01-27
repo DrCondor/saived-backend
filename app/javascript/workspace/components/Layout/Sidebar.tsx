@@ -130,24 +130,73 @@ function ProjectItem({
         </Link>
       </div>
 
-      {/* Nested sections - show for ANY expanded project */}
+      {/* Nested sections/groups - show for ANY expanded project */}
       {isSectionsExpanded && project.sections.length > 0 && (
         <div className="px-3 pb-2.5 space-y-0.5">
-          {project.sections.map((section) => (
-            <a
-              key={section.id}
-              href={`#section-${section.id}`}
-              onClick={(e) => handleSectionClick(e, section.id)}
-              className={`flex items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs transition-colors ${
-                isActive
-                  ? 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
-                  : 'text-neutral-500 hover:bg-neutral-100/50 hover:text-neutral-700'
-              }`}
-            >
-              <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-neutral-300' : 'bg-neutral-300/70'}`} />
-              <span className="truncate">{section.name}</span>
-            </a>
-          ))}
+          {(() => {
+            const groups = project.section_groups || [];
+            const groupedSectionIds = new Set<number>();
+
+            // Build group entries
+            const groupEntries = groups.map((group) => {
+              const groupSections = project.sections.filter((s) => s.section_group_id === group.id);
+              groupSections.forEach((s) => groupedSectionIds.add(s.id));
+              return { type: 'group' as const, group, sections: groupSections, position: group.position };
+            });
+
+            // Build standalone section entries
+            const standaloneEntries = project.sections
+              .filter((s) => !groupedSectionIds.has(s.id))
+              .map((section) => ({ type: 'section' as const, section, position: section.position }));
+
+            // Sort all entries by position
+            const entries = [...groupEntries, ...standaloneEntries].sort((a, b) => a.position - b.position);
+
+            return entries.map((entry) => {
+              if (entry.type === 'group') {
+                return (
+                  <div key={`group-${entry.group.id}`}>
+                    <div className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+                      <svg className="w-3.5 h-3.5 text-neutral-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                      </svg>
+                      <span className="truncate">{entry.group.name}</span>
+                    </div>
+                    {entry.sections.map((section) => (
+                      <a
+                        key={section.id}
+                        href={`#section-${section.id}`}
+                        onClick={(e) => handleSectionClick(e, section.id)}
+                        className={`flex items-center gap-2 rounded-xl px-2.5 py-1.5 pl-6 text-xs transition-colors ${
+                          isActive
+                            ? 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
+                            : 'text-neutral-500 hover:bg-neutral-100/50 hover:text-neutral-700'
+                        }`}
+                      >
+                        <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-neutral-300' : 'bg-neutral-300/70'}`} />
+                        <span className="truncate">{section.name}</span>
+                      </a>
+                    ))}
+                  </div>
+                );
+              }
+              return (
+                <a
+                  key={entry.section.id}
+                  href={`#section-${entry.section.id}`}
+                  onClick={(e) => handleSectionClick(e, entry.section.id)}
+                  className={`flex items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs transition-colors ${
+                    isActive
+                      ? 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
+                      : 'text-neutral-500 hover:bg-neutral-100/50 hover:text-neutral-700'
+                  }`}
+                >
+                  <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-neutral-300' : 'bg-neutral-300/70'}`} />
+                  <span className="truncate">{entry.section.name}</span>
+                </a>
+              );
+            });
+          })()}
         </div>
       )}
     </div>

@@ -49,6 +49,7 @@ Rails.application.routes.draw do
       resources :projects, only: [ :index, :show, :create, :update, :destroy ] do
         # Sections nested under projects
         resources :sections, only: [ :create, :update, :destroy ]
+        resources :section_groups, only: [ :create, :update, :destroy ]
 
         # Reordering items within project
         post :reorder, on: :member

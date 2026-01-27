@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_26_140000) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_27_124136) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -188,7 +188,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_26_140000) do
     t.integer "position", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "section_group_id"
     t.index ["project_id"], name: "index_project_sections_on_project_id"
+    t.index ["section_group_id"], name: "index_project_sections_on_section_group_id"
   end
 
   create_table "projects", force: :cascade do |t|
@@ -200,6 +202,15 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_26_140000) do
     t.boolean "favorite", default: false, null: false
     t.integer "position"
     t.index ["owner_id"], name: "index_projects_on_owner_id"
+  end
+
+  create_table "section_groups", force: :cascade do |t|
+    t.bigint "project_id", null: false
+    t.string "name", null: false
+    t.integer "position", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["project_id"], name: "index_section_groups_on_project_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -244,6 +255,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_26_140000) do
   add_foreign_key "project_memberships", "projects"
   add_foreign_key "project_memberships", "users"
   add_foreign_key "project_sections", "projects"
+  add_foreign_key "project_sections", "section_groups"
   add_foreign_key "projects", "users", column: "owner_id"
+  add_foreign_key "section_groups", "projects"
   add_foreign_key "users", "organizations"
 end
