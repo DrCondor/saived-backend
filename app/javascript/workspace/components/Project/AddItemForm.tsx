@@ -1,14 +1,15 @@
 import { useState, useRef } from 'react';
-import type { CreateItemInput, ItemType } from '../../types';
+import type { CreateItemInput, ItemType, CustomCategory } from '../../types';
 import { SYSTEM_STATUSES } from '../../utils/statusHelpers';
 import { UNIT_TYPES, DEFAULT_UNIT_TYPE } from '../../utils/unitTypes';
-import { CATEGORIES } from '../../utils/categoryHelpers';
+import { getAllCategories } from '../../utils/categoryHelpers';
 
 interface AddItemFormProps {
   onSubmit: (data: CreateItemInput) => void;
   isSubmitting?: boolean;
   itemType: ItemType;
   onClose: () => void;
+  customCategories?: CustomCategory[];
 }
 
 const getDefaultFormData = (itemType: ItemType): CreateItemInput => ({
@@ -30,7 +31,7 @@ const getDefaultFormData = (itemType: ItemType): CreateItemInput => ({
   attachment: undefined,
 });
 
-export default function AddItemForm({ onSubmit, isSubmitting, itemType, onClose }: AddItemFormProps) {
+export default function AddItemForm({ onSubmit, isSubmitting, itemType, onClose, customCategories = [] }: AddItemFormProps) {
   const [formData, setFormData] = useState<CreateItemInput>(() => getDefaultFormData(itemType));
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -226,7 +227,7 @@ export default function AddItemForm({ onSubmit, isSubmitting, itemType, onClose 
                   onChange={handleChange}
                   className="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900"
                 >
-                  {CATEGORIES.map((cat) => (
+                  {getAllCategories(customCategories).map((cat) => (
                     <option key={cat.id} value={cat.id}>
                       {cat.label}
                     </option>

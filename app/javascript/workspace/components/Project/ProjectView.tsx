@@ -25,6 +25,7 @@ function reorder<T>(list: T[], startIndex: number, endIndex: number): T[] {
 export default function ProjectView({ project }: ProjectViewProps) {
   const { data: user } = useCurrentUser();
   const customStatuses = user?.custom_statuses || [];
+  const customCategories = user?.custom_categories || [];
 
   const createSection = useCreateSection(project.id);
   const reorderProject = useReorderProject(project.id);
@@ -431,6 +432,7 @@ export default function ProjectView({ project }: ProjectViewProps) {
             availableCategories={availableCategories}
             availableStatuses={availableStatuses}
             customStatuses={customStatuses}
+            customCategories={customCategories}
             matchCount={matchCount}
             totalCount={totalItemCount}
             hasActiveFilters={hasActiveFilters}

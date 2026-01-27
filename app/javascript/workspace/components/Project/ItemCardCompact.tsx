@@ -1,7 +1,7 @@
 import { memo } from 'react';
-import type { ProjectItem, UpdateItemInput, CustomStatus } from '../../types';
+import type { ProjectItem, UpdateItemInput, CustomStatus, CustomCategory } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
-import { CATEGORIES } from '../../utils/categoryHelpers';
+import { getAllCategories } from '../../utils/categoryHelpers';
 import EditableField from '../shared/EditableField';
 import StatusSelect from '../shared/StatusSelect';
 
@@ -35,6 +35,7 @@ interface ItemCardCompactProps {
   dragHandleProps?: React.HTMLAttributes<HTMLDivElement>;
   isDragging?: boolean;
   customStatuses?: CustomStatus[];
+  customCategories?: CustomCategory[];
 }
 
 const ItemCardCompact = memo(function ItemCardCompact({
@@ -45,6 +46,7 @@ const ItemCardCompact = memo(function ItemCardCompact({
   dragHandleProps,
   isDragging,
   customStatuses = [],
+  customCategories = [],
 }: ItemCardCompactProps) {
   const isContractor = item.item_type === 'contractor';
   const isNote = item.item_type === 'note';
@@ -54,6 +56,7 @@ const ItemCardCompact = memo(function ItemCardCompact({
     isDragging ? 'ring-2 ring-emerald-500 shadow-lg' : '',
     isContractor ? 'border-neutral-300' : '',
     isNote ? 'border-amber-200 bg-amber-50/50' : '',
+    isProposal && !isNote ? 'opacity-50 bg-neutral-100' : '',
   ].filter(Boolean).join(' ');
 
   const handleDelete = () => {
@@ -88,7 +91,7 @@ const ItemCardCompact = memo(function ItemCardCompact({
       >
         {/* Thumbnail / Icon */}
         <div
-          className={`shrink-0 w-8 h-8 ${isProposal && !isNote ? 'opacity-70' : ''}`}
+          className="shrink-0 w-8 h-8"
         >
           {isContractor ? (
             <ContractorIconSmall />
@@ -124,7 +127,7 @@ const ItemCardCompact = memo(function ItemCardCompact({
         </div>
 
         {/* Name + note content (for notes) / external link/phone (adjacent) */}
-        <div className={`flex-1 min-w-0 max-w-[45%] flex items-center gap-1 ${isProposal && !isNote ? 'opacity-70' : ''}`}>
+        <div className="flex-1 min-w-0 max-w-[45%] flex items-center gap-1">
           {isNote ? (
             // Notes: show name (if any) + note content
             <span className="text-sm text-neutral-700 truncate">
@@ -175,7 +178,7 @@ const ItemCardCompact = memo(function ItemCardCompact({
         <div className="ml-auto shrink-0 flex items-center gap-3">
           {/* Category - select (products only, not notes) */}
           {isProduct && (
-            <div className={`hidden lg:flex w-28 justify-end ${isProposal ? 'opacity-70' : ''}`}>
+            <div className="hidden lg:flex w-28 justify-end">
               <select
                 value={item.category || ''}
                 onChange={(e) => handleUpdate('category', e.target.value)}
@@ -183,7 +186,7 @@ const ItemCardCompact = memo(function ItemCardCompact({
                 className="text-[11px] text-neutral-500 bg-transparent border-0 p-0 pr-3 cursor-pointer hover:text-neutral-700 focus:outline-none focus:ring-0 appearance-none truncate"
                 style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 20 20\'%3E%3Cpath stroke=\'%236b7280\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'1.5\' d=\'m6 8 4 4 4-4\'/%3E%3C/svg%3E")', backgroundPosition: 'right 0 center', backgroundRepeat: 'no-repeat', backgroundSize: '12px' }}
               >
-                {CATEGORIES.map((cat) => (
+                {getAllCategories(customCategories).map((cat) => (
                   <option key={cat.id} value={cat.id}>
                     {cat.label}
                   </option>
@@ -198,7 +201,7 @@ const ItemCardCompact = memo(function ItemCardCompact({
 
           {/* Price section - different for product vs contractor (hidden for notes) */}
           {!isNote && (
-            <div className={`w-64 flex items-center justify-end gap-1 text-sm ${isProposal ? 'opacity-70' : ''}`}>
+            <div className="w-64 flex items-center justify-end gap-1 text-sm">
               {isContractor ? (
                 // Contractor: just show total (flat price)
                 <span className="font-semibold text-neutral-900 whitespace-nowrap">

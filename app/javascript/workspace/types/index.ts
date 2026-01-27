@@ -12,6 +12,12 @@ export interface CustomStatus {
   include_in_sum: boolean;
 }
 
+// Custom category type
+export interface CustomCategory {
+  id: string;
+  name: string;
+}
+
 // Discount type for domain-based discounts
 export interface Discount {
   id: string;
@@ -53,6 +59,7 @@ export interface User {
   company_logo_url: string | null;
   api_token: string;
   custom_statuses: CustomStatus[];
+  custom_categories: CustomCategory[];
   discounts: Discount[];
   seen_extension_version: number;
   organization: Organization | null;

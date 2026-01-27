@@ -65,6 +65,15 @@ class User < ApplicationRecord
     update(preferences: (preferences || {}).merge("custom_statuses" => statuses))
   end
 
+  # Custom categories helpers
+  def custom_categories
+    preferences&.dig("custom_categories") || []
+  end
+
+  def update_custom_categories(categories)
+    update(preferences: (preferences || {}).merge("custom_categories" => categories))
+  end
+
   # Discounts helpers
   def discounts
     preferences&.dig("discounts") || []

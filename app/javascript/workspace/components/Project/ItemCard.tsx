@@ -1,7 +1,7 @@
 import { useState, memo, useRef } from 'react';
-import type { ProjectItem, UpdateItemInput, CustomStatus, UnitType } from '../../types';
+import type { ProjectItem, UpdateItemInput, CustomStatus, CustomCategory, UnitType } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
-import { CATEGORIES, getCategoryLabel } from '../../utils/categoryHelpers';
+import { getAllCategories } from '../../utils/categoryHelpers';
 import EditableField from '../shared/EditableField';
 import StatusSelect from '../shared/StatusSelect';
 import UnitTypeSelect from '../shared/UnitTypeSelect';
@@ -36,6 +36,7 @@ interface ItemCardProps {
   dragHandleProps?: React.HTMLAttributes<HTMLDivElement>;
   isDragging?: boolean;
   customStatuses?: CustomStatus[];
+  customCategories?: CustomCategory[];
 }
 
 // Memoize to prevent re-renders when other items change
@@ -47,6 +48,7 @@ const ItemCard = memo(function ItemCard({
   dragHandleProps,
   isDragging,
   customStatuses = [],
+  customCategories = [],
 }: ItemCardProps) {
   const [isEditingThumbnail, setIsEditingThumbnail] = useState(false);
   const [thumbnailUrl, setThumbnailUrl] = useState(item.thumbnail_url || '');
@@ -449,7 +451,7 @@ const ItemCard = memo(function ItemCard({
                     className="text-xs text-neutral-700 font-medium bg-transparent border-0 p-0 pr-4 cursor-pointer hover:text-neutral-900 focus:outline-none focus:ring-0 appearance-none"
                     style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 20 20\'%3E%3Cpath stroke=\'%236b7280\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'1.5\' d=\'m6 8 4 4 4-4\'/%3E%3C/svg%3E")', backgroundPosition: 'right 0 center', backgroundRepeat: 'no-repeat', backgroundSize: '16px' }}
                   >
-                    {CATEGORIES.map((cat) => (
+                    {getAllCategories(customCategories).map((cat) => (
                       <option key={cat.id} value={cat.id}>
                         {cat.label}
                       </option>

@@ -3,10 +3,18 @@ import type { CustomStatus } from '../types';
 // System statuses configuration
 export const SYSTEM_STATUSES = [
   {
+    id: 'bez_statusu',
+    label: 'BEZ STATUSU',
+    color: 'slate',
+    bgColor: 'bg-neutral-200',
+    textColor: 'text-neutral-500',
+    includeInSum: true,
+  },
+  {
     id: 'propozycja',
     label: 'PROPOZYCJA',
     color: 'neutral',
-    bgColor: 'bg-neutral-200',
+    bgColor: 'bg-neutral-300',
     textColor: 'text-neutral-600',
     includeInSum: false,
   },
@@ -24,14 +32,6 @@ export const SYSTEM_STATUSES = [
     color: 'emerald',
     bgColor: 'bg-emerald-500',
     textColor: 'text-white',
-    includeInSum: true,
-  },
-  {
-    id: 'bez_statusu',
-    label: 'BEZ STATUSU',
-    color: 'slate',
-    bgColor: 'bg-neutral-100',
-    textColor: 'text-neutral-500',
     includeInSum: true,
   },
 ] as const;

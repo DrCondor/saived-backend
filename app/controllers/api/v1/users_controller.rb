@@ -129,6 +129,30 @@ module Api
         end
       end
 
+      # PATCH /api/v1/me/categories
+      def update_categories
+        permitted = params.permit(custom_categories: [ :id, :name ])
+        categories = permitted[:custom_categories] || []
+
+        if categories.length > 10
+          render json: { errors: [ "Maksymalnie 10 własnych kategorii" ] }, status: :unprocessable_entity
+          return
+        end
+
+        categories.each do |cat|
+          unless cat[:id].present? && cat[:name].present?
+            render json: { errors: [ "Każda kategoria musi mieć id i nazwę" ] }, status: :unprocessable_entity
+            return
+          end
+        end
+
+        if current_user.update_custom_categories(categories.map(&:to_h))
+          render json: { custom_categories: current_user.custom_categories }
+        else
+          render json: { errors: current_user.errors.full_messages }, status: :unprocessable_entity
+        end
+      end
+
       # PATCH /api/v1/me/discounts
       def update_discounts
         permitted = params.permit(discounts: [ :id, :domain, :percentage, :code ])
@@ -227,6 +251,7 @@ module Api
           company_logo_url: organization_logo_url(user.organization),
           api_token: user.api_token,
           custom_statuses: user.custom_statuses,
+          custom_categories: user.custom_categories,
           discounts: user.discounts,
           seen_extension_version: user.seen_extension_version,
           organization: organization_json(user.organization)

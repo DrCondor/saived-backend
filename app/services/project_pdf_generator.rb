@@ -404,9 +404,11 @@ class ProjectPdfGenerator
     ]
 
     # Item rows
+    proposal_row_indices = []
     items.each_with_index do |item, index|
-      status_indicator = item.status.downcase == "propozycja" ? " *" : ""
-      item_name = item.name + status_indicator
+      is_proposal = item.status.downcase == "propozycja"
+      item_name = item.name
+      item_name += " (propozycja)" if is_proposal
 
       # Add note on new line if present
       if item.note.present?
@@ -432,6 +434,9 @@ class ProjectPdfGenerator
         { content: format_currency(item.unit_price) },
         { content: format_currency(item.total_price), font_style: :bold }
       ]
+
+      # Track proposal rows (offset by 1 for header row)
+      proposal_row_indices << (index + 1) if is_proposal
     end
 
     # Compact table with thumbnail column
@@ -458,6 +463,11 @@ class ProjectPdfGenerator
       t.column(2).align = :center
       t.column(3).align = :right
       t.column(4).align = :right
+
+      # Gray text for proposal rows
+      proposal_row_indices.each do |row_idx|
+        t.row(row_idx).text_color = BRAND_SECONDARY
+      end
 
       # Last row no bottom border
       t.row(-1).borders = []
@@ -586,7 +596,7 @@ class ProjectPdfGenerator
     fill_color BRAND_SECONDARY
 
     if has_proposals?
-      text "* Pozycje oznaczone gwiazdką są propozycjami."
+      text "Pozycje oznaczone jako propozycje nie wliczają się do sumy."
       move_down 3
     end
 

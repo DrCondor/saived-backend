@@ -9,10 +9,11 @@ import {
   deleteCompanyLogo,
   updateOrganization,
   updateCustomStatuses,
+  updateCustomCategories,
   updateDiscounts,
   dismissExtensionUpdate,
 } from '../api/user';
-import type { User, UpdateProfileInput, UpdatePasswordInput, UpdateOrganizationInput, CustomStatus, Discount } from '../types';
+import type { User, UpdateProfileInput, UpdatePasswordInput, UpdateOrganizationInput, CustomStatus, CustomCategory, Discount } from '../types';
 
 export function useCurrentUser() {
   return useQuery({
@@ -136,6 +137,20 @@ export function useUpdateCustomStatuses() {
       // Invalidate projects to recalculate totals
       queryClient.invalidateQueries({ queryKey: ['projects'] });
       queryClient.invalidateQueries({ queryKey: ['project'] });
+    },
+  });
+}
+
+export function useUpdateCustomCategories() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (categories: CustomCategory[]) => updateCustomCategories(categories),
+    onSuccess: (data) => {
+      queryClient.setQueryData<User | undefined>(['currentUser'], (old) => {
+        if (!old) return old;
+        return { ...old, custom_categories: data.custom_categories };
+      });
     },
   });
 }

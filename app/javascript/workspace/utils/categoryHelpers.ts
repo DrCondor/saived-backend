@@ -1,3 +1,5 @@
+import type { CustomCategory } from '../types';
+
 // Predefined categories for project items
 export interface CategoryConfig {
   id: string;
@@ -15,10 +17,22 @@ export const CATEGORIES: CategoryConfig[] = [
   { id: 'agd', label: 'AGD' },
 ];
 
-export function getCategoryLabel(categoryId: string | null | undefined): string {
+export function getAllCategories(customCategories: CustomCategory[] = []): CategoryConfig[] {
+  const customConfigs = customCategories.map((c) => ({
+    id: c.id,
+    label: c.name.toUpperCase(),
+  }));
+  return [...CATEGORIES, ...customConfigs];
+}
+
+export function getCategoryLabel(
+  categoryId: string | null | undefined,
+  customCategories: CustomCategory[] = []
+): string {
   if (!categoryId) return 'BRAK';
-  const category = CATEGORIES.find((c) => c.id === categoryId);
-  return category?.label || categoryId.toUpperCase();
+  const all = getAllCategories(customCategories);
+  const found = all.find((c) => c.id === categoryId);
+  return found?.label || categoryId.toUpperCase();
 }
 
 export function getCategoryId(categoryLabel: string): string {

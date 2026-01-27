@@ -1,5 +1,5 @@
 import { apiClient } from './client';
-import type { User, UpdateProfileInput, UpdatePasswordInput, UpdateOrganizationInput, CustomStatus, Discount } from '../types';
+import type { User, UpdateProfileInput, UpdatePasswordInput, UpdateOrganizationInput, CustomStatus, CustomCategory, Discount } from '../types';
 
 export async function fetchCurrentUser(): Promise<User> {
   return apiClient<User>('/me');
@@ -90,6 +90,15 @@ export async function updateCustomStatuses(
   return apiClient<{ custom_statuses: CustomStatus[] }>('/me/statuses', {
     method: 'PATCH',
     json: { custom_statuses: customStatuses },
+  });
+}
+
+export async function updateCustomCategories(
+  customCategories: CustomCategory[]
+): Promise<{ custom_categories: CustomCategory[] }> {
+  return apiClient<{ custom_categories: CustomCategory[] }>('/me/categories', {
+    method: 'PATCH',
+    json: { custom_categories: customCategories },
   });
 }
 

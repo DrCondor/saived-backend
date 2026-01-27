@@ -353,4 +353,78 @@ class Api::V1::UsersControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
   end
+
+  # ============================================================
+  # CUSTOM CATEGORIES (PATCH /api/v1/me/categories)
+  # ============================================================
+
+  test "update_categories saves custom categories" do
+    categories = [
+      { id: "custom_1", name: "Podłogi" },
+      { id: "custom_2", name: "Stolarka" }
+    ]
+
+    patch api_v1_me_categories_path,
+          params: { custom_categories: categories },
+          headers: auth_headers(@user),
+          as: :json
+
+    assert_response :success
+    assert_equal 2, json_response["custom_categories"].length
+    assert_equal "Podłogi", json_response["custom_categories"][0]["name"]
+    assert_equal "Stolarka", json_response["custom_categories"][1]["name"]
+
+    @user.reload
+    assert_equal 2, @user.custom_categories.length
+  end
+
+  test "update_categories rejects more than 10 categories" do
+    categories = 11.times.map { |i| { id: "cat_#{i}", name: "Kategoria #{i}" } }
+
+    patch api_v1_me_categories_path,
+          params: { custom_categories: categories },
+          headers: auth_headers(@user),
+          as: :json
+
+    assert_response :unprocessable_entity
+    assert_includes json_response["errors"], "Maksymalnie 10 własnych kategorii"
+  end
+
+  test "update_categories rejects category without id or name" do
+    categories = [ { id: "", name: "Test" } ]
+
+    patch api_v1_me_categories_path,
+          params: { custom_categories: categories },
+          headers: auth_headers(@user),
+          as: :json
+
+    assert_response :unprocessable_entity
+    assert_includes json_response["errors"], "Każda kategoria musi mieć id i nazwę"
+  end
+
+  test "update_categories clears categories with empty payload" do
+    @user.update_custom_categories([ { "id" => "cat_1", "name" => "Test" } ])
+    assert_equal 1, @user.custom_categories.length
+
+    patch api_v1_me_categories_path,
+          params: { custom_categories: [] },
+          headers: auth_headers(@user),
+          as: :json
+
+    assert_response :success
+    assert_equal 0, json_response["custom_categories"].length
+
+    @user.reload
+    assert_equal 0, @user.custom_categories.length
+  end
+
+  test "me includes custom_categories" do
+    @user.update_custom_categories([ { "id" => "cat_1", "name" => "Podłogi" } ])
+
+    get api_v1_me_path, headers: auth_headers(@user)
+
+    assert_response :success
+    assert_equal 1, json_response["custom_categories"].length
+    assert_equal "Podłogi", json_response["custom_categories"][0]["name"]
+  end
 end

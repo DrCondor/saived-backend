@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import type { SortOption, FilterState, ViewMode, CustomStatus } from '../../types';
+import type { SortOption, FilterState, ViewMode, CustomStatus, CustomCategory } from '../../types';
 import { getStatusConfig } from '../../utils/statusHelpers';
 import { getCategoryLabel } from '../../utils/categoryHelpers';
 
@@ -14,6 +14,7 @@ interface ProjectToolbarProps {
   availableCategories: string[];
   availableStatuses: string[];
   customStatuses: CustomStatus[];
+  customCategories: CustomCategory[];
   matchCount: number;
   totalCount: number;
   hasActiveFilters: boolean;
@@ -42,6 +43,7 @@ export default function ProjectToolbar({
   availableCategories,
   availableStatuses,
   customStatuses,
+  customCategories,
   matchCount,
   totalCount,
   hasActiveFilters,
@@ -410,7 +412,7 @@ export default function ProjectToolbar({
                         className="w-4 h-4 rounded border-neutral-300 text-emerald-500 focus:ring-emerald-500"
                       />
                       <span className="text-sm text-neutral-700 group-hover:text-neutral-900">
-                        {getCategoryLabel(category)}
+                        {getCategoryLabel(category, customCategories)}
                       </span>
                     </label>
                   ))}

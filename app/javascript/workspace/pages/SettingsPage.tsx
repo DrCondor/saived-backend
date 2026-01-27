@@ -3,6 +3,7 @@ import { useCurrentUser } from '../hooks/useUser';
 import AccountSettings from '../components/Settings/AccountSettings';
 import DocumentSettings from '../components/Settings/DocumentSettings';
 import StatusSettings from '../components/Settings/StatusSettings';
+import CategorySettings from '../components/Settings/CategorySettings';
 import DiscountSettings from '../components/Settings/DiscountSettings';
 
 type SettingsTab = 'account' | 'documents' | 'personalization';
@@ -111,6 +112,14 @@ export default function SettingsPage() {
                   Statusy pomagaja organizowac produkty w projektach. Mozesz dodac do 3 wlasnych statusow.
                 </p>
                 <StatusSettings />
+              </section>
+
+              <section className="rounded-2xl border border-neutral-200 bg-white p-6">
+                <h2 className="text-lg font-semibold text-neutral-900 mb-4">Kategorie produktow</h2>
+                <p className="text-sm text-neutral-500 mb-6">
+                  Kategorie pomagaja organizowac produkty w projektach. Mozesz dodac do 10 wlasnych kategorii.
+                </p>
+                <CategorySettings />
               </section>
 
               <section className="rounded-2xl border border-neutral-200 bg-white p-6">

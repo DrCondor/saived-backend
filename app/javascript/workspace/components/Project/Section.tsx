@@ -58,6 +58,7 @@ export default function Section({ section, projectId, viewMode, isDnDEnabled }: 
 
   const { data: user } = useCurrentUser();
   const customStatuses = user?.custom_statuses || [];
+  const customCategories = user?.custom_categories || [];
 
   const updateSection = useUpdateSection(projectId);
   const deleteSection = useDeleteSection(projectId);
@@ -135,6 +136,7 @@ export default function Section({ section, projectId, viewMode, isDnDEnabled }: 
           onDelete={handleDeleteItem}
           onToggleFavorite={handleToggleFavorite}
           customStatuses={customStatuses}
+          customCategories={customCategories}
           isDragging={isDragging}
         />
       );
@@ -146,6 +148,7 @@ export default function Section({ section, projectId, viewMode, isDnDEnabled }: 
         onDelete={handleDeleteItem}
         onToggleFavorite={handleToggleFavorite}
         customStatuses={customStatuses}
+        customCategories={customCategories}
         isDragging={isDragging}
       />
     );
@@ -362,6 +365,7 @@ export default function Section({ section, projectId, viewMode, isDnDEnabled }: 
               onSubmit={handleAddItem}
               isSubmitting={createItem.isPending}
               onClose={() => setOpenForm(null)}
+              customCategories={customCategories}
             />
           )}
         </>
