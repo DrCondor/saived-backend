@@ -17,13 +17,14 @@ interface SectionProps {
   projectId: number;
   viewMode: ViewMode;
   isDnDEnabled: boolean;
+  isDraggingItem?: boolean;
   dragHandleProps?: DraggableProvidedDragHandleProps | null;
 }
 
 // Helper to get/set section collapsed state in localStorage
 const COLLAPSED_SECTIONS_KEY = 'saived_collapsed_sections';
 
-function getCollapsedSections(): Set<number> {
+export function getCollapsedSections(): Set<number> {
   try {
     const stored = localStorage.getItem(COLLAPSED_SECTIONS_KEY);
     if (stored) {
@@ -49,7 +50,7 @@ function setCollapsedSection(sectionId: number, collapsed: boolean) {
   }
 }
 
-export default function Section({ section, projectId, viewMode, isDnDEnabled, dragHandleProps }: SectionProps) {
+export default function Section({ section, projectId, viewMode, isDnDEnabled, isDraggingItem, dragHandleProps }: SectionProps) {
   // Initialize collapsed state from localStorage
   const [isCollapsed, setIsCollapsed] = useState(() => getCollapsedSections().has(section.id));
   const [isEditing, setIsEditing] = useState(false);
@@ -175,22 +176,67 @@ export default function Section({ section, projectId, viewMode, isDnDEnabled, dr
     );
   };
 
-  return (
-    <div id={`section-${section.id}`} className="mb-6 scroll-mt-28">
-      {/* Section header */}
-      <div className="group/section flex items-center justify-between mb-3 pb-2 border-b border-neutral-200">
-        <div className="flex items-center gap-3 flex-1" {...dragHandleProps} style={{ cursor: 'default' }}>
-          <button
-            type="button"
-            onClick={() => {
-              const newCollapsed = !isCollapsed;
-              setIsCollapsed(newCollapsed);
-              setCollapsedSection(section.id, newCollapsed);
-            }}
-            className="p-1 hover:bg-neutral-100 rounded-lg transition-colors"
+  // Is this a collapsed section that can receive drops?
+  const canReceiveDropsWhenCollapsed = isCollapsed && isDnDEnabled && viewMode !== 'moodboard';
+
+  // Header content - extracted to reuse in both collapsed (Droppable) and expanded modes
+  const renderHeader = (isDroppingOver: boolean = false) => (
+    <div
+      className={`group/section flex items-center justify-between mb-3 pb-2 border-b transition-colors rounded-lg ${
+        isDroppingOver
+          ? 'border-emerald-400 bg-emerald-50 ring-2 ring-emerald-300'
+          : isDraggingItem && canReceiveDropsWhenCollapsed
+            ? 'border-neutral-300 bg-neutral-50'
+            : 'border-neutral-200'
+      }`}
+    >
+      <div className="flex items-center gap-3 flex-1" {...dragHandleProps} style={{ cursor: 'default' }}>
+        <button
+          type="button"
+          onClick={() => {
+            const newCollapsed = !isCollapsed;
+            setIsCollapsed(newCollapsed);
+            setCollapsedSection(section.id, newCollapsed);
+          }}
+          className="p-1 hover:bg-neutral-100 rounded-lg transition-colors"
+        >
+          <svg
+            className={`w-5 h-5 text-neutral-400 transition-transform ${isCollapsed ? '-rotate-90' : ''}`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
           >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 9l-7 7-7-7"
+            />
+          </svg>
+        </button>
+
+        {isEditing ? (
+          <input
+            ref={inputRef}
+            type="text"
+            value={editName}
+            onChange={(e) => setEditName(e.target.value)}
+            onBlur={handleNameSubmit}
+            onKeyDown={handleKeyDown}
+            className="text-lg font-bold text-neutral-900 bg-transparent border-0 p-0 focus:ring-0 focus:outline-none w-full"
+          />
+        ) : (
+          <div
+            role="button"
+            tabIndex={0}
+            onMouseDown={handleNameMouseDown}
+            onClick={handleNameClick}
+            onKeyDown={(e) => e.key === 'Enter' && setIsEditing(true)}
+            className="group/name text-lg font-bold text-neutral-900 hover:text-neutral-700 text-left flex-1 flex items-center gap-2 select-none"
+          >
+            {editName}
             <svg
-              className={`w-5 h-5 text-neutral-400 transition-transform ${isCollapsed ? '-rotate-90' : ''}`}
+              className="w-4 h-4 text-neutral-300 opacity-0 group-hover/name:opacity-100 transition-opacity"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -199,81 +245,69 @@ export default function Section({ section, projectId, viewMode, isDnDEnabled, dr
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={2}
-                d="M19 9l-7 7-7-7"
+                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
               />
             </svg>
-          </button>
-
-          {isEditing ? (
-            <input
-              ref={inputRef}
-              type="text"
-              value={editName}
-              onChange={(e) => setEditName(e.target.value)}
-              onBlur={handleNameSubmit}
-              onKeyDown={handleKeyDown}
-              className="text-lg font-bold text-neutral-900 bg-transparent border-0 p-0 focus:ring-0 focus:outline-none w-full"
-            />
-          ) : (
-            <div
-              role="button"
-              tabIndex={0}
-              onMouseDown={handleNameMouseDown}
-              onClick={handleNameClick}
-              onKeyDown={(e) => e.key === 'Enter' && setIsEditing(true)}
-              className="group/name text-lg font-bold text-neutral-900 hover:text-neutral-700 text-left flex-1 flex items-center gap-2 select-none"
-            >
-              {editName}
-              <svg
-                className="w-4 h-4 text-neutral-300 opacity-0 group-hover/name:opacity-100 transition-opacity"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                />
-              </svg>
-            </div>
-          )}
-        </div>
-
-        <div className="flex items-center gap-3">
-          {/* Section total */}
-          <div className="inline-flex items-center rounded-full bg-emerald-50 border border-emerald-200 px-4 py-1.5">
-            <span className="text-sm font-bold text-emerald-700">
-              {formatCurrency(sectionTotal)}
-            </span>
           </div>
-
-          {/* Delete section button */}
-          <button
-            type="button"
-            onClick={() => {
-              if (confirm(`Usunąć sekcję "${section.name}"? Wszystkie pozycje w tej sekcji zostaną usunięte.`)) {
-                deleteSection.mutate(section.id);
-              }
-            }}
-            disabled={deleteSection.isPending}
-            className="p-2 rounded-lg text-neutral-400 hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50"
-            title="Usuń sekcję"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-              />
-            </svg>
-          </button>
-        </div>
+        )}
       </div>
 
-      {/* Section content */}
+      <div className="flex items-center gap-3">
+        {/* Section total */}
+        <div className="inline-flex items-center rounded-full bg-emerald-50 border border-emerald-200 px-4 py-1.5">
+          <span className="text-sm font-bold text-emerald-700">
+            {formatCurrency(sectionTotal)}
+          </span>
+        </div>
+
+        {/* Delete section button */}
+        <button
+          type="button"
+          onClick={() => {
+            if (confirm(`Usunąć sekcję "${section.name}"? Wszystkie pozycje w tej sekcji zostaną usunięte.`)) {
+              deleteSection.mutate(section.id);
+            }
+          }}
+          disabled={deleteSection.isPending}
+          className="p-2 rounded-lg text-neutral-400 hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50"
+          title="Usuń sekcję"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div id={`section-${section.id}`} className="mb-6 scroll-mt-28">
+      {/* Section header - is a Droppable when collapsed, otherwise just a header */}
+      {canReceiveDropsWhenCollapsed ? (
+        <Droppable
+          droppableId={`section-${section.id}`}
+          type="ITEMS"
+        >
+          {(provided, snapshot) => (
+            <div ref={provided.innerRef} {...provided.droppableProps}>
+              {renderHeader(snapshot.isDraggingOver)}
+              <div style={{ display: 'none' }}>{provided.placeholder}</div>
+            </div>
+          )}
+        </Droppable>
+      ) : !isCollapsed ? (
+        renderHeader()
+      ) : (
+        // Collapsed but DnD disabled or moodboard view - just render header
+        renderHeader()
+      )}
+
+      {/* Section content - only when expanded */}
       {!isCollapsed && (
         <>
           {/* Items list - droppable zone */}
@@ -297,6 +331,7 @@ export default function Section({ section, projectId, viewMode, isDnDEnabled, dr
               droppableId={`section-${section.id}`}
               type="ITEMS"
               isDropDisabled={!isDnDEnabled}
+              ignoreContainerClipping
             >
               {(provided, snapshot) => (
                 <div

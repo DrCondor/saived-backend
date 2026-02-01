@@ -8,7 +8,7 @@ import { useCreateSectionGroup } from '../../hooks/useSectionGroups';
 import { useUpdateProject } from '../../hooks/useProjects';
 import { useReorderProject } from '../../hooks/useReorderProject';
 import { useCurrentUser } from '../../hooks/useUser';
-import Section from './Section';
+import Section, { getCollapsedSections } from './Section';
 import SectionGroupBlock from './SectionGroupBlock';
 import ProjectToolbar from './ProjectToolbar';
 
@@ -53,6 +53,9 @@ export default function ProjectView({ project }: ProjectViewProps) {
   const [sortBy, setSortBy] = useState<SortOption>('default');
   const [filters, setFilters] = useState<FilterState>({ statuses: [], categories: [] });
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
+
+  // Track if an item is being dragged (for showing drop zones on collapsed sections)
+  const [isDraggingItem, setIsDraggingItem] = useState(false);
 
   // Sync local state with server data when project changes
   useEffect(() => {
@@ -290,9 +293,21 @@ export default function ProjectView({ project }: ProjectViewProps) {
     });
   }, [localGroups, localSections]);
 
+  // Handle drag start - track if dragging items
+  const handleDragStart = useCallback(
+    (start: { type: string }) => {
+      if (start.type === 'ITEMS') {
+        setIsDraggingItem(true);
+      }
+    },
+    []
+  );
+
   // Handle drag end - dispatch by type
   const handleDragEnd = useCallback(
     (result: DropResult) => {
+      setIsDraggingItem(false);
+
       const { destination, source, type } = result;
 
       if (!destination) return;
@@ -488,7 +503,17 @@ export default function ProjectView({ project }: ProjectViewProps) {
       } else {
         affectedSectionIds.add(destSectionId);
         const destItems = [...(destSection.items || [])];
-        destItems.splice(destination.index, 0, movedItem);
+
+        // Check if destination section is collapsed - if so, add item at the end
+        const collapsedSections = getCollapsedSections();
+        const isDestCollapsed = collapsedSections.has(destSectionId);
+
+        if (isDestCollapsed) {
+          // Dropping on collapsed section - add to end
+          destItems.push(movedItem);
+        } else {
+          destItems.splice(destination.index, 0, movedItem);
+        }
 
         newSections = localSections.map((section) => {
           if (section.id === sourceSectionId) return { ...section, items: sourceItems };
@@ -646,7 +671,7 @@ export default function ProjectView({ project }: ProjectViewProps) {
       </header>
 
       {/* Sections with DnD */}
-      <DragDropContext onDragEnd={handleDragEnd}>
+      <DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
         {/* No results message */}
         {hasActiveFilters && processedSections.length === 0 && (
           <div className="flex flex-col items-center justify-center py-16 text-center">
@@ -738,6 +763,7 @@ export default function ProjectView({ project }: ProjectViewProps) {
                                             projectId={project.id}
                                             viewMode={viewMode}
                                             isDnDEnabled={isDnDEnabled}
+                                            isDraggingItem={isDraggingItem}
                                             dragHandleProps={dragProvided.dragHandleProps}
                                           />
                                         </div>
@@ -807,6 +833,7 @@ export default function ProjectView({ project }: ProjectViewProps) {
                             projectId={project.id}
                             viewMode={viewMode}
                             isDnDEnabled={isDnDEnabled}
+                            isDraggingItem={isDraggingItem}
                             dragHandleProps={dragProvided.dragHandleProps}
                           />
                         </div>
