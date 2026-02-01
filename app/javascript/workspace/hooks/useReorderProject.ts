@@ -1,6 +1,6 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient, type QueryClient } from '@tanstack/react-query';
 import { reorderProject } from '../api/projects';
-import type { Project, ReorderInput, ItemMove, ProjectItem, ProjectSection } from '../types';
+import type { Project, ProjectListItem, ReorderInput, ItemMove, SectionMove, ProjectItem, ProjectSection, SectionGroup } from '../types';
 
 export function useReorderProject(projectId: number) {
   const queryClient = useQueryClient();
@@ -12,9 +12,11 @@ export function useReorderProject(projectId: number) {
     onMutate: async (input) => {
       // Cancel outgoing refetches
       await queryClient.cancelQueries({ queryKey: ['project', projectId] });
+      await queryClient.cancelQueries({ queryKey: ['projects'] });
 
       // Snapshot previous state
       const previousProject = queryClient.getQueryData<Project>(['project', projectId]);
+      const previousProjects = queryClient.getQueryData<ProjectListItem[]>(['projects']);
 
       if (previousProject && input.item_moves) {
         // Apply optimistic update for item moves
@@ -29,15 +31,36 @@ export function useReorderProject(projectId: number) {
           input.section_order
         );
         queryClient.setQueryData(['project', projectId], updatedProject);
+        // Also update projects list for sidebar
+        updateProjectsListSections(queryClient, projectId, updatedProject);
       }
 
-      return { previousProject };
+      if (previousProject && input.group_order) {
+        const current = queryClient.getQueryData<Project>(['project', projectId]) || previousProject;
+        const updatedProject = applyGroupOrder(current, input.group_order);
+        queryClient.setQueryData(['project', projectId], updatedProject);
+        // Also update projects list for sidebar
+        updateProjectsListGroups(queryClient, projectId, updatedProject);
+      }
+
+      if (previousProject && input.section_moves) {
+        const current = queryClient.getQueryData<Project>(['project', projectId]) || previousProject;
+        const updatedProject = applySectionMoves(current, input.section_moves);
+        queryClient.setQueryData(['project', projectId], updatedProject);
+        // Also update projects list for sidebar
+        updateProjectsListSections(queryClient, projectId, updatedProject);
+      }
+
+      return { previousProject, previousProjects };
     },
 
     onError: (_err, _input, context) => {
       // Rollback on error
       if (context?.previousProject) {
         queryClient.setQueryData(['project', projectId], context.previousProject);
+      }
+      if (context?.previousProjects) {
+        queryClient.setQueryData(['projects'], context.previousProjects);
       }
     },
 
@@ -111,6 +134,26 @@ function applyItemMoves(project: Project, moves: ItemMove[]): Project {
   };
 }
 
+// Apply group order to project data
+function applyGroupOrder(project: Project, groupOrder: number[]): Project {
+  const groupsMap = new Map(project.section_groups.map((g) => [g.id, g]));
+
+  const orderedGroups = groupOrder
+    .map((id, index) => {
+      const group = groupsMap.get(id);
+      if (group) {
+        return { ...group, position: index };
+      }
+      return null;
+    })
+    .filter((g): g is SectionGroup => g !== null);
+
+  return {
+    ...project,
+    section_groups: orderedGroups,
+  };
+}
+
 // Apply section order to project data
 function applySectionOrder(project: Project, sectionOrder: number[]): Project {
   const sectionsMap = new Map(project.sections.map((s) => [s.id, s]));
@@ -129,4 +172,74 @@ function applySectionOrder(project: Project, sectionOrder: number[]): Project {
     ...project,
     sections: orderedSections,
   };
+}
+
+// Apply section moves to project data (moving sections between/out of groups)
+function applySectionMoves(project: Project, moves: SectionMove[]): Project {
+  const newSections = project.sections.map((section) => {
+    const move = moves.find((m) => m.section_id === section.id);
+    if (move) {
+      return {
+        ...section,
+        section_group_id: move.group_id,
+        position: move.position,
+      };
+    }
+    return section;
+  });
+
+  // Sort by position
+  newSections.sort((a, b) => a.position - b.position);
+
+  return {
+    ...project,
+    sections: newSections,
+  };
+}
+
+// Update projects list cache with new section data (for sidebar)
+function updateProjectsListSections(
+  queryClient: QueryClient,
+  projectId: number,
+  updatedProject: Project
+) {
+  queryClient.setQueryData<ProjectListItem[]>(['projects'], (oldProjects) => {
+    if (!oldProjects) return oldProjects;
+    return oldProjects.map((p) => {
+      if (p.id !== projectId) return p;
+      return {
+        ...p,
+        sections: updatedProject.sections.map((s) => ({
+          id: s.id,
+          name: s.name,
+          position: s.position,
+          section_group_id: s.section_group_id,
+        })),
+      };
+    });
+  });
+}
+
+// Update projects list cache with new group data (for sidebar)
+function updateProjectsListGroups(
+  queryClient: QueryClient,
+  projectId: number,
+  updatedProject: Project
+) {
+  queryClient.setQueryData<ProjectListItem[]>(['projects'], (oldProjects) => {
+    if (!oldProjects) return oldProjects;
+    return oldProjects.map((p) => {
+      if (p.id !== projectId) return p;
+      return {
+        ...p,
+        section_groups: updatedProject.section_groups,
+        sections: updatedProject.sections.map((s) => ({
+          id: s.id,
+          name: s.name,
+          position: s.position,
+          section_group_id: s.section_group_id,
+        })),
+      };
+    });
+  });
 }

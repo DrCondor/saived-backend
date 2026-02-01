@@ -1,23 +1,23 @@
-import { useState, useRef, useEffect, useMemo } from 'react';
-import type { SectionGroup, ProjectSection, ViewMode } from '../../types';
+import { useState, useRef, useEffect, useMemo, type ReactNode } from 'react';
+import type { DraggableProvidedDragHandleProps } from '@hello-pangea/dnd';
+import type { SectionGroup, ProjectSection } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
 import { shouldIncludeInSum } from '../../utils/statusHelpers';
 import { useUpdateSectionGroup, useDeleteSectionGroup } from '../../hooks/useSectionGroups';
 import { useCreateSection } from '../../hooks/useSections';
 import { useCurrentUser } from '../../hooks/useUser';
-import Section from './Section';
 
 interface SectionGroupBlockProps {
   group: SectionGroup;
-  sections: ProjectSection[];
+  sections: ProjectSection[]; // For calculating total
   projectId: number;
-  viewMode: ViewMode;
-  isDnDEnabled: boolean;
+  dragHandleProps?: DraggableProvidedDragHandleProps | null;
+  children?: ReactNode; // Sections rendered by parent (ProjectView)
 }
 
 const COLLAPSED_GROUPS_KEY = 'saived_collapsed_groups';
 
-function getCollapsedGroups(): Set<number> {
+export function getCollapsedGroups(): Set<number> {
   try {
     const stored = localStorage.getItem(COLLAPSED_GROUPS_KEY);
     if (stored) return new Set(JSON.parse(stored));
@@ -25,7 +25,7 @@ function getCollapsedGroups(): Set<number> {
   return new Set();
 }
 
-function setCollapsedGroup(groupId: number, collapsed: boolean) {
+export function setCollapsedGroup(groupId: number, collapsed: boolean) {
   try {
     const groups = getCollapsedGroups();
     if (collapsed) groups.add(groupId);
@@ -38,13 +38,14 @@ export default function SectionGroupBlock({
   group,
   sections,
   projectId,
-  viewMode,
-  isDnDEnabled,
+  dragHandleProps,
+  children,
 }: SectionGroupBlockProps) {
   const [isCollapsed, setIsCollapsed] = useState(() => getCollapsedGroups().has(group.id));
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(group.name);
   const inputRef = useRef<HTMLInputElement>(null);
+  const dragStartPosRef = useRef<{ x: number; y: number } | null>(null);
 
   const { data: user } = useCurrentUser();
   const customStatuses = user?.custom_statuses || [];
@@ -82,6 +83,25 @@ export default function SectionGroupBlock({
     }
   };
 
+  // Track mouse position to differentiate click from drag
+  const handleNameMouseDown = (e: React.MouseEvent) => {
+    dragStartPosRef.current = { x: e.clientX, y: e.clientY };
+  };
+
+  const handleNameClick = (e: React.MouseEvent) => {
+    // If the mouse moved more than 5px, it was a drag attempt - don't trigger edit
+    if (dragStartPosRef.current) {
+      const dx = Math.abs(e.clientX - dragStartPosRef.current.x);
+      const dy = Math.abs(e.clientY - dragStartPosRef.current.y);
+      if (dx > 5 || dy > 5) {
+        dragStartPosRef.current = null;
+        return;
+      }
+    }
+    dragStartPosRef.current = null;
+    setIsEditing(true);
+  };
+
   const groupTotal = useMemo(() => {
     return sections.reduce((sum, section) => {
       const sectionSum = (section.items || [])
@@ -96,10 +116,10 @@ export default function SectionGroupBlock({
   };
 
   return (
-    <div className="mb-8">
+    <div id={`group-${group.id}`} className="mb-8 scroll-mt-28">
       {/* Group header */}
-      <div className="flex items-center justify-between mb-3 pb-2 border-b-2 border-neutral-300">
-        <div className="flex items-center gap-3 flex-1">
+      <div className="group/grp flex items-center justify-between mb-3 pb-2 border-b-2 border-neutral-300">
+        <div className="flex items-center gap-3 flex-1" {...dragHandleProps} style={{ cursor: 'default' }}>
           <button
             type="button"
             onClick={() => {
@@ -135,12 +155,15 @@ export default function SectionGroupBlock({
               className="text-lg font-bold text-neutral-900 bg-transparent border-0 p-0 focus:ring-0 focus:outline-none w-full uppercase tracking-wide"
             />
           ) : (
-            <button
-              type="button"
-              onClick={() => setIsEditing(true)}
-              className="group/name text-lg font-bold text-neutral-900 hover:text-neutral-700 text-left flex-1 flex items-center gap-2 uppercase tracking-wide"
+            <div
+              role="button"
+              tabIndex={0}
+              onMouseDown={handleNameMouseDown}
+              onClick={handleNameClick}
+              onKeyDown={(e) => e.key === 'Enter' && setIsEditing(true)}
+              className="group/name text-lg font-bold text-neutral-900 hover:text-neutral-700 text-left flex-1 flex items-center gap-2 uppercase tracking-wide select-none"
             >
-              {group.name}
+              {editName}
               <svg
                 className="w-4 h-4 text-neutral-300 opacity-0 group-hover/name:opacity-100 transition-opacity"
                 fill="none"
@@ -149,7 +172,7 @@ export default function SectionGroupBlock({
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
               </svg>
-            </button>
+            </div>
           )}
         </div>
 
@@ -180,18 +203,10 @@ export default function SectionGroupBlock({
         </div>
       </div>
 
-      {/* Group content */}
+      {/* Group content - children rendered by parent */}
       {!isCollapsed && (
         <div className="pl-4 border-l-2 border-neutral-200">
-          {sections.map((section) => (
-            <Section
-              key={section.id}
-              section={section}
-              projectId={projectId}
-              viewMode={viewMode}
-              isDnDEnabled={isDnDEnabled}
-            />
-          ))}
+          {children}
 
           {/* Add section inside group */}
           <div className="mt-2 mb-4">

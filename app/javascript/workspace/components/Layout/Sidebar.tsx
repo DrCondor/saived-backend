@@ -3,10 +3,13 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
 import type { ProjectListItem, Project } from '../../types';
 import { useToggleFavorite, useReorderProjects, useDeleteProject } from '../../hooks/useProjects';
+import { reorderProject as reorderProjectApi } from '../../api/projects';
+import { useQueryClient } from '@tanstack/react-query';
 import { formatCurrency } from '../../utils/formatters';
 
 // localStorage functions for expanded projects state
 const EXPANDED_SIDEBAR_PROJECTS_KEY = 'saived_sidebar_expanded_projects';
+const COLLAPSED_SIDEBAR_GROUPS_KEY = 'saived_sidebar_collapsed_groups';
 
 function getExpandedProjects(): Set<number> {
   try {
@@ -23,6 +26,26 @@ function getExpandedProjects(): Set<number> {
 function saveExpandedProjects(projectIds: Set<number>) {
   try {
     localStorage.setItem(EXPANDED_SIDEBAR_PROJECTS_KEY, JSON.stringify([...projectIds]));
+  } catch {
+    // Ignore localStorage errors
+  }
+}
+
+function getCollapsedSidebarGroups(): Set<number> {
+  try {
+    const stored = localStorage.getItem(COLLAPSED_SIDEBAR_GROUPS_KEY);
+    if (stored) {
+      return new Set(JSON.parse(stored));
+    }
+  } catch {
+    // Ignore localStorage errors
+  }
+  return new Set();
+}
+
+function saveCollapsedSidebarGroups(groupIds: Set<number>) {
+  try {
+    localStorage.setItem(COLLAPSED_SIDEBAR_GROUPS_KEY, JSON.stringify([...groupIds]));
   } catch {
     // Ignore localStorage errors
   }
@@ -53,14 +76,69 @@ function ProjectItem({
   isDragging = false,
 }: ProjectItemProps) {
   const navigate = useNavigate();
+  const [collapsedGroups, setCollapsedGroups] = useState<Set<number>>(() => getCollapsedSidebarGroups());
+  const dragStartPosRef = useRef<{ x: number; y: number } | null>(null);
+
+  const toggleGroupCollapse = (groupId: number) => {
+    setCollapsedGroups((prev) => {
+      const next = new Set(prev);
+      if (next.has(groupId)) {
+        next.delete(groupId);
+      } else {
+        next.add(groupId);
+      }
+      saveCollapsedSidebarGroups(next);
+      return next;
+    });
+  };
+
+  // Track mouse position to differentiate click from drag
+  const handleGroupNameMouseDown = (e: React.MouseEvent) => {
+    dragStartPosRef.current = { x: e.clientX, y: e.clientY };
+  };
+
+  const handleGroupNameClick = (e: React.MouseEvent, groupId: number) => {
+    // If the mouse moved more than 5px, it was a drag attempt - don't trigger click
+    if (dragStartPosRef.current) {
+      const dx = Math.abs(e.clientX - dragStartPosRef.current.x);
+      const dy = Math.abs(e.clientY - dragStartPosRef.current.y);
+      if (dx > 5 || dy > 5) {
+        dragStartPosRef.current = null;
+        return;
+      }
+    }
+    dragStartPosRef.current = null;
+    handleGroupClick(e, groupId);
+  };
+
+  const HEADER_OFFSET = 80; // Height of sticky header + some padding
+
+  const scrollToElement = (elementId: string) => {
+    const element = document.getElementById(elementId);
+    if (element) {
+      const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({ top: elementPosition - HEADER_OFFSET, behavior: 'smooth' });
+    }
+  };
 
   const handleSectionClick = (e: React.MouseEvent, sectionId: number) => {
     if (isActive) {
-      // For active project, anchor link works normally
+      e.preventDefault();
+      scrollToElement(`section-${sectionId}`);
       return;
     }
     e.preventDefault();
     navigate(`/workspace/projects/${project.id}#section-${sectionId}`);
+  };
+
+  const handleGroupClick = (e: React.MouseEvent, groupId: number) => {
+    if (isActive) {
+      e.preventDefault();
+      scrollToElement(`group-${groupId}`);
+      return;
+    }
+    e.preventDefault();
+    navigate(`/workspace/projects/${project.id}#group-${groupId}`);
   };
 
   return (
@@ -134,68 +212,151 @@ function ProjectItem({
       {isSectionsExpanded && project.sections.length > 0 && (
         <div className="px-3 pb-2.5 space-y-0.5">
           {(() => {
-            const groups = project.section_groups || [];
+            const groups = (project.section_groups || []).sort((a, b) => a.position - b.position);
             const groupedSectionIds = new Set<number>();
-
-            // Build group entries
-            const groupEntries = groups.map((group) => {
-              const groupSections = project.sections.filter((s) => s.section_group_id === group.id);
-              groupSections.forEach((s) => groupedSectionIds.add(s.id));
-              return { type: 'group' as const, group, sections: groupSections, position: group.position };
+            groups.forEach((g) => {
+              project.sections.filter((s) => s.section_group_id === g.id).forEach((s) => groupedSectionIds.add(s.id));
             });
-
-            // Build standalone section entries
-            const standaloneEntries = project.sections
+            const ungroupedSections = project.sections
               .filter((s) => !groupedSectionIds.has(s.id))
-              .map((section) => ({ type: 'section' as const, section, position: section.position }));
+              .sort((a, b) => a.position - b.position);
 
-            // Sort all entries by position
-            const entries = [...groupEntries, ...standaloneEntries].sort((a, b) => a.position - b.position);
+            return (
+              <>
+                {/* Groups with their sections - draggable */}
+                <Droppable droppableId={`sidebar-groups-${project.id}`} type="SIDEBAR_GROUPS">
+                  {(groupsDropProvided) => (
+                    <div ref={groupsDropProvided.innerRef} {...groupsDropProvided.droppableProps}>
+                      {groups.map((group, groupIndex) => {
+                        const groupSections = project.sections
+                          .filter((s) => s.section_group_id === group.id)
+                          .sort((a, b) => a.position - b.position);
+                        const isGroupCollapsed = collapsedGroups.has(group.id);
 
-            return entries.map((entry) => {
-              if (entry.type === 'group') {
-                return (
-                  <div key={`group-${entry.group.id}`}>
-                    <div className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-neutral-500 uppercase tracking-wider">
-                      <svg className="w-3.5 h-3.5 text-neutral-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-                      </svg>
-                      <span className="truncate">{entry.group.name}</span>
+                        return (
+                          <Draggable key={`group-${group.id}`} draggableId={`sidebar-group-${group.id}-${project.id}`} index={groupIndex}>
+                            {(groupDragProvided, groupDragSnapshot) => (
+                              <div
+                                ref={groupDragProvided.innerRef}
+                                {...groupDragProvided.draggableProps}
+                                className={groupDragSnapshot.isDragging ? 'bg-white rounded-lg shadow-md ring-1 ring-emerald-300' : ''}
+                              >
+                                <div className="flex items-center" {...groupDragProvided.dragHandleProps}>
+                                  <button
+                                    type="button"
+                                    onClick={() => toggleGroupCollapse(group.id)}
+                                    className="p-0.5 rounded hover:bg-neutral-200 transition-colors"
+                                  >
+                                    <svg
+                                      className={`w-3 h-3 text-neutral-400 transition-transform ${isGroupCollapsed ? '-rotate-90' : ''}`}
+                                      fill="none"
+                                      stroke="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                  </button>
+                                  <div
+                                    role="button"
+                                    tabIndex={0}
+                                    onMouseDown={handleGroupNameMouseDown}
+                                    onClick={(e) => handleGroupNameClick(e, group.id)}
+                                    onKeyDown={(e) => e.key === 'Enter' && handleGroupClick(e as unknown as React.MouseEvent, group.id)}
+                                    className="group/sge flex items-center gap-1.5 px-1.5 py-1.5 text-xs font-semibold text-neutral-500 uppercase tracking-wider flex-1 text-left hover:bg-neutral-100 rounded-lg transition-colors cursor-pointer"
+                                  >
+                                    <svg className="w-3.5 h-3.5 text-neutral-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                                    </svg>
+                                    <span className="truncate">{group.name}</span>
+                                  </div>
+                                </div>
+                                {!isGroupCollapsed && (
+                                  <Droppable droppableId={`sidebar-group-${group.id}-${project.id}`} type="SIDEBAR_SECTIONS">
+                                    {(dropProvided, dropSnapshot) => (
+                                      <div
+                                        ref={dropProvided.innerRef}
+                                        {...dropProvided.droppableProps}
+                                        className={`min-h-[4px] rounded transition-colors ${
+                                          dropSnapshot.isDraggingOver ? 'bg-emerald-100' : ''
+                                        }`}
+                                      >
+                                        {groupSections.map((section, idx) => (
+                                          <Draggable key={`section-${section.id}`} draggableId={`sidebar-section-${section.id}-${project.id}`} index={idx}>
+                                            {(dragProvided, dragSnapshot) => (
+                                              <a
+                                                ref={dragProvided.innerRef}
+                                                {...dragProvided.draggableProps}
+                                                {...dragProvided.dragHandleProps}
+                                                href={`#section-${section.id}`}
+                                                onClick={(e) => handleSectionClick(e, section.id)}
+                                                className={`flex items-center gap-2 rounded-xl px-2.5 py-1.5 pl-6 text-xs transition-colors ${
+                                                  dragSnapshot.isDragging
+                                                    ? 'bg-white shadow-md ring-1 ring-emerald-300'
+                                                    : isActive
+                                                      ? 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
+                                                      : 'text-neutral-500 hover:bg-neutral-100/50 hover:text-neutral-700'
+                                                }`}
+                                              >
+                                                <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-neutral-300' : 'bg-neutral-300/70'}`} />
+                                                <span className="truncate">{section.name}</span>
+                                              </a>
+                                            )}
+                                          </Draggable>
+                                        ))}
+                                        {dropProvided.placeholder}
+                                      </div>
+                                    )}
+                                  </Droppable>
+                                )}
+                              </div>
+                            )}
+                          </Draggable>
+                        );
+                      })}
+                      {groupsDropProvided.placeholder}
                     </div>
-                    {entry.sections.map((section) => (
-                      <a
-                        key={section.id}
-                        href={`#section-${section.id}`}
-                        onClick={(e) => handleSectionClick(e, section.id)}
-                        className={`flex items-center gap-2 rounded-xl px-2.5 py-1.5 pl-6 text-xs transition-colors ${
-                          isActive
-                            ? 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
-                            : 'text-neutral-500 hover:bg-neutral-100/50 hover:text-neutral-700'
-                        }`}
-                      >
-                        <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-neutral-300' : 'bg-neutral-300/70'}`} />
-                        <span className="truncate">{section.name}</span>
-                      </a>
-                    ))}
-                  </div>
-                );
-              }
-              return (
-                <a
-                  key={entry.section.id}
-                  href={`#section-${entry.section.id}`}
-                  onClick={(e) => handleSectionClick(e, entry.section.id)}
-                  className={`flex items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs transition-colors ${
-                    isActive
-                      ? 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
-                      : 'text-neutral-500 hover:bg-neutral-100/50 hover:text-neutral-700'
-                  }`}
-                >
-                  <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-neutral-300' : 'bg-neutral-300/70'}`} />
-                  <span className="truncate">{entry.section.name}</span>
-                </a>
-              );
-            });
+                  )}
+                </Droppable>
+
+                {/* Ungrouped sections */}
+                <Droppable droppableId={`sidebar-ungrouped-${project.id}`} type="SIDEBAR_SECTIONS">
+                  {(dropProvided, dropSnapshot) => (
+                    <div
+                      ref={dropProvided.innerRef}
+                      {...dropProvided.droppableProps}
+                      className={`min-h-[4px] rounded transition-colors ${
+                        dropSnapshot.isDraggingOver ? 'bg-emerald-100' : ''
+                      }`}
+                    >
+                      {ungroupedSections.map((section, idx) => (
+                        <Draggable key={`section-${section.id}`} draggableId={`sidebar-section-${section.id}-${project.id}`} index={idx}>
+                          {(dragProvided, dragSnapshot) => (
+                            <a
+                              ref={dragProvided.innerRef}
+                              {...dragProvided.draggableProps}
+                              {...dragProvided.dragHandleProps}
+                              href={`#section-${section.id}`}
+                              onClick={(e) => handleSectionClick(e, section.id)}
+                              className={`flex items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs transition-colors ${
+                                dragSnapshot.isDragging
+                                  ? 'bg-white shadow-md ring-1 ring-emerald-300'
+                                  : isActive
+                                    ? 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
+                                    : 'text-neutral-500 hover:bg-neutral-100/50 hover:text-neutral-700'
+                              }`}
+                            >
+                              <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-neutral-300' : 'bg-neutral-300/70'}`} />
+                              <span className="truncate">{section.name}</span>
+                            </a>
+                          )}
+                        </Draggable>
+                      ))}
+                      {dropProvided.placeholder}
+                    </div>
+                  )}
+                </Droppable>
+              </>
+            );
           })()}
         </div>
       )}
@@ -312,69 +473,227 @@ export default function Sidebar({
     setContextMenu((prev) => ({ ...prev, visible: false }));
   }, [contextMenu.projectId, projects, deleteProject, currentProjectId, navigate]);
 
+  const queryClient = useQueryClient();
+
   const handleDragEnd = useCallback((result: DropResult) => {
-    const { destination, source, draggableId } = result;
+    const { destination, source, type } = result;
 
-    // Dropped outside a droppable area
     if (!destination) return;
+    if (destination.droppableId === source.droppableId && destination.index === source.index) return;
 
-    // Dropped in same position
-    if (
-      destination.droppableId === source.droppableId &&
-      destination.index === source.index
-    ) {
-      return;
+    if (type === 'PROJECT') {
+      handleProjectDragEnd(result);
+    } else if (type === 'SIDEBAR_SECTIONS') {
+      handleSidebarSectionsDragEnd(result);
+    } else if (type === 'SIDEBAR_GROUPS') {
+      handleSidebarGroupsDragEnd(result);
     }
+  }, [localProjects, reorderProjects, toggleFavorite, queryClient]);
+
+  const handleProjectDragEnd = useCallback((result: DropResult) => {
+    const { destination, source, draggableId } = result;
+    if (!destination) return;
 
     const projectId = parseInt(draggableId.replace('project-', ''), 10);
     const project = localProjects.find((p) => p.id === projectId);
     if (!project) return;
 
-    // Determine if moving between favorites and regular lists
     const sourceIsFavorites = source.droppableId === 'favorites';
     const destIsFavorites = destination.droppableId === 'favorites';
 
-    // Get current lists
-    const favoriteProjects = localProjects.filter((p) => p.favorite);
-    const regularProjects = localProjects.filter((p) => !p.favorite);
+    const favProjects = localProjects.filter((p) => p.favorite);
+    const regProjects = localProjects.filter((p) => !p.favorite);
 
     let newOrder: ProjectListItem[];
 
     if (sourceIsFavorites && destIsFavorites) {
-      // Reorder within favorites
-      const newFavorites = [...favoriteProjects];
+      const newFavorites = [...favProjects];
       newFavorites.splice(source.index, 1);
       newFavorites.splice(destination.index, 0, project);
-      newOrder = [...newFavorites, ...regularProjects];
+      newOrder = [...newFavorites, ...regProjects];
     } else if (!sourceIsFavorites && !destIsFavorites) {
-      // Reorder within regular
-      const newRegular = [...regularProjects];
+      const newRegular = [...regProjects];
       newRegular.splice(source.index, 1);
       newRegular.splice(destination.index, 0, project);
-      newOrder = [...favoriteProjects, ...newRegular];
+      newOrder = [...favProjects, ...newRegular];
     } else if (sourceIsFavorites && !destIsFavorites) {
-      // Move from favorites to regular (unfavorite)
       const updatedProject = { ...project, favorite: false };
-      const newFavorites = favoriteProjects.filter((p) => p.id !== projectId);
-      const newRegular = [...regularProjects];
+      const newFavorites = favProjects.filter((p) => p.id !== projectId);
+      const newRegular = [...regProjects];
       newRegular.splice(destination.index, 0, updatedProject);
       newOrder = [...newFavorites, ...newRegular];
-      // Also toggle favorite on backend
       toggleFavorite.mutate(projectId);
     } else {
-      // Move from regular to favorites (favorite)
       const updatedProject = { ...project, favorite: true };
-      const newRegular = regularProjects.filter((p) => p.id !== projectId);
-      const newFavorites = [...favoriteProjects];
+      const newRegular = regProjects.filter((p) => p.id !== projectId);
+      const newFavorites = [...favProjects];
       newFavorites.splice(destination.index, 0, updatedProject);
       newOrder = [...newFavorites, ...newRegular];
-      // Also toggle favorite on backend
       toggleFavorite.mutate(projectId);
     }
 
     setLocalProjects(newOrder);
     reorderProjects.mutate(newOrder.map((p) => p.id));
   }, [localProjects, reorderProjects, toggleFavorite]);
+
+  const handleSidebarSectionsDragEnd = useCallback((result: DropResult) => {
+    const { destination, source, draggableId } = result;
+    if (!destination) return;
+
+    // Parse section ID and project ID from draggableId: "sidebar-section-{sectionId}-{projectId}"
+    const parts = draggableId.replace('sidebar-section-', '').split('-');
+    const sectionId = parseInt(parts[0], 10);
+    const projectId = parseInt(parts[1], 10);
+
+    const proj = localProjects.find((p) => p.id === projectId);
+    if (!proj) return;
+
+    // Parse source and destination group IDs from droppableId
+    // Format: "sidebar-group-{groupId}-{projectId}" or "sidebar-ungrouped-{projectId}"
+    const parseGroupId = (droppableId: string): number | null => {
+      if (droppableId.startsWith('sidebar-ungrouped-')) return null;
+      // sidebar-group-{groupId}-{projectId}
+      const match = droppableId.match(/sidebar-group-(\d+)-/);
+      return match ? parseInt(match[1], 10) : null;
+    };
+
+    const sourceGroupId = parseGroupId(source.droppableId);
+    const destGroupId = parseGroupId(destination.droppableId);
+
+    // Build section lists for source and destination
+    const getGroupSections = (groupId: number | null) => {
+      return proj.sections
+        .filter((s) => s.section_group_id === groupId)
+        .sort((a, b) => a.position - b.position);
+    };
+
+    // Helper to apply optimistic update to localProjects AND main project view cache
+    const applyOptimisticUpdate = (sectionMoves: Array<{ section_id: number; group_id: number | null; position: number }>) => {
+      // Update sidebar local state
+      setLocalProjects((prev) =>
+        prev.map((p) => {
+          if (p.id !== projectId) return p;
+          return {
+            ...p,
+            sections: p.sections.map((s) => {
+              const move = sectionMoves.find((m) => m.section_id === s.id);
+              if (move) {
+                return { ...s, section_group_id: move.group_id, position: move.position };
+              }
+              return s;
+            }),
+          };
+        })
+      );
+
+      // Update main project view cache (for ProjectView component)
+      queryClient.setQueryData<Project>(['project', projectId], (oldProject) => {
+        if (!oldProject) return oldProject;
+        return {
+          ...oldProject,
+          sections: oldProject.sections.map((s) => {
+            const move = sectionMoves.find((m) => m.section_id === s.id);
+            if (move) {
+              return { ...s, section_group_id: move.group_id, position: move.position };
+            }
+            return s;
+          }),
+        };
+      });
+    };
+
+    // If moving within the same group/ungrouped
+    if (sourceGroupId === destGroupId) {
+      const sections = getGroupSections(destGroupId);
+      const reordered = [...sections];
+      const [moved] = reordered.splice(source.index, 1);
+      reordered.splice(destination.index, 0, moved);
+
+      const sectionMoves = reordered.map((s, index) => ({
+        section_id: s.id,
+        group_id: destGroupId,
+        position: index,
+      }));
+
+      // Optimistic update
+      applyOptimisticUpdate(sectionMoves);
+
+      // Fire API call (no need to wait)
+      reorderProjectApi(projectId, { section_moves: sectionMoves });
+      return;
+    }
+
+    // Moving between groups/ungrouped
+    const movedSection = proj.sections.find((s) => s.id === sectionId);
+    if (!movedSection) return;
+
+    const sourceSections = getGroupSections(sourceGroupId).filter((s) => s.id !== sectionId);
+    const destSections = getGroupSections(destGroupId).filter((s) => s.id !== sectionId);
+    destSections.splice(destination.index, 0, movedSection);
+
+    const sectionMoves = [
+      // Update source group sections positions
+      ...sourceSections.map((s, index) => ({
+        section_id: s.id,
+        group_id: sourceGroupId,
+        position: index,
+      })),
+      // Update dest group sections positions (including moved section)
+      ...destSections.map((s, index) => ({
+        section_id: s.id,
+        group_id: destGroupId,
+        position: index,
+      })),
+    ];
+
+    // Optimistic update
+    applyOptimisticUpdate(sectionMoves);
+
+    // Fire API call (no need to wait)
+    reorderProjectApi(projectId, { section_moves: sectionMoves });
+  }, [localProjects, queryClient]);
+
+  const handleSidebarGroupsDragEnd = useCallback((result: DropResult) => {
+    const { destination, source, draggableId } = result;
+    if (!destination) return;
+
+    // Parse group ID and project ID from draggableId: "sidebar-group-{groupId}-{projectId}"
+    const match = draggableId.match(/sidebar-group-(\d+)-(\d+)/);
+    if (!match) return;
+    const projectId = parseInt(match[2], 10);
+
+    const proj = localProjects.find((p) => p.id === projectId);
+    if (!proj) return;
+
+    const groups = [...(proj.section_groups || [])].sort((a, b) => a.position - b.position);
+    const [movedGroup] = groups.splice(source.index, 1);
+    groups.splice(destination.index, 0, movedGroup);
+
+    const groupOrder = groups.map((g) => g.id);
+
+    // Optimistic update - sidebar local state
+    setLocalProjects((prev) =>
+      prev.map((p) => {
+        if (p.id !== projectId) return p;
+        return {
+          ...p,
+          section_groups: groups.map((g, idx) => ({ ...g, position: idx })),
+        };
+      })
+    );
+
+    // Optimistic update - main project view cache
+    queryClient.setQueryData<Project>(['project', projectId], (oldProject) => {
+      if (!oldProject) return oldProject;
+      return {
+        ...oldProject,
+        section_groups: groups.map((g, idx) => ({ ...g, position: idx })),
+      };
+    });
+
+    // Fire API call
+    reorderProjectApi(projectId, { group_order: groupOrder });
+  }, [localProjects, queryClient]);
 
   // Split projects into favorites and regular
   const favoriteProjects = localProjects.filter((p) => p.favorite);
@@ -427,7 +746,7 @@ export default function Sidebar({
                     Ulubione
                   </p>
 
-                  <Droppable droppableId="favorites">
+                  <Droppable droppableId="favorites" type="PROJECT">
                     {(provided, snapshot) => (
                       <div
                         ref={provided.innerRef}
@@ -477,7 +796,7 @@ export default function Sidebar({
                   Projekty
                 </p>
 
-                <Droppable droppableId="projects">
+                <Droppable droppableId="projects" type="PROJECT">
                   {(provided, snapshot) => (
                     <div
                       ref={provided.innerRef}

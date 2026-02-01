@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
-import { DragDropContext, type DropResult } from '@hello-pangea/dnd';
-import type { Project, ProjectItem, ProjectSection, SectionGroup, ItemMove, SortOption, FilterState, ViewMode } from '../../types';
+import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
+import type { Project, ProjectItem, ProjectSection, SectionGroup, ItemMove, SectionMove, SortOption, FilterState, ViewMode } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
 import { shouldIncludeInSum } from '../../utils/statusHelpers';
 import { useCreateSection } from '../../hooks/useSections';
@@ -46,6 +46,7 @@ export default function ProjectView({ project }: ProjectViewProps) {
 
   // Local state for real-time DnD updates
   const [localSections, setLocalSections] = useState<ProjectSection[]>(project.sections || []);
+  const [localGroups, setLocalGroups] = useState<SectionGroup[]>(project.section_groups || []);
 
   // Toolbar state: search, sort, filter, view mode
   const [searchQuery, setSearchQuery] = useState('');
@@ -57,6 +58,10 @@ export default function ProjectView({ project }: ProjectViewProps) {
   useEffect(() => {
     setLocalSections(project.sections || []);
   }, [project.sections]);
+
+  useEffect(() => {
+    setLocalGroups(project.section_groups || []);
+  }, [project.section_groups]);
 
   // Reset toolbar state when project changes
   useEffect(() => {
@@ -263,11 +268,12 @@ export default function ProjectView({ project }: ProjectViewProps) {
     | { type: 'section'; section: ProjectSection };
 
   const topLevelEntries = useMemo((): TopLevelEntry[] => {
-    const groups = project.section_groups || [];
     const groupedSectionIds = new Set<number>();
 
-    const groupEntries: TopLevelEntry[] = groups.map((group) => {
-      const groupSections = localSections.filter((s) => s.section_group_id === group.id);
+    const groupEntries: TopLevelEntry[] = localGroups.map((group) => {
+      const groupSections = localSections
+        .filter((s) => s.section_group_id === group.id)
+        .sort((a, b) => a.position - b.position);
       groupSections.forEach((s) => groupedSectionIds.add(s.id));
       return { type: 'group' as const, group, sections: groupSections };
     });
@@ -282,80 +288,222 @@ export default function ProjectView({ project }: ProjectViewProps) {
       const posB = b.type === 'group' ? b.group.position : b.section.position;
       return posA - posB;
     });
-  }, [project.section_groups, localSections]);
+  }, [localGroups, localSections]);
 
-  // Handle drag end - @hello-pangea/dnd style
+  // Handle drag end - dispatch by type
   const handleDragEnd = useCallback(
     (result: DropResult) => {
-      const { destination, source, draggableId } = result;
+      const { destination, source, type } = result;
 
-      // Dropped outside any droppable
+      if (!destination) return;
+      if (destination.droppableId === source.droppableId && destination.index === source.index) return;
+
+      if (type === 'TOP_LEVEL') {
+        handleTopLevelReorder(result);
+      } else if (type === 'SECTIONS') {
+        handleSectionMove(result);
+      } else if (type === 'ITEMS') {
+        handleItemReorder(result);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [localSections, localGroups, reorderProject, topLevelEntries]
+  );
+
+  // Reorder top-level entries (groups only - standalone sections are now in SECTIONS type)
+  const handleTopLevelReorder = useCallback(
+    (result: DropResult) => {
+      const { destination, source } = result;
       if (!destination) return;
 
-      // Same position - no change
-      if (
-        destination.droppableId === source.droppableId &&
-        destination.index === source.index
-      ) {
+      const reordered = reorder(topLevelEntries, source.index, destination.index);
+
+      // Extract new orders
+      const sectionOrder: number[] = [];
+      const groupOrder: number[] = [];
+
+      reordered.forEach((entry) => {
+        if (entry.type === 'group') {
+          groupOrder.push(entry.group.id);
+          // Also update positions of sections within the group
+          entry.sections.forEach((s) => sectionOrder.push(s.id));
+        } else {
+          sectionOrder.push(entry.section.id);
+        }
+      });
+
+      // Optimistic: update local group positions
+      const groupPosMap = new Map<number, number>();
+      groupOrder.forEach((id, i) => groupPosMap.set(id, i));
+      setLocalGroups((prev) =>
+        prev.map((g) => {
+          const newPos = groupPosMap.get(g.id);
+          return newPos !== undefined ? { ...g, position: newPos } : g;
+        })
+      );
+
+      // Optimistic: update local section positions
+      const sectionPosMap = new Map<number, number>();
+      sectionOrder.forEach((id, i) => sectionPosMap.set(id, i));
+      setLocalSections((prev) =>
+        prev.map((s) => {
+          const newPos = sectionPosMap.get(s.id);
+          return newPos !== undefined ? { ...s, position: newPos } : s;
+        })
+      );
+
+      reorderProject.mutate({
+        section_order: sectionOrder,
+        group_order: groupOrder,
+      });
+    },
+    [topLevelEntries, reorderProject]
+  );
+
+  // Handle section moves between groups or to/from standalone
+  const handleSectionMove = useCallback(
+    (result: DropResult) => {
+      const { destination, source, draggableId } = result;
+      if (!destination) return;
+
+      // Parse section ID from draggableId: "section-{id}"
+      const sectionId = parseInt(draggableId.replace('section-', ''), 10);
+
+      // Parse source and destination group IDs
+      // droppableId format: "group-{id}" or "ungrouped"
+      const sourceGroupId = source.droppableId === 'ungrouped'
+        ? null
+        : parseInt(source.droppableId.replace('group-', ''), 10);
+      const destGroupId = destination.droppableId === 'ungrouped'
+        ? null
+        : parseInt(destination.droppableId.replace('group-', ''), 10);
+
+      // Build list of sections in destination group/ungrouped
+      let destSections: ProjectSection[];
+      if (destGroupId === null) {
+        destSections = localSections.filter((s) => s.section_group_id === null);
+      } else {
+        destSections = localSections.filter((s) => s.section_group_id === destGroupId);
+      }
+
+      // If moving within the same group, use reorder
+      if (sourceGroupId === destGroupId) {
+        const reordered = reorder(destSections, source.index, destination.index);
+        const sectionMoves: SectionMove[] = reordered.map((s, index) => ({
+          section_id: s.id,
+          group_id: destGroupId,
+          position: index,
+        }));
+
+        // Optimistic update
+        setLocalSections((prev) =>
+          prev.map((s) => {
+            const move = sectionMoves.find((m) => m.section_id === s.id);
+            if (move) {
+              return { ...s, position: move.position };
+            }
+            return s;
+          })
+        );
+
+        reorderProject.mutate({ section_moves: sectionMoves });
         return;
       }
 
-      // Parse IDs (format: "section-123" for droppable, "item-456" for draggable)
+      // Moving between groups - need to remove from source and add to dest
+      const movedSection = localSections.find((s) => s.id === sectionId);
+      if (!movedSection) return;
+
+      // Remove from source list (for position recalculation)
+      const sourceSections = sourceGroupId === null
+        ? localSections.filter((s) => s.section_group_id === null && s.id !== sectionId)
+        : localSections.filter((s) => s.section_group_id === sourceGroupId && s.id !== sectionId);
+
+      // Insert into dest list at the right position
+      const newDestSections = [...destSections.filter((s) => s.id !== sectionId)];
+      newDestSections.splice(destination.index, 0, movedSection);
+
+      // Build section moves for all affected sections
+      const sectionMoves: SectionMove[] = [];
+
+      // Update source group sections positions
+      sourceSections.forEach((s, index) => {
+        sectionMoves.push({
+          section_id: s.id,
+          group_id: sourceGroupId,
+          position: index,
+        });
+      });
+
+      // Update dest group sections positions
+      newDestSections.forEach((s, index) => {
+        sectionMoves.push({
+          section_id: s.id,
+          group_id: destGroupId,
+          position: index,
+        });
+      });
+
+      // Optimistic update
+      setLocalSections((prev) =>
+        prev.map((s) => {
+          const move = sectionMoves.find((m) => m.section_id === s.id);
+          if (move) {
+            return { ...s, section_group_id: move.group_id, position: move.position };
+          }
+          return s;
+        })
+      );
+
+      reorderProject.mutate({ section_moves: sectionMoves });
+    },
+    [localSections, reorderProject]
+  );
+
+  // Reorder items within/across sections (existing logic)
+  const handleItemReorder = useCallback(
+    (result: DropResult) => {
+      const { destination, source, draggableId } = result;
+      if (!destination) return;
+
       const sourceSectionId = parseInt(source.droppableId.replace('section-', ''), 10);
       const destSectionId = parseInt(destination.droppableId.replace('section-', ''), 10);
-      const itemId = parseInt(draggableId.replace('item-', ''), 10);
 
-      // Find sections
       const sourceSection = localSections.find((s) => s.id === sourceSectionId);
       const destSection = localSections.find((s) => s.id === destSectionId);
-
       if (!sourceSection || !destSection) return;
 
-      // Get the item being moved
       const sourceItems = [...(sourceSection.items || [])];
       const [movedItem] = sourceItems.splice(source.index, 1);
-
       if (!movedItem) return;
 
       let newSections: ProjectSection[];
       const affectedSectionIds = new Set([sourceSectionId]);
 
       if (sourceSectionId === destSectionId) {
-        // Same section - reorder
         const newItems = reorder(sourceSection.items || [], source.index, destination.index);
         newSections = localSections.map((section) =>
           section.id === sourceSectionId ? { ...section, items: newItems } : section
         );
       } else {
-        // Cross-section move
         affectedSectionIds.add(destSectionId);
         const destItems = [...(destSection.items || [])];
         destItems.splice(destination.index, 0, movedItem);
 
         newSections = localSections.map((section) => {
-          if (section.id === sourceSectionId) {
-            return { ...section, items: sourceItems };
-          }
-          if (section.id === destSectionId) {
-            return { ...section, items: destItems };
-          }
+          if (section.id === sourceSectionId) return { ...section, items: sourceItems };
+          if (section.id === destSectionId) return { ...section, items: destItems };
           return section;
         });
       }
 
-      // Update local state immediately for responsive UI
       setLocalSections(newSections);
 
-      // Build item moves for affected sections and send to server
       const itemMoves: ItemMove[] = [];
       newSections.forEach((section) => {
         if (affectedSectionIds.has(section.id)) {
           section.items?.forEach((item, index) => {
-            itemMoves.push({
-              item_id: item.id,
-              section_id: section.id,
-              position: index,
-            });
+            itemMoves.push({ item_id: item.id, section_id: section.id, position: index });
           });
         }
       });
@@ -393,7 +541,7 @@ export default function ProjectView({ project }: ProjectViewProps) {
                 onClick={() => setIsEditingName(true)}
                 className="group/name text-xl font-bold tracking-tight text-neutral-900 hover:text-neutral-700 text-left flex items-center gap-2"
               >
-                {project.name}
+                {editName}
                 <svg
                   className="w-4 h-4 text-neutral-300 opacity-0 group-hover/name:opacity-100 transition-opacity"
                   fill="none"
@@ -428,9 +576,9 @@ export default function ProjectView({ project }: ProjectViewProps) {
                 onClick={() => setIsEditingDescription(true)}
                 className="group/desc mt-1 text-sm text-left flex items-center gap-1.5"
               >
-                {project.description ? (
+                {editDescription ? (
                   <span className="text-neutral-600 hover:text-neutral-800 transition-colors">
-                    {project.description}
+                    {editDescription}
                   </span>
                 ) : (
                   <span className="text-neutral-400 hover:text-neutral-600 transition-colors">
@@ -530,40 +678,147 @@ export default function ProjectView({ project }: ProjectViewProps) {
           </div>
         )}
 
-        {topLevelEntries.map((entry) =>
-          entry.type === 'group' ? (
-            <SectionGroupBlock
-              key={`group-${entry.group.id}`}
-              group={entry.group}
-              sections={entry.sections.map((s) => {
-                const processed = processedSections.find((ps) => ps.id === s.id);
-                return processed || s;
-              }).filter((s) => {
-                const hasFiltersActive = searchQuery.trim() || filters.statuses.length > 0 || filters.categories.length > 0;
-                return !hasFiltersActive || (s.items && s.items.length > 0);
+        <Droppable droppableId="top-level-entries" type="TOP_LEVEL" isDropDisabled={!isDnDEnabled}>
+          {(provided) => (
+            <div ref={provided.innerRef} {...provided.droppableProps}>
+              {topLevelEntries.map((entry, index) => {
+                if (entry.type === 'group') {
+                  const groupSections = entry.sections.map((s) => {
+                    const processed = processedSections.find((ps) => ps.id === s.id);
+                    return processed || s;
+                  }).filter((s) => {
+                    const hasFiltersActive = searchQuery.trim() || filters.statuses.length > 0 || filters.categories.length > 0;
+                    return !hasFiltersActive || (s.items && s.items.length > 0);
+                  });
+
+                  return (
+                    <Draggable
+                      key={`entry-group-${entry.group.id}`}
+                      draggableId={`entry-group-${entry.group.id}`}
+                      index={index}
+                      isDragDisabled={!isDnDEnabled}
+                    >
+                      {(provided, snapshot) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          className={snapshot.isDragging ? 'bg-white rounded-xl shadow-lg ring-2 ring-emerald-300' : ''}
+                        >
+                          <SectionGroupBlock
+                            group={entry.group}
+                            sections={groupSections}
+                            projectId={project.id}
+                            dragHandleProps={provided.dragHandleProps}
+                          >
+                            {/* Nested Droppable for sections within the group */}
+                            <Droppable droppableId={`group-${entry.group.id}`} type="SECTIONS" isDropDisabled={!isDnDEnabled}>
+                              {(dropProvided, dropSnapshot) => (
+                                <div
+                                  ref={dropProvided.innerRef}
+                                  {...dropProvided.droppableProps}
+                                  className={`min-h-[20px] rounded-lg transition-colors ${
+                                    dropSnapshot.isDraggingOver ? 'bg-emerald-50 ring-2 ring-emerald-300 ring-dashed' : ''
+                                  }`}
+                                >
+                                  {groupSections.map((section, sectionIndex) => (
+                                    <Draggable
+                                      key={`section-${section.id}`}
+                                      draggableId={`section-${section.id}`}
+                                      index={sectionIndex}
+                                      isDragDisabled={!isDnDEnabled}
+                                    >
+                                      {(dragProvided, dragSnapshot) => (
+                                        <div
+                                          ref={dragProvided.innerRef}
+                                          {...dragProvided.draggableProps}
+                                          className={dragSnapshot.isDragging ? 'bg-white rounded-xl shadow-lg ring-2 ring-emerald-300' : ''}
+                                        >
+                                          <Section
+                                            section={section}
+                                            projectId={project.id}
+                                            viewMode={viewMode}
+                                            isDnDEnabled={isDnDEnabled}
+                                            dragHandleProps={dragProvided.dragHandleProps}
+                                          />
+                                        </div>
+                                      )}
+                                    </Draggable>
+                                  ))}
+                                  {dropProvided.placeholder}
+                                </div>
+                              )}
+                            </Droppable>
+                          </SectionGroupBlock>
+                        </div>
+                      )}
+                    </Draggable>
+                  );
+                }
+
+                // Standalone section - skip rendering here, will be rendered in ungrouped Droppable
+                return null;
               })}
-              projectId={project.id}
-              viewMode={viewMode}
-              isDnDEnabled={isDnDEnabled}
-            />
-          ) : (
-            (() => {
-              const processed = processedSections.find((ps) => ps.id === entry.section.id);
-              const section = processed || entry.section;
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+
+        {/* Ungrouped sections - separate Droppable for sections not in any group */}
+        {(() => {
+          const ungroupedSections = localSections
+            .filter((s) => s.section_group_id === null)
+            .map((s) => {
+              const processed = processedSections.find((ps) => ps.id === s.id);
+              return processed || s;
+            })
+            .filter((s) => {
               const hasFiltersActive = searchQuery.trim() || filters.statuses.length > 0 || filters.categories.length > 0;
-              if (hasFiltersActive && (!section.items || section.items.length === 0)) return null;
-              return (
-                <Section
-                  key={section.id}
-                  section={section}
-                  projectId={project.id}
-                  viewMode={viewMode}
-                  isDnDEnabled={isDnDEnabled}
-                />
-              );
-            })()
-          )
-        )}
+              return !hasFiltersActive || (s.items && s.items.length > 0);
+            })
+            .sort((a, b) => a.position - b.position);
+
+          if (ungroupedSections.length === 0 && !isDnDEnabled) return null;
+
+          return (
+            <Droppable droppableId="ungrouped" type="SECTIONS" isDropDisabled={!isDnDEnabled}>
+              {(dropProvided, dropSnapshot) => (
+                <div
+                  ref={dropProvided.innerRef}
+                  {...dropProvided.droppableProps}
+                  className={`min-h-[20px] rounded-lg transition-colors ${
+                    dropSnapshot.isDraggingOver ? 'bg-emerald-50 ring-2 ring-emerald-300 ring-dashed' : ''
+                  }`}
+                >
+                  {ungroupedSections.map((section, index) => (
+                    <Draggable
+                      key={`section-${section.id}`}
+                      draggableId={`section-${section.id}`}
+                      index={index}
+                      isDragDisabled={!isDnDEnabled}
+                    >
+                      {(dragProvided, dragSnapshot) => (
+                        <div
+                          ref={dragProvided.innerRef}
+                          {...dragProvided.draggableProps}
+                          className={dragSnapshot.isDragging ? 'bg-white rounded-xl shadow-lg ring-2 ring-emerald-300' : ''}
+                        >
+                          <Section
+                            section={section}
+                            projectId={project.id}
+                            viewMode={viewMode}
+                            isDnDEnabled={isDnDEnabled}
+                            dragHandleProps={dragProvided.dragHandleProps}
+                          />
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                  {dropProvided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          );
+        })()}
       </DragDropContext>
 
       {/* Add section / group buttons */}

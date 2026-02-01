@@ -33,9 +33,40 @@ export function useUpdateProject() {
   return useMutation({
     mutationFn: ({ id, input }: { id: number; input: UpdateProjectInput }) =>
       updateProject(id, input),
-    onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
-      queryClient.invalidateQueries({ queryKey: ['project', id] });
+    onMutate: async ({ id, input }) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['projects'] });
+      await queryClient.cancelQueries({ queryKey: ['project', id] });
+
+      // Snapshot previous values
+      const previousProjects = queryClient.getQueryData<ProjectListItem[]>(['projects']);
+      const previousProject = queryClient.getQueryData(['project', id]);
+
+      // Optimistically update projects list
+      if (previousProjects) {
+        queryClient.setQueryData<ProjectListItem[]>(
+          ['projects'],
+          previousProjects.map((p) =>
+            p.id === id ? { ...p, ...input } : p
+          )
+        );
+      }
+
+      // Optimistically update single project
+      if (previousProject) {
+        queryClient.setQueryData(['project', id], { ...previousProject, ...input });
+      }
+
+      return { previousProjects, previousProject };
+    },
+    onError: (_, { id }, context) => {
+      // Rollback on error
+      if (context?.previousProjects) {
+        queryClient.setQueryData(['projects'], context.previousProjects);
+      }
+      if (context?.previousProject) {
+        queryClient.setQueryData(['project', id], context.previousProject);
+      }
     },
   });
 }

@@ -29,8 +29,10 @@ export function useUpdateSectionGroup(projectId: number) {
 
     onMutate: async ({ groupId, input }) => {
       await queryClient.cancelQueries({ queryKey: ['project', projectId] });
+      await queryClient.cancelQueries({ queryKey: ['projects'] });
 
       const previousProject = queryClient.getQueryData<Project>(['project', projectId]);
+      const previousProjects = queryClient.getQueryData<Array<{ id: number; section_groups: Array<{ id: number; name: string; position: number }> }>>(['projects']);
 
       if (previousProject) {
         const updatedProject = {
@@ -48,12 +50,36 @@ export function useUpdateSectionGroup(projectId: number) {
         queryClient.setQueryData(['project', projectId], updatedProject);
       }
 
-      return { previousProject };
+      // Also update the projects list (used by sidebar)
+      if (previousProjects) {
+        queryClient.setQueryData(
+          ['projects'],
+          previousProjects.map((project) => {
+            if (project.id !== projectId) return project;
+            return {
+              ...project,
+              section_groups: project.section_groups.map((group) => {
+                if (group.id !== groupId) return group;
+                return {
+                  ...group,
+                  ...(input.name !== undefined && { name: input.name }),
+                  ...(input.position !== undefined && { position: input.position }),
+                };
+              }),
+            };
+          })
+        );
+      }
+
+      return { previousProject, previousProjects };
     },
 
     onError: (_err, _variables, context) => {
       if (context?.previousProject) {
         queryClient.setQueryData(['project', projectId], context.previousProject);
+      }
+      if (context?.previousProjects) {
+        queryClient.setQueryData(['projects'], context.previousProjects);
       }
     },
   });

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import { Droppable, Draggable } from '@hello-pangea/dnd';
+import { Droppable, Draggable, type DraggableProvidedDragHandleProps } from '@hello-pangea/dnd';
 import type { ProjectSection, CreateItemInput, UpdateItemInput, ViewMode, ItemType } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
 import { shouldIncludeInSum } from '../../utils/statusHelpers';
@@ -17,6 +17,7 @@ interface SectionProps {
   projectId: number;
   viewMode: ViewMode;
   isDnDEnabled: boolean;
+  dragHandleProps?: DraggableProvidedDragHandleProps | null;
 }
 
 // Helper to get/set section collapsed state in localStorage
@@ -48,13 +49,14 @@ function setCollapsedSection(sectionId: number, collapsed: boolean) {
   }
 }
 
-export default function Section({ section, projectId, viewMode, isDnDEnabled }: SectionProps) {
+export default function Section({ section, projectId, viewMode, isDnDEnabled, dragHandleProps }: SectionProps) {
   // Initialize collapsed state from localStorage
   const [isCollapsed, setIsCollapsed] = useState(() => getCollapsedSections().has(section.id));
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(section.name);
   const [openForm, setOpenForm] = useState<ItemType | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const dragStartPosRef = useRef<{ x: number; y: number } | null>(null);
 
   const { data: user } = useCurrentUser();
   const customStatuses = user?.custom_statuses || [];
@@ -90,6 +92,25 @@ export default function Section({ section, projectId, viewMode, isDnDEnabled }: 
       setEditName(section.name);
       setIsEditing(false);
     }
+  };
+
+  // Track mouse position to differentiate click from drag
+  const handleNameMouseDown = (e: React.MouseEvent) => {
+    dragStartPosRef.current = { x: e.clientX, y: e.clientY };
+  };
+
+  const handleNameClick = (e: React.MouseEvent) => {
+    // If the mouse moved more than 5px, it was a drag attempt - don't trigger edit
+    if (dragStartPosRef.current) {
+      const dx = Math.abs(e.clientX - dragStartPosRef.current.x);
+      const dy = Math.abs(e.clientY - dragStartPosRef.current.y);
+      if (dx > 5 || dy > 5) {
+        dragStartPosRef.current = null;
+        return;
+      }
+    }
+    dragStartPosRef.current = null;
+    setIsEditing(true);
   };
 
   const handleAddItem = useCallback((data: CreateItemInput) => {
@@ -155,10 +176,10 @@ export default function Section({ section, projectId, viewMode, isDnDEnabled }: 
   };
 
   return (
-    <div id={`section-${section.id}`} className="mb-6 scroll-mt-4">
+    <div id={`section-${section.id}`} className="mb-6 scroll-mt-28">
       {/* Section header */}
-      <div className="flex items-center justify-between mb-3 pb-2 border-b border-neutral-200">
-        <div className="flex items-center gap-3 flex-1">
+      <div className="group/section flex items-center justify-between mb-3 pb-2 border-b border-neutral-200">
+        <div className="flex items-center gap-3 flex-1" {...dragHandleProps} style={{ cursor: 'default' }}>
           <button
             type="button"
             onClick={() => {
@@ -194,12 +215,15 @@ export default function Section({ section, projectId, viewMode, isDnDEnabled }: 
               className="text-lg font-bold text-neutral-900 bg-transparent border-0 p-0 focus:ring-0 focus:outline-none w-full"
             />
           ) : (
-            <button
-              type="button"
-              onClick={() => setIsEditing(true)}
-              className="group/name text-lg font-bold text-neutral-900 hover:text-neutral-700 text-left flex-1 flex items-center gap-2"
+            <div
+              role="button"
+              tabIndex={0}
+              onMouseDown={handleNameMouseDown}
+              onClick={handleNameClick}
+              onKeyDown={(e) => e.key === 'Enter' && setIsEditing(true)}
+              className="group/name text-lg font-bold text-neutral-900 hover:text-neutral-700 text-left flex-1 flex items-center gap-2 select-none"
             >
-              {section.name}
+              {editName}
               <svg
                 className="w-4 h-4 text-neutral-300 opacity-0 group-hover/name:opacity-100 transition-opacity"
                 fill="none"
@@ -213,7 +237,7 @@ export default function Section({ section, projectId, viewMode, isDnDEnabled }: 
                   d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
                 />
               </svg>
-            </button>
+            </div>
           )}
         </div>
 
@@ -271,6 +295,7 @@ export default function Section({ section, projectId, viewMode, isDnDEnabled }: 
             // Grid/List view: With DnD
             <Droppable
               droppableId={`section-${section.id}`}
+              type="ITEMS"
               isDropDisabled={!isDnDEnabled}
             >
               {(provided, snapshot) => (
