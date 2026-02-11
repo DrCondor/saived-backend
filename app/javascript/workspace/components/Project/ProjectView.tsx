@@ -57,6 +57,36 @@ export default function ProjectView({ project }: ProjectViewProps) {
   // Track if an item is being dragged (for showing drop zones on collapsed sections)
   const [isDraggingItem, setIsDraggingItem] = useState(false);
 
+  // Cursor-based detection for collapsed sections (overrides library's center-based detection)
+  const [cursorOverCollapsedSectionId, setCursorOverCollapsedSectionId] = useState<number | null>(null);
+  const cursorPosRef = useRef<{ x: number; y: number } | null>(null);
+  const cursorOverRef = useRef<number | null>(null); // Avoid re-renders on every mousemove
+
+  const handleMouseMoveDuringDrag = useCallback((e: MouseEvent) => {
+    cursorPosRef.current = { x: e.clientX, y: e.clientY };
+
+    const collapsedSections = getCollapsedSections();
+    let foundId: number | null = null;
+
+    for (const sectionId of collapsedSections) {
+      const el = document.getElementById(`section-${sectionId}`);
+      if (el) {
+        const rect = el.getBoundingClientRect();
+        if (e.clientX >= rect.left && e.clientX <= rect.right &&
+            e.clientY >= rect.top && e.clientY <= rect.bottom) {
+          foundId = sectionId;
+          break;
+        }
+      }
+    }
+
+    // Only trigger re-render when the detected section changes
+    if (foundId !== cursorOverRef.current) {
+      cursorOverRef.current = foundId;
+      setCursorOverCollapsedSectionId(foundId);
+    }
+  }, []);
+
   // Sync local state with server data when project changes
   useEffect(() => {
     setLocalSections(project.sections || []);
@@ -293,22 +323,46 @@ export default function ProjectView({ project }: ProjectViewProps) {
     });
   }, [localGroups, localSections]);
 
-  // Handle drag start - track if dragging items
+  // Handle drag start - track if dragging items + attach cursor listener
   const handleDragStart = useCallback(
     (start: { type: string }) => {
       if (start.type === 'ITEMS') {
         setIsDraggingItem(true);
+        cursorOverRef.current = null;
+        setCursorOverCollapsedSectionId(null);
+        document.addEventListener('mousemove', handleMouseMoveDuringDrag);
       }
     },
-    []
+    [handleMouseMoveDuringDrag]
   );
 
-  // Handle drag end - dispatch by type
+  // Handle drag end - dispatch by type, override destination for collapsed sections
   const handleDragEnd = useCallback(
     (result: DropResult) => {
       setIsDraggingItem(false);
+      document.removeEventListener('mousemove', handleMouseMoveDuringDrag);
 
-      const { destination, source, type } = result;
+      const cursorTargetId = cursorOverRef.current;
+      cursorOverRef.current = null;
+      setCursorOverCollapsedSectionId(null);
+
+      const { source, type } = result;
+      let { destination } = result;
+
+      // For ITEMS drag: if cursor is over a collapsed section, override the destination
+      if (type === 'ITEMS' && cursorTargetId !== null) {
+        const collapsedSections = getCollapsedSections();
+        if (collapsedSections.has(cursorTargetId)) {
+          const sourceSectionId = parseInt(source.droppableId.replace('section-', ''), 10);
+          // Don't override if dropping back on the same section
+          if (cursorTargetId !== sourceSectionId) {
+            destination = {
+              droppableId: `section-${cursorTargetId}`,
+              index: 0, // Will be overridden to append at end by handleItemReorder
+            };
+          }
+        }
+      }
 
       if (!destination) return;
       if (destination.droppableId === source.droppableId && destination.index === source.index) return;
@@ -318,11 +372,11 @@ export default function ProjectView({ project }: ProjectViewProps) {
       } else if (type === 'SECTIONS') {
         handleSectionMove(result);
       } else if (type === 'ITEMS') {
-        handleItemReorder(result);
+        handleItemReorder({ ...result, destination });
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [localSections, localGroups, reorderProject, topLevelEntries]
+    [localSections, localGroups, reorderProject, topLevelEntries, handleMouseMoveDuringDrag]
   );
 
   // Reorder top-level entries (groups only - standalone sections are now in SECTIONS type)
@@ -764,6 +818,7 @@ export default function ProjectView({ project }: ProjectViewProps) {
                                             viewMode={viewMode}
                                             isDnDEnabled={isDnDEnabled}
                                             isDraggingItem={isDraggingItem}
+                                            cursorOverCollapsedSectionId={cursorOverCollapsedSectionId}
                                             dragHandleProps={dragProvided.dragHandleProps}
                                           />
                                         </div>
@@ -834,6 +889,7 @@ export default function ProjectView({ project }: ProjectViewProps) {
                             viewMode={viewMode}
                             isDnDEnabled={isDnDEnabled}
                             isDraggingItem={isDraggingItem}
+                            cursorOverCollapsedSectionId={cursorOverCollapsedSectionId}
                             dragHandleProps={dragProvided.dragHandleProps}
                           />
                         </div>

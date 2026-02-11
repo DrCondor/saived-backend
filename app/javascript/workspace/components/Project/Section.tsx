@@ -18,6 +18,7 @@ interface SectionProps {
   viewMode: ViewMode;
   isDnDEnabled: boolean;
   isDraggingItem?: boolean;
+  cursorOverCollapsedSectionId?: number | null;
   dragHandleProps?: DraggableProvidedDragHandleProps | null;
 }
 
@@ -50,7 +51,7 @@ function setCollapsedSection(sectionId: number, collapsed: boolean) {
   }
 }
 
-export default function Section({ section, projectId, viewMode, isDnDEnabled, isDraggingItem, dragHandleProps }: SectionProps) {
+export default function Section({ section, projectId, viewMode, isDnDEnabled, isDraggingItem, cursorOverCollapsedSectionId, dragHandleProps }: SectionProps) {
   // Initialize collapsed state from localStorage
   const [isCollapsed, setIsCollapsed] = useState(() => getCollapsedSections().has(section.id));
   const [isEditing, setIsEditing] = useState(false);
@@ -293,9 +294,12 @@ export default function Section({ section, projectId, viewMode, isDnDEnabled, is
           droppableId={`section-${section.id}`}
           type="ITEMS"
         >
-          {(provided, snapshot) => (
-            <div ref={provided.innerRef} {...provided.droppableProps}>
-              {renderHeader(snapshot.isDraggingOver)}
+          {(provided) => (
+            <div
+              ref={provided.innerRef}
+              {...provided.droppableProps}
+            >
+              {renderHeader(cursorOverCollapsedSectionId === section.id)}
               <div style={{ display: 'none' }}>{provided.placeholder}</div>
             </div>
           )}
