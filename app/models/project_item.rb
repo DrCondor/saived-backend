@@ -4,6 +4,20 @@ class ProjectItem < ApplicationRecord
   has_many :item_favorites, dependent: :destroy
   has_one_attached :attachment
 
+  # Soft delete
+  scope :active, -> { where(deleted_at: nil) }
+
+  def soft_delete!
+    update!(deleted_at: Time.current)
+  end
+
+  def restore!
+    if project_section.deleted_at.present?
+      raise ActiveRecord::RecordInvalid.new(self), "Parent section is soft-deleted"
+    end
+    update!(deleted_at: nil)
+  end
+
   # Item types
   ITEM_TYPES = %w[product contractor note].freeze
 

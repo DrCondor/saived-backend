@@ -90,16 +90,17 @@ class Api::V1::SectionGroupsControllerTest < ActionDispatch::IntegrationTest
   # DESTROY
   # ============================================================
 
-  test "destroy deletes group" do
-    assert_difference "SectionGroup.count", -1 do
+  test "destroy soft-deletes group" do
+    assert_no_difference "SectionGroup.unscoped.count" do
       delete api_v1_project_section_group_path(@project, @group),
              headers: auth_headers(@user)
     end
 
     assert_response :no_content
+    assert_not_nil @group.reload.deleted_at
   end
 
-  test "destroy cascades to sections and items" do
+  test "destroy cascades soft-delete to sections and items" do
     section = create(:project_section, project: @project, section_group: @group)
     item = create(:project_item, project_section: section)
 
@@ -107,9 +108,9 @@ class Api::V1::SectionGroupsControllerTest < ActionDispatch::IntegrationTest
            headers: auth_headers(@user)
 
     assert_response :no_content
-    assert_nil SectionGroup.find_by(id: @group.id)
-    assert_nil ProjectSection.find_by(id: section.id)
-    assert_nil ProjectItem.find_by(id: item.id)
+    assert_not_nil @group.reload.deleted_at
+    assert_not_nil section.reload.deleted_at
+    assert_not_nil item.reload.deleted_at
   end
 
   test "destroy returns 404 for non-existent group" do

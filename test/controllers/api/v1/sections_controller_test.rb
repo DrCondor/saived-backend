@@ -129,13 +129,14 @@ class Api::V1::SectionsControllerTest < ActionDispatch::IntegrationTest
   # DESTROY
   # ============================================================
 
-  test "destroy deletes section" do
-    assert_difference "ProjectSection.count", -1 do
+  test "destroy soft-deletes section" do
+    assert_no_difference "ProjectSection.unscoped.count" do
       delete api_v1_project_section_path(@project, @section),
              headers: auth_headers(@user)
     end
 
     assert_response :no_content
+    assert_not_nil @section.reload.deleted_at
   end
 
   test "destroy returns 404 for non-existent section" do
@@ -145,14 +146,14 @@ class Api::V1::SectionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
-  test "destroy cascades to items" do
+  test "destroy cascades soft-delete to items" do
     item = create(:project_item, project_section: @section)
 
     delete api_v1_project_section_path(@project, @section),
            headers: auth_headers(@user)
 
     assert_response :no_content
-    assert_nil ProjectItem.find_by(id: item.id)
+    assert_not_nil item.reload.deleted_at
   end
 
   # ============================================================

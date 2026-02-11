@@ -37,3 +37,13 @@ export async function deleteSectionGroup(
     method: 'DELETE',
   });
 }
+
+export async function restoreSectionGroup(
+  projectId: number,
+  groupId: number
+): Promise<SectionGroup> {
+  return apiClient<SectionGroup>(
+    `/projects/${projectId}/section_groups/${groupId}/restore`,
+    { method: 'POST' }
+  );
+}

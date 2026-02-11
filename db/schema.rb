@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_27_124136) do
+ActiveRecord::Schema[7.2].define(version: 2026_02_11_170534) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -167,6 +167,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_27_124136) do
     t.integer "original_unit_price_cents"
     t.integer "discount_percent"
     t.string "discount_code"
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_project_items_on_deleted_at"
     t.index ["item_type"], name: "index_project_items_on_item_type"
     t.index ["project_section_id"], name: "index_project_items_on_project_section_id"
   end
@@ -189,6 +191,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_27_124136) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "section_group_id"
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_project_sections_on_deleted_at"
     t.index ["project_id"], name: "index_project_sections_on_project_id"
     t.index ["section_group_id"], name: "index_project_sections_on_section_group_id"
   end
@@ -210,6 +214,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_27_124136) do
     t.integer "position", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_section_groups_on_deleted_at"
     t.index ["project_id"], name: "index_section_groups_on_project_id"
   end
 

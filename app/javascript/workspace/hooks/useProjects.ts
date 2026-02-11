@@ -7,6 +7,7 @@ import {
   toggleFavorite,
   reorderProjects,
 } from '../api/projects';
+import { useOptionalUndoRedo } from '../contexts/UndoRedoContext';
 import type { CreateProjectInput, UpdateProjectInput, ProjectListItem } from '../types';
 
 export function useProjects() {
@@ -84,6 +85,7 @@ export function useDeleteProject() {
 
 export function useToggleFavorite() {
   const queryClient = useQueryClient();
+  const { pushUndo } = useOptionalUndoRedo();
 
   return useMutation({
     mutationFn: (id: number) => toggleFavorite(id),
@@ -111,6 +113,19 @@ export function useToggleFavorite() {
       if (context?.previousProjects) {
         queryClient.setQueryData(['projects'], context.previousProjects);
       }
+    },
+    onSuccess: (_data, id) => {
+      pushUndo({
+        description: `zmianę ulubionego projektu`,
+        undo: async () => {
+          await toggleFavorite(id);
+          queryClient.invalidateQueries({ queryKey: ['projects'] });
+        },
+        redo: async () => {
+          await toggleFavorite(id);
+          queryClient.invalidateQueries({ queryKey: ['projects'] });
+        },
+      });
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['projects'] });

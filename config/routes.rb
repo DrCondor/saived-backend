@@ -48,8 +48,12 @@ Rails.application.routes.draw do
       # Projects CRUD
       resources :projects, only: [ :index, :show, :create, :update, :destroy ] do
         # Sections nested under projects
-        resources :sections, only: [ :create, :update, :destroy ]
-        resources :section_groups, only: [ :create, :update, :destroy ]
+        resources :sections, only: [ :create, :update, :destroy ] do
+          post :restore, on: :member
+        end
+        resources :section_groups, only: [ :create, :update, :destroy ] do
+          post :restore, on: :member
+        end
 
         # Reordering items within project
         post :reorder, on: :member
@@ -64,7 +68,9 @@ Rails.application.routes.draw do
 
       # Items nested under sections
       resources :project_sections, only: [] do
-        resources :items, controller: "project_items", path: "items", only: [ :create, :update, :destroy ]
+        resources :items, controller: "project_items", path: "items", only: [ :create, :update, :destroy ] do
+          post :restore, on: :member
+        end
       end
 
       # Item favorites

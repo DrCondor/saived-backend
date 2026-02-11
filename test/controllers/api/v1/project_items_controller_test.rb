@@ -166,15 +166,16 @@ class Api::V1::ProjectItemsControllerTest < ActionDispatch::IntegrationTest
   # DESTROY
   # ============================================================
 
-  test "destroy deletes item" do
+  test "destroy soft-deletes item" do
     item = create(:project_item, project_section: @section)
 
-    assert_difference "ProjectItem.count", -1 do
+    assert_no_difference "ProjectItem.unscoped.count" do
       delete api_v1_project_section_item_path(@section, item),
              headers: auth_headers(@user)
     end
 
     assert_response :no_content
+    assert_not_nil item.reload.deleted_at
   end
 
   test "destroy returns 404 for non-existent item" do

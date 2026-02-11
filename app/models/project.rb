@@ -7,10 +7,21 @@ class Project < ApplicationRecord
   has_many :users, through: :project_memberships
 
   has_many :sections,
+           -> { active },
            class_name: "ProjectSection",
            dependent: :destroy
 
-  has_many :section_groups, dependent: :destroy
+  has_many :all_sections,
+           class_name: "ProjectSection",
+           dependent: :destroy
+
+  has_many :section_groups,
+           -> { active },
+           dependent: :destroy
+
+  has_many :all_section_groups,
+           class_name: "SectionGroup",
+           dependent: :destroy
 
   validates :name, presence: true
 

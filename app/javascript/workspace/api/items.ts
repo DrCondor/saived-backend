@@ -76,3 +76,13 @@ export async function deleteItem(
     method: 'DELETE',
   });
 }
+
+export async function restoreItem(
+  sectionId: number,
+  itemId: number
+): Promise<ProjectItem> {
+  return apiClient<ProjectItem>(
+    `/project_sections/${sectionId}/items/${itemId}/restore`,
+    { method: 'POST' }
+  );
+}

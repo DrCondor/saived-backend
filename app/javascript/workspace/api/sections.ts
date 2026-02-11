@@ -37,3 +37,13 @@ export async function deleteSection(
     method: 'DELETE',
   });
 }
+
+export async function restoreSection(
+  projectId: number,
+  sectionId: number
+): Promise<ProjectSection> {
+  return apiClient<ProjectSection>(
+    `/projects/${projectId}/sections/${sectionId}/restore`,
+    { method: 'POST' }
+  );
+}

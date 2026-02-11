@@ -1,8 +1,10 @@
 module Api
   module V1
     class SectionsController < BaseController
-      before_action :set_project
+      before_action :set_project, except: [ :restore ]
       before_action :set_section, only: [ :update, :destroy ]
+      before_action :set_project_for_restore, only: [ :restore ]
+      before_action :set_deleted_section, only: [ :restore ]
 
       # POST /api/v1/projects/:project_id/sections
       def create
@@ -28,8 +30,21 @@ module Api
 
       # DELETE /api/v1/projects/:project_id/sections/:id
       def destroy
-        @section.destroy
+        @section.soft_delete!
         head :no_content
+      end
+
+      # POST /api/v1/projects/:project_id/sections/:id/restore
+      def restore
+        if @section.deleted_at.nil?
+          render json: { error: "Section is not deleted" }, status: :unprocessable_entity
+          return
+        end
+
+        @section.restore!
+        render json: section_json(@section.reload)
+      rescue ActiveRecord::RecordInvalid => e
+        render json: { error: e.message }, status: :unprocessable_entity
       end
 
       private
@@ -40,6 +55,18 @@ module Api
 
       def set_section
         @section = @project.sections.find(params[:id])
+      end
+
+      def set_project_for_restore
+        @project = current_user.projects.find(params[:project_id])
+      rescue ActiveRecord::RecordNotFound
+        render json: { error: "Not found" }, status: :not_found
+      end
+
+      def set_deleted_section
+        @section = ProjectSection.unscoped.where(project_id: @project.id).find(params[:id])
+      rescue ActiveRecord::RecordNotFound
+        render json: { error: "Not found" }, status: :not_found
       end
 
       def section_params

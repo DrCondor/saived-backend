@@ -1,9 +1,11 @@
 import { useMutation, useQueryClient, type QueryClient } from '@tanstack/react-query';
 import { reorderProject } from '../api/projects';
+import { useOptionalUndoRedo } from '../contexts/UndoRedoContext';
 import type { Project, ProjectListItem, ReorderInput, ItemMove, SectionMove, ProjectItem, ProjectSection, SectionGroup } from '../types';
 
 export function useReorderProject(projectId: number) {
   const queryClient = useQueryClient();
+  const { pushUndo } = useOptionalUndoRedo();
 
   return useMutation({
     mutationFn: (input: ReorderInput) => reorderProject(projectId, input),
@@ -49,6 +51,67 @@ export function useReorderProject(projectId: number) {
         queryClient.setQueryData(['project', projectId], updatedProject);
         // Also update projects list for sidebar
         updateProjectsListSections(queryClient, projectId, updatedProject);
+      }
+
+      // Build reverse reorder input from previous state
+      if (previousProject) {
+        const reverseInput: ReorderInput = {};
+
+        if (input.item_moves) {
+          // Capture previous positions of moved items
+          const reverseItemMoves: ItemMove[] = [];
+          input.item_moves.forEach((move) => {
+            for (const section of previousProject.sections) {
+              const item = section.items?.find((i) => i.id === move.item_id);
+              if (item) {
+                reverseItemMoves.push({
+                  item_id: move.item_id,
+                  section_id: section.id,
+                  position: item.position ?? 0,
+                });
+                break;
+              }
+            }
+          });
+          reverseInput.item_moves = reverseItemMoves;
+        }
+
+        if (input.section_order) {
+          reverseInput.section_order = previousProject.sections.map((s) => s.id);
+        }
+
+        if (input.group_order) {
+          reverseInput.group_order = previousProject.section_groups.map((g) => g.id);
+        }
+
+        if (input.section_moves) {
+          const reverseSectionMoves: SectionMove[] = [];
+          input.section_moves.forEach((move) => {
+            const section = previousProject.sections.find((s) => s.id === move.section_id);
+            if (section) {
+              reverseSectionMoves.push({
+                section_id: move.section_id,
+                group_id: section.section_group_id,
+                position: section.position,
+              });
+            }
+          });
+          reverseInput.section_moves = reverseSectionMoves;
+        }
+
+        pushUndo({
+          description: `zmianę kolejności`,
+          undo: async () => {
+            await reorderProject(projectId, reverseInput);
+            queryClient.invalidateQueries({ queryKey: ['project', projectId] });
+            queryClient.invalidateQueries({ queryKey: ['projects'] });
+          },
+          redo: async () => {
+            await reorderProject(projectId, input);
+            queryClient.invalidateQueries({ queryKey: ['project', projectId] });
+            queryClient.invalidateQueries({ queryKey: ['projects'] });
+          },
+        });
       }
 
       return { previousProject, previousProjects };

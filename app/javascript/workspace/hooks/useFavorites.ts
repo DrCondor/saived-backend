@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getFavorites, addFavorite, removeFavorite } from '../api/favorites';
+import { useOptionalUndoRedo } from '../contexts/UndoRedoContext';
 import type { Project, FavoriteItem } from '../types';
 
 export function useFavorites() {
@@ -11,6 +12,7 @@ export function useFavorites() {
 
 export function useToggleFavorite() {
   const queryClient = useQueryClient();
+  const { pushUndo } = useOptionalUndoRedo();
 
   return useMutation({
     mutationFn: async ({ itemId, favorite }: { itemId: number; favorite: boolean }) => {
@@ -65,6 +67,32 @@ export function useToggleFavorite() {
         queryClient.setQueryData(['favorites'], context.previousFavorites);
       }
     },
+
+    onSuccess: (_data, { itemId, favorite }) => {
+      pushUndo({
+        description: favorite ? `usunięcie z ulubionych` : `dodanie do ulubionych`,
+        undo: async () => {
+          // Toggle back
+          if (favorite) {
+            await addFavorite(itemId);
+          } else {
+            await removeFavorite(itemId);
+          }
+          queryClient.invalidateQueries({ queryKey: ['favorites'] });
+          queryClient.invalidateQueries({ queryKey: ['project'] });
+        },
+        redo: async () => {
+          if (favorite) {
+            await removeFavorite(itemId);
+          } else {
+            await addFavorite(itemId);
+          }
+          queryClient.invalidateQueries({ queryKey: ['favorites'] });
+          queryClient.invalidateQueries({ queryKey: ['project'] });
+        },
+      });
+    },
+
     // Always refetch to sync with server
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['favorites'] });

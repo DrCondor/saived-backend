@@ -5,6 +5,8 @@ module Api
 
       before_action :set_section
       before_action :set_item, only: [ :update, :destroy ]
+      before_action :set_section_for_restore, only: [ :restore ]
+      before_action :set_deleted_item, only: [ :restore ]
 
       def create
         item = @section.items.new(item_params)
@@ -40,8 +42,21 @@ module Api
 
       # DELETE /api/v1/project_sections/:section_id/items/:id
       def destroy
-        @item.destroy
+        @item.soft_delete!
         head :no_content
+      end
+
+      # POST /api/v1/project_sections/:section_id/items/:id/restore
+      def restore
+        if @item.deleted_at.nil?
+          render json: { error: "Item is not deleted" }, status: :unprocessable_entity
+          return
+        end
+
+        @item.restore!
+        render json: item_json(@item)
+      rescue ActiveRecord::RecordInvalid => e
+        render json: { error: e.message }, status: :unprocessable_entity
       end
 
       private
@@ -58,6 +73,22 @@ module Api
 
       def set_item
         @item = @section.items.find(params[:id])
+      rescue ActiveRecord::RecordNotFound
+        render json: { error: "Not found" }, status: :not_found
+      end
+
+      def set_section_for_restore
+        @section = ProjectSection.unscoped.find(params[:project_section_id])
+
+        unless current_user.projects.exists?(@section.project_id)
+          render json: { error: "Not found" }, status: :not_found
+        end
+      rescue ActiveRecord::RecordNotFound
+        render json: { error: "Not found" }, status: :not_found
+      end
+
+      def set_deleted_item
+        @item = ProjectItem.unscoped.where(project_section_id: @section.id).find(params[:id])
       rescue ActiveRecord::RecordNotFound
         render json: { error: "Not found" }, status: :not_found
       end

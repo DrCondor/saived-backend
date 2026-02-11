@@ -1,21 +1,35 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createItem, updateItem, deleteItem } from '../api/items';
+import { createItem, updateItem, deleteItem, restoreItem } from '../api/items';
+import { useOptionalUndoRedo } from '../contexts/UndoRedoContext';
 import type { CreateItemInput, UpdateItemInput, Project, ProjectItem } from '../types';
 
 export function useCreateItem(projectId: number, sectionId: number) {
   const queryClient = useQueryClient();
+  const { pushUndo } = useOptionalUndoRedo();
 
   return useMutation({
     mutationFn: (input: CreateItemInput) => createItem(sectionId, input),
-    onSuccess: () => {
-      // For create, we need to refetch to get the new item with ID
+    onSuccess: (createdItem, input) => {
       queryClient.invalidateQueries({ queryKey: ['project', projectId] });
+
+      pushUndo({
+        description: `dodanie pozycji '${createdItem.name}'`,
+        undo: async () => {
+          await deleteItem(sectionId, createdItem.id);
+          queryClient.invalidateQueries({ queryKey: ['project', projectId] });
+        },
+        redo: async () => {
+          await createItem(sectionId, input);
+          queryClient.invalidateQueries({ queryKey: ['project', projectId] });
+        },
+      });
     },
   });
 }
 
 export function useUpdateItem(projectId: number, sectionId: number) {
   const queryClient = useQueryClient();
+  const { pushUndo } = useOptionalUndoRedo();
 
   return useMutation({
     mutationFn: ({ itemId, input }: { itemId: number; input: UpdateItemInput }) =>
@@ -28,6 +42,22 @@ export function useUpdateItem(projectId: number, sectionId: number) {
 
       // Snapshot the previous value
       const previousProject = queryClient.getQueryData<Project>(['project', projectId]);
+
+      // Capture previous item values for undo
+      let previousItemValues: Partial<UpdateItemInput> | null = null;
+      if (previousProject) {
+        for (const section of previousProject.sections) {
+          const item = section.items?.find((i) => i.id === itemId);
+          if (item) {
+            // Capture only the fields that are being changed
+            previousItemValues = {};
+            for (const key of Object.keys(input) as Array<keyof UpdateItemInput>) {
+              (previousItemValues as Record<string, unknown>)[key] = (item as Record<string, unknown>)[key];
+            }
+            break;
+          }
+        }
+      }
 
       // Optimistically update the cache
       if (previousProject) {
@@ -89,6 +119,21 @@ export function useUpdateItem(projectId: number, sectionId: number) {
         queryClient.setQueryData(['project', projectId], updatedProject);
       }
 
+      // Push undo entry
+      if (previousItemValues) {
+        pushUndo({
+          description: `edycję pozycji`,
+          undo: async () => {
+            await updateItem(sectionId, itemId, previousItemValues as UpdateItemInput);
+            queryClient.invalidateQueries({ queryKey: ['project', projectId] });
+          },
+          redo: async () => {
+            await updateItem(sectionId, itemId, input);
+            queryClient.invalidateQueries({ queryKey: ['project', projectId] });
+          },
+        });
+      }
+
       // Return context with the previous value for rollback
       return { previousProject };
     },
@@ -141,6 +186,7 @@ export function useUpdateItem(projectId: number, sectionId: number) {
 
 export function useDeleteItem(projectId: number, sectionId: number) {
   const queryClient = useQueryClient();
+  const { pushUndo } = useOptionalUndoRedo();
 
   return useMutation({
     mutationFn: (itemId: number) => deleteItem(sectionId, itemId),
@@ -151,7 +197,17 @@ export function useDeleteItem(projectId: number, sectionId: number) {
 
       const previousProject = queryClient.getQueryData<Project>(['project', projectId]);
 
+      // Capture item name for undo description
+      let deletedItemName = '';
       if (previousProject) {
+        for (const section of previousProject.sections) {
+          const item = section.items?.find((i) => i.id === itemId);
+          if (item) {
+            deletedItemName = item.name;
+            break;
+          }
+        }
+
         const updatedProject = {
           ...previousProject,
           sections: previousProject.sections.map((section) => {
@@ -178,13 +234,27 @@ export function useDeleteItem(projectId: number, sectionId: number) {
         queryClient.setQueryData(['project', projectId], updatedProject);
       }
 
-      return { previousProject };
+      return { previousProject, deletedItemName };
     },
 
     onError: (_err, _itemId, context) => {
       if (context?.previousProject) {
         queryClient.setQueryData(['project', projectId], context.previousProject);
       }
+    },
+
+    onSuccess: (_data, itemId, context) => {
+      pushUndo({
+        description: `usunięcie pozycji '${context?.deletedItemName ?? ''}'`,
+        undo: async () => {
+          await restoreItem(sectionId, itemId);
+          queryClient.invalidateQueries({ queryKey: ['project', projectId] });
+        },
+        redo: async () => {
+          await deleteItem(sectionId, itemId);
+          queryClient.invalidateQueries({ queryKey: ['project', projectId] });
+        },
+      });
     },
 
     onSettled: () => {

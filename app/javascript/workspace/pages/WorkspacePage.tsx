@@ -4,6 +4,7 @@ import { useProjects } from '../hooks/useProjects';
 import { useProject } from '../hooks/useProject';
 import Sidebar from '../components/Layout/Sidebar';
 import ProjectView from '../components/Project/ProjectView';
+import { UndoRedoProvider } from '../contexts/UndoRedoContext';
 
 export default function WorkspacePage() {
   const { projectId } = useParams<{ projectId?: string }>();
@@ -70,7 +71,11 @@ export default function WorkspacePage() {
           </div>
         )}
 
-        {currentProject && <ProjectView project={currentProject} />}
+        {currentProject && (
+          <UndoRedoProvider activeProjectId={currentProjectId}>
+            <ProjectView project={currentProject} />
+          </UndoRedoProvider>
+        )}
 
         {!currentProjectId && !projectsLoading && projects.length === 0 && (
           <EmptyState />
