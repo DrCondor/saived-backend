@@ -334,7 +334,7 @@ export default function Section({ section, projectId, viewMode, isDnDEnabled, is
             <Droppable
               droppableId={`section-${section.id}`}
               type="ITEMS"
-              isDropDisabled={!isDnDEnabled}
+              isDropDisabled={!isDnDEnabled || cursorOverCollapsedSectionId !== null}
               ignoreContainerClipping
             >
               {(provided, snapshot) => (
