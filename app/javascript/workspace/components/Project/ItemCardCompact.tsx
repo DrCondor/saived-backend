@@ -53,7 +53,7 @@ const ItemCardCompact = memo(function ItemCardCompact({
   const isProduct = item.item_type === 'product';
   const isProposal = item.status?.toLowerCase() === 'propozycja';
   const cardClasses = [
-    isDragging ? 'ring-2 ring-emerald-500 shadow-lg' : '',
+    isDragging ? 'ring-2 ring-emerald-500 shadow-lg opacity-60' : '',
     isContractor ? 'border-neutral-300' : '',
     isNote ? 'border-amber-200 bg-amber-50/50' : '',
     isProposal && !isNote ? 'opacity-50 bg-neutral-100' : '',

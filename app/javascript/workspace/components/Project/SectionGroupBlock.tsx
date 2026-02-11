@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useMemo, type ReactNode } from 'react';
 import type { DraggableProvidedDragHandleProps } from '@hello-pangea/dnd';
-import type { SectionGroup, ProjectSection } from '../../types';
+import type { SectionGroup, ProjectSection, ViewMode } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
 import { shouldIncludeInSum } from '../../utils/statusHelpers';
 import { useUpdateSectionGroup, useDeleteSectionGroup } from '../../hooks/useSectionGroups';
@@ -11,6 +11,7 @@ interface SectionGroupBlockProps {
   group: SectionGroup;
   sections: ProjectSection[]; // For calculating total
   projectId: number;
+  viewMode?: ViewMode;
   dragHandleProps?: DraggableProvidedDragHandleProps | null;
   children?: ReactNode; // Sections rendered by parent (ProjectView)
 }
@@ -38,6 +39,7 @@ export default function SectionGroupBlock({
   group,
   sections,
   projectId,
+  viewMode = 'grid',
   dragHandleProps,
   children,
 }: SectionGroupBlockProps) {
@@ -115,10 +117,18 @@ export default function SectionGroupBlock({
     createSection.mutate({ section_group_id: group.id });
   };
 
+  // View-mode-aware header sizing
+  const headerSpacing = viewMode === 'list' ? 'mb-1.5 pb-1' : viewMode === 'moodboard' ? 'mb-2 pb-1.5' : 'mb-3 pb-2';
+  const chevronSize = viewMode === 'list' || viewMode === 'moodboard' ? 'w-4 h-4' : 'w-5 h-5';
+  const folderIconSize = viewMode === 'list' || viewMode === 'moodboard' ? 'w-4 h-4' : 'w-5 h-5';
+  const titleClass = viewMode === 'list' ? 'text-sm font-semibold' : viewMode === 'moodboard' ? 'text-base font-medium' : 'text-lg font-bold';
+  const badgeClass = viewMode === 'list' ? 'px-2.5 py-0.5' : viewMode === 'moodboard' ? 'px-3 py-1' : 'px-4 py-1.5';
+  const badgeTextClass = viewMode === 'list' || viewMode === 'moodboard' ? 'text-xs font-semibold' : 'text-sm font-bold';
+
   return (
     <div id={`group-${group.id}`} className="mb-8 scroll-mt-28">
       {/* Group header */}
-      <div className="group/grp flex items-center justify-between mb-3 pb-2 border-b-2 border-neutral-300">
+      <div className={`group/grp flex items-center justify-between ${headerSpacing} border-b-2 border-neutral-300`}>
         <div className="flex items-center gap-3 flex-1" {...dragHandleProps} style={{ cursor: 'default' }}>
           <button
             type="button"
@@ -130,7 +140,7 @@ export default function SectionGroupBlock({
             className="p-1 hover:bg-neutral-100 rounded-lg transition-colors"
           >
             <svg
-              className={`w-5 h-5 text-neutral-500 transition-transform ${isCollapsed ? '-rotate-90' : ''}`}
+              className={`${chevronSize} text-neutral-500 transition-transform ${isCollapsed ? '-rotate-90' : ''}`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -140,7 +150,7 @@ export default function SectionGroupBlock({
           </button>
 
           {/* Folder icon */}
-          <svg className="w-5 h-5 text-neutral-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className={`${folderIconSize} text-neutral-400 shrink-0`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
           </svg>
 
@@ -152,7 +162,7 @@ export default function SectionGroupBlock({
               onChange={(e) => setEditName(e.target.value)}
               onBlur={handleNameSubmit}
               onKeyDown={handleKeyDown}
-              className="text-lg font-bold text-neutral-900 bg-transparent border-0 p-0 focus:ring-0 focus:outline-none w-full uppercase tracking-wide"
+              className={`${titleClass} text-neutral-900 bg-transparent border-0 p-0 focus:ring-0 focus:outline-none w-full uppercase tracking-wide`}
             />
           ) : (
             <div
@@ -161,7 +171,7 @@ export default function SectionGroupBlock({
               onMouseDown={handleNameMouseDown}
               onClick={handleNameClick}
               onKeyDown={(e) => e.key === 'Enter' && setIsEditing(true)}
-              className="group/name text-lg font-bold text-neutral-900 hover:text-neutral-700 text-left flex-1 flex items-center gap-2 uppercase tracking-wide select-none"
+              className={`group/name ${titleClass} text-neutral-900 hover:text-neutral-700 text-left flex-1 flex items-center gap-2 uppercase tracking-wide select-none`}
             >
               {editName}
               <svg
@@ -178,8 +188,8 @@ export default function SectionGroupBlock({
 
         <div className="flex items-center gap-3">
           {/* Group total */}
-          <div className="inline-flex items-center rounded-full bg-neutral-100 border border-neutral-200 px-4 py-1.5">
-            <span className="text-sm font-bold text-neutral-700">
+          <div className={`inline-flex items-center rounded-full bg-neutral-100 border border-neutral-200 ${badgeClass}`}>
+            <span className={`${badgeTextClass} text-neutral-700`}>
               {formatCurrency(groupTotal)}
             </span>
           </div>

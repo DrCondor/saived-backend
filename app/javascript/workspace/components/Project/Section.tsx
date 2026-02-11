@@ -180,10 +180,17 @@ export default function Section({ section, projectId, viewMode, isDnDEnabled, is
   // Is this a collapsed section that can receive drops?
   const canReceiveDropsWhenCollapsed = isCollapsed && isDnDEnabled && viewMode !== 'moodboard';
 
+  // View-mode-aware header sizing
+  const headerSpacing = viewMode === 'list' ? 'mb-1.5 pb-1' : viewMode === 'moodboard' ? 'mb-2 pb-1.5' : 'mb-3 pb-2';
+  const chevronSize = viewMode === 'list' || viewMode === 'moodboard' ? 'w-4 h-4' : 'w-5 h-5';
+  const titleClass = viewMode === 'list' ? 'text-sm font-semibold' : viewMode === 'moodboard' ? 'text-base font-medium' : 'text-lg font-bold';
+  const badgeClass = viewMode === 'list' ? 'px-2.5 py-0.5' : viewMode === 'moodboard' ? 'px-3 py-1' : 'px-4 py-1.5';
+  const badgeTextClass = viewMode === 'list' || viewMode === 'moodboard' ? 'text-xs font-semibold' : 'text-sm font-bold';
+
   // Header content - extracted to reuse in both collapsed (Droppable) and expanded modes
   const renderHeader = (isDroppingOver: boolean = false) => (
     <div
-      className={`group/section flex items-center justify-between mb-3 pb-2 border-b transition-colors rounded-lg ${
+      className={`group/section flex items-center justify-between ${headerSpacing} border-b transition-colors rounded-lg ${
         isDroppingOver
           ? 'border-emerald-400 bg-emerald-50 ring-2 ring-emerald-300'
           : isDraggingItem && canReceiveDropsWhenCollapsed
@@ -202,7 +209,7 @@ export default function Section({ section, projectId, viewMode, isDnDEnabled, is
           className="p-1 hover:bg-neutral-100 rounded-lg transition-colors"
         >
           <svg
-            className={`w-5 h-5 text-neutral-400 transition-transform ${isCollapsed ? '-rotate-90' : ''}`}
+            className={`${chevronSize} text-neutral-400 transition-transform ${isCollapsed ? '-rotate-90' : ''}`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -224,7 +231,7 @@ export default function Section({ section, projectId, viewMode, isDnDEnabled, is
             onChange={(e) => setEditName(e.target.value)}
             onBlur={handleNameSubmit}
             onKeyDown={handleKeyDown}
-            className="text-lg font-bold text-neutral-900 bg-transparent border-0 p-0 focus:ring-0 focus:outline-none w-full"
+            className={`${titleClass} text-neutral-900 bg-transparent border-0 p-0 focus:ring-0 focus:outline-none w-full`}
           />
         ) : (
           <div
@@ -233,7 +240,7 @@ export default function Section({ section, projectId, viewMode, isDnDEnabled, is
             onMouseDown={handleNameMouseDown}
             onClick={handleNameClick}
             onKeyDown={(e) => e.key === 'Enter' && setIsEditing(true)}
-            className="group/name text-lg font-bold text-neutral-900 hover:text-neutral-700 text-left flex-1 flex items-center gap-2 select-none"
+            className={`group/name ${titleClass} text-neutral-900 hover:text-neutral-700 text-left flex-1 flex items-center gap-2 select-none`}
           >
             {editName}
             <svg
@@ -255,8 +262,8 @@ export default function Section({ section, projectId, viewMode, isDnDEnabled, is
 
       <div className="flex items-center gap-3">
         {/* Section total */}
-        <div className="inline-flex items-center rounded-full bg-emerald-50 border border-emerald-200 px-4 py-1.5">
-          <span className="text-sm font-bold text-emerald-700">
+        <div className={`inline-flex items-center rounded-full bg-emerald-50 border border-emerald-200 ${badgeClass}`}>
+          <span className={`${badgeTextClass} text-emerald-700`}>
             {formatCurrency(sectionTotal)}
           </span>
         </div>

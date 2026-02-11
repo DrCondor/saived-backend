@@ -16,6 +16,28 @@ interface ProjectViewProps {
   project: Project;
 }
 
+// Helper to get/set view mode in localStorage
+const VIEW_MODE_KEY = 'saived_view_mode';
+const VALID_VIEW_MODES: ViewMode[] = ['grid', 'list', 'moodboard'];
+
+function getViewMode(): ViewMode {
+  try {
+    const stored = localStorage.getItem(VIEW_MODE_KEY) as ViewMode | null;
+    if (stored && VALID_VIEW_MODES.includes(stored)) return stored;
+  } catch {
+    // Ignore localStorage errors
+  }
+  return 'grid';
+}
+
+function setViewModeStorage(mode: ViewMode) {
+  try {
+    localStorage.setItem(VIEW_MODE_KEY, mode);
+  } catch {
+    // Ignore localStorage errors
+  }
+}
+
 // Helper to reorder array
 function reorder<T>(list: T[], startIndex: number, endIndex: number): T[] {
   const result = Array.from(list);
@@ -52,7 +74,7 @@ export default function ProjectView({ project }: ProjectViewProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('default');
   const [filters, setFilters] = useState<FilterState>({ statuses: [], categories: [] });
-  const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const [viewMode, setViewMode] = useState<ViewMode>(getViewMode);
 
   // Track if an item is being dragged (for showing drop zones on collapsed sections)
   const [isDraggingItem, setIsDraggingItem] = useState(false);
@@ -698,7 +720,7 @@ export default function ProjectView({ project }: ProjectViewProps) {
             totalCount={totalItemCount}
             hasActiveFilters={hasActiveFilters}
             viewMode={viewMode}
-            onViewModeChange={setViewMode}
+            onViewModeChange={(mode: ViewMode) => { setViewMode(mode); setViewModeStorage(mode); }}
           />
         </div>
 
@@ -787,6 +809,7 @@ export default function ProjectView({ project }: ProjectViewProps) {
                             group={entry.group}
                             sections={groupSections}
                             projectId={project.id}
+                            viewMode={viewMode}
                             dragHandleProps={provided.dragHandleProps}
                           >
                             {/* Nested Droppable for sections within the group */}

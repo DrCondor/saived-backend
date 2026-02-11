@@ -60,7 +60,7 @@ const ItemCard = memo(function ItemCard({
   const isProposal = item.status?.toLowerCase() === 'propozycja';
   const cardClasses = [
     isProposal && !isNote ? 'opacity-70' : '',
-    isDragging ? 'ring-2 ring-emerald-500 shadow-lg' : '',
+    isDragging ? 'ring-2 ring-emerald-500 shadow-lg opacity-60' : '',
     isContractor ? 'border-neutral-300' : '',
     isNote ? 'border-amber-200 bg-amber-50/50' : '',
   ].filter(Boolean).join(' ');
