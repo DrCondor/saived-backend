@@ -49,19 +49,9 @@ sed -i '' "s/EXTENSION_VERSION = $CURRENT_VERSION/EXTENSION_VERSION = $NEW_VERSI
 echo "   $CURRENT_VERSION → $NEW_VERSION"
 echo ""
 
-# 4. Commit and push
-echo -e "${GREEN}📝 Commit i push...${NC}"
-cd "$BACKEND_DIR"
-git add public/downloads/saived-extension.zip config/initializers/extension_version.rb
-git commit -m "chore: update extension to v$NEW_VERSION
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)"
-git push
-echo ""
-
-# 5. Deploy
-echo -e "${GREEN}🚀 Deploy na Fly.io...${NC}"
-fly deploy
-echo ""
-
 echo -e "${GREEN}✅ Gotowe! Wtyczka zaktualizowana do v$NEW_VERSION${NC}"
+echo ""
+echo "Następne kroki:"
+echo "  git add public/downloads/saived-extension.zip config/initializers/extension_version.rb"
+echo "  git commit -m 'chore: update extension to v$NEW_VERSION'"
+echo "  git push && fly deploy"
