@@ -12,6 +12,7 @@ class ProjectPdfGenerator
   BRAND_SECONDARY = "666666"  # Gray for secondary text
   BRAND_LIGHT = "f5f5f5"      # Light gray (table headers only)
   BRAND_BORDER = "cccccc"     # Lines
+  PROPOSAL_BG = "f0f0f0"      # Light gray for proposal rows
 
   # Compact document settings
   PAGE_MARGIN_TOP = 25
@@ -507,8 +508,9 @@ class ProjectPdfGenerator
       t.column(3).align = :right
       t.column(4).align = :right
 
-      # Gray text for proposal rows
+      # Highlight proposal rows with background and gray text
       proposal_row_indices.each do |row_idx|
+        t.row(row_idx).background_color = PROPOSAL_BG
         t.row(row_idx).text_color = BRAND_SECONDARY
       end
 
