@@ -118,14 +118,16 @@ module Api
         render json: { errors: e.record.errors.full_messages }, status: :unprocessable_entity
       end
 
-      # GET /api/v1/projects/:id/pdf
+      # POST /api/v1/projects/:id/pdf
       # Generates and returns a PDF cost estimate for the project
+      # Accepts optional item_ids array to scope which items appear in the PDF
       def pdf
         project = current_user.projects
                               .includes(:section_groups, sections: { items: { attachment_attachment: :blob } })
                               .find(params[:id])
 
-        generator = ProjectPdfGenerator.new(project, current_user)
+        item_ids = params[:item_ids]&.map(&:to_i)
+        generator = ProjectPdfGenerator.new(project, current_user, item_ids: item_ids)
         generator.generate
 
         send_data generator.to_pdf,

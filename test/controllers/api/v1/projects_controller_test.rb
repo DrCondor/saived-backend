@@ -270,4 +270,92 @@ class Api::V1::ProjectsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_equal section2.id, item.reload.project_section_id
   end
+
+  # ============================================================
+  # PDF
+  # ============================================================
+
+  test "pdf returns 401 without auth" do
+    post pdf_api_v1_project_path(@project)
+    assert_response :unauthorized
+  end
+
+  test "pdf returns PDF with POST" do
+    section = @project.sections.first
+    create(:project_item, project_section: section, name: "Test Chair", unit_price_cents: 10000)
+
+    post pdf_api_v1_project_path(@project), headers: auth_headers(@user)
+
+    assert_response :success
+    assert_equal "application/pdf", response.content_type
+    assert response.body.start_with?("%PDF")
+  end
+
+  test "pdf with item_ids returns PDF containing only those items" do
+    section = @project.sections.first
+    item1 = create(:project_item, project_section: section, name: "Chair", unit_price_cents: 10000)
+    item2 = create(:project_item, project_section: section, name: "Table", unit_price_cents: 20000)
+    create(:project_item, project_section: section, name: "Lamp", unit_price_cents: 5000)
+
+    post pdf_api_v1_project_path(@project),
+         params: { item_ids: [ item1.id, item2.id ] },
+         headers: auth_headers(@user),
+         as: :json
+
+    assert_response :success
+    assert_equal "application/pdf", response.content_type
+  end
+
+  test "pdf with foreign item IDs ignores them" do
+    other_user = create(:user)
+    other_project = create(:project, owner: other_user)
+    other_section = other_project.sections.first
+    foreign_item = create(:project_item, project_section: other_section, name: "Foreign")
+
+    section = @project.sections.first
+    own_item = create(:project_item, project_section: section, name: "Own")
+
+    post pdf_api_v1_project_path(@project),
+         params: { item_ids: [ own_item.id, foreign_item.id ] },
+         headers: auth_headers(@user),
+         as: :json
+
+    assert_response :success
+    assert_equal "application/pdf", response.content_type
+  end
+
+  test "pdf without item_ids returns all items" do
+    section = @project.sections.first
+    create(:project_item, project_section: section, name: "Item 1")
+    create(:project_item, project_section: section, name: "Item 2")
+
+    post pdf_api_v1_project_path(@project),
+         headers: auth_headers(@user)
+
+    assert_response :success
+    assert_equal "application/pdf", response.content_type
+  end
+
+  test "pdf with empty item_ids returns PDF" do
+    section = @project.sections.first
+    create(:project_item, project_section: section, name: "Item 1")
+
+    post pdf_api_v1_project_path(@project),
+         params: { item_ids: [] },
+         headers: auth_headers(@user),
+         as: :json
+
+    assert_response :success
+    assert_equal "application/pdf", response.content_type
+  end
+
+  test "pdf returns 404 for other user's project" do
+    other_user = create(:user)
+    other_project = create(:project, owner: other_user)
+
+    post pdf_api_v1_project_path(other_project),
+         headers: auth_headers(@user)
+
+    assert_response :not_found
+  end
 end

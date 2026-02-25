@@ -215,7 +215,7 @@ export default function ProjectView({ project }: ProjectViewProps) {
   }, [localSections]);
 
   // Apply search, filters, and sorting to sections
-  const { processedSections, matchCount, filteredTotal } = useMemo(() => {
+  const { processedSections, matchCount, filteredTotal, visibleItemIds } = useMemo(() => {
     let matchedItems = 0;
     let totalPrice = 0;
 
@@ -296,7 +296,12 @@ export default function ProjectView({ project }: ProjectViewProps) {
         return !hasFiltersActive || (section.items && section.items.length > 0);
       });
 
-    return { processedSections: processed, matchCount: matchedItems, filteredTotal: totalPrice };
+    // Collect all visible item IDs in display order (for PDF export)
+    const itemIds = processed.flatMap((section) =>
+      (section.items || []).map((item) => item.id)
+    );
+
+    return { processedSections: processed, matchCount: matchedItems, filteredTotal: totalPrice, visibleItemIds: itemIds };
   }, [localSections, searchQuery, filters, sortBy, customStatuses]);
 
   const hasActiveFilters =
@@ -706,6 +711,7 @@ export default function ProjectView({ project }: ProjectViewProps) {
           {/* Toolbar with search, sort, filter */}
           <ProjectToolbar
             projectId={project.id}
+            itemIds={visibleItemIds}
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
             sortBy={sortBy}

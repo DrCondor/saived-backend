@@ -1,4 +1,4 @@
-import { apiClient } from './client';
+import { apiClient, getCsrfToken } from './client';
 import type {
   Project,
   ProjectListItem,
@@ -69,4 +69,25 @@ export async function reorderProjects(
     method: 'POST',
     json: { project_order: projectOrder },
   });
+}
+
+export async function downloadPdf(
+  projectId: number,
+  itemIds: number[]
+): Promise<Blob> {
+  const response = await fetch(`/api/v1/projects/${projectId}/pdf`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': getCsrfToken(),
+    },
+    credentials: 'include',
+    body: JSON.stringify({ item_ids: itemIds }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`PDF download failed: ${response.status}`);
+  }
+
+  return response.blob();
 }

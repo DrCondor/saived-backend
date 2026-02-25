@@ -26,9 +26,10 @@ class ProjectPdfGenerator
   LOGO_MAX_SIZE = 400         # Max dimension for company logo (px)
   JPEG_QUALITY = 85           # JPEG compression quality (0-100)
 
-  def initialize(project, user)
+  def initialize(project, user, item_ids: nil)
     @project = project
     @user = user
+    @item_ids = item_ids
     @document_number = generate_document_number
     @generated_at = Time.current
   end
@@ -363,18 +364,41 @@ class ProjectPdfGenerator
 
     entries.sort_by! { |e| e[:position] }
 
+    @section_subtotals = []
     section_number = 0
     entries.each do |entry|
       if entry[:type] == :group
+        group_has_items = entry[:sections].any? { |s| filtered_items_for(s).any? }
+        next unless group_has_items
+
         render_group_header(entry[:group])
         entry[:sections].each do |section|
+          items = filtered_items_for(section)
+          next if items.empty?
+
           section_number += 1
-          render_section(section, section_number)
+          render_section_with_items(section, section_number, items)
         end
       else
+        items = filtered_items_for(entry[:section])
+        next if items.empty?
+
         section_number += 1
-        render_section(entry[:section], section_number)
+        render_section_with_items(entry[:section], section_number, items)
       end
+    end
+  end
+
+  # Returns items for a section filtered by @item_ids (preserving array order)
+  def filtered_items_for(section)
+    items = section.items.order(:position, :created_at).to_a
+
+    if @item_ids
+      # Filter to only requested items, in the order they appear in @item_ids
+      item_map = items.index_by(&:id)
+      @item_ids.filter_map { |id| item_map[id] }
+    else
+      items
     end
   end
 
@@ -395,8 +419,13 @@ class ProjectPdfGenerator
   end
 
   def render_section(section, section_number)
-    items = section.items.order(:position, :created_at)
+    items = filtered_items_for(section)
+    return if items.empty?
 
+    render_section_with_items(section, section_number, items)
+  end
+
+  def render_section_with_items(section, section_number, items)
     # Check if we need a new page (minimum space for header + at least one row)
     start_new_page if cursor < 80
 
@@ -410,8 +439,10 @@ class ProjectPdfGenerator
       render_empty_section_message
     end
 
-    # Section subtotal
-    render_section_subtotal(section)
+    # Section subtotal from filtered items
+    subtotal = items.sum { |item| item.include_in_sum? ? item.total_price : 0 }
+    @section_subtotals << subtotal
+    render_section_subtotal_value(subtotal)
 
     move_down 12
   end
@@ -569,9 +600,7 @@ class ProjectPdfGenerator
     move_down 6
   end
 
-  def render_section_subtotal(section)
-    subtotal = section.total_price
-
+  def render_section_subtotal_value(subtotal)
     # Simple right-aligned text, no box
     font_size 8
     fill_color BRAND_SECONDARY
@@ -619,7 +648,7 @@ class ProjectPdfGenerator
 
     font_size 12
     fill_color BRAND_PRIMARY
-    text_box format_currency(@project.total_price),
+    text_box format_currency(@section_subtotals.sum),
              at: [ CONTENT_WIDTH - 125, cursor ],
              width: 125,
              height: 15,
@@ -649,7 +678,15 @@ class ProjectPdfGenerator
   end
 
   def has_proposals?
-    @project.sections.joins(:items).where(project_items: { status: "Propozycja" }).exists?
+    if @item_ids
+      @project.sections.joins(:items)
+        .where(project_items: { id: @item_ids, status: "Propozycja" })
+        .exists?
+    else
+      @project.sections.joins(:items)
+        .where(project_items: { status: "Propozycja" })
+        .exists?
+    end
   end
 
   # === FOOTER ===

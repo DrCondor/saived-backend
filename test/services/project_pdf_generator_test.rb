@@ -315,4 +315,106 @@ class ProjectPdfGeneratorTest < ActiveSupport::TestCase
       assert pdf_data.present?
     end
   end
+
+  # ============================================================
+  # FILTERED ITEMS (item_ids)
+  # ============================================================
+
+  test "generates PDF with filtered items" do
+    item1 = create(:project_item, project_section: @section, name: "Chair", unit_price_cents: 10000)
+    item2 = create(:project_item, project_section: @section, name: "Table", unit_price_cents: 20000)
+    create(:project_item, project_section: @section, name: "Lamp", unit_price_cents: 5000)
+
+    generator = ProjectPdfGenerator.new(@project, @user, item_ids: [ item1.id, item2.id ])
+
+    assert_nothing_raised do
+      generator.generate
+      pdf_data = generator.to_pdf
+      assert pdf_data.present?
+      assert pdf_data.start_with?("%PDF")
+    end
+  end
+
+  test "generates PDF without item_ids includes all items" do
+    create(:project_item, project_section: @section, name: "Chair", unit_price_cents: 10000)
+    create(:project_item, project_section: @section, name: "Table", unit_price_cents: 20000)
+
+    generator = ProjectPdfGenerator.new(@project, @user)
+
+    assert_nothing_raised do
+      generator.generate
+      pdf_data = generator.to_pdf
+      assert pdf_data.present?
+    end
+  end
+
+  test "generates PDF with empty item_ids" do
+    create(:project_item, project_section: @section, name: "Chair", unit_price_cents: 10000)
+
+    generator = ProjectPdfGenerator.new(@project, @user, item_ids: [])
+
+    assert_nothing_raised do
+      generator.generate
+      pdf_data = generator.to_pdf
+      assert pdf_data.present?
+    end
+  end
+
+  test "filtered_items_for preserves item_ids order" do
+    item1 = create(:project_item, project_section: @section, name: "A", position: 0)
+    item2 = create(:project_item, project_section: @section, name: "B", position: 1)
+    item3 = create(:project_item, project_section: @section, name: "C", position: 2)
+
+    generator = ProjectPdfGenerator.new(@project, @user, item_ids: [ item3.id, item1.id, item2.id ])
+
+    items = generator.send(:filtered_items_for, @section)
+
+    assert_equal [ item3.id, item1.id, item2.id ], items.map(&:id)
+  end
+
+  test "filtered_items_for ignores foreign item IDs" do
+    own_item = create(:project_item, project_section: @section, name: "Own")
+
+    generator = ProjectPdfGenerator.new(@project, @user, item_ids: [ own_item.id, 999999 ])
+
+    items = generator.send(:filtered_items_for, @section)
+
+    assert_equal [ own_item.id ], items.map(&:id)
+  end
+
+  test "skips sections with no matching items when filtered" do
+    section2 = @project.sections.create!(name: "Empty Section", position: 2)
+    create(:project_item, project_section: @section, name: "Chair", unit_price_cents: 10000)
+    item_in_section2 = create(:project_item, project_section: section2, name: "Table", unit_price_cents: 20000)
+
+    # Only include the item from section1 — section2 should be skipped
+    generator = ProjectPdfGenerator.new(@project, @user, item_ids: [ @section.items.first.id ])
+
+    assert_nothing_raised do
+      generator.generate
+      pdf_data = generator.to_pdf
+      assert pdf_data.present?
+    end
+  end
+
+  test "has_proposals? returns false when filtered items have no proposals" do
+    create(:project_item, project_section: @section, name: "Chair", status: "kupione")
+    proposal = create(:project_item, project_section: @section, name: "Table", status: "Propozycja")
+
+    # Filter to only the non-proposal item
+    generator = ProjectPdfGenerator.new(@project, @user, item_ids: [ @section.items.where(status: "kupione").first.id ])
+    generator.generate
+
+    assert_not generator.send(:has_proposals?)
+  end
+
+  test "has_proposals? returns true when filtered items include proposals" do
+    create(:project_item, project_section: @section, name: "Chair", status: "kupione")
+    proposal = create(:project_item, project_section: @section, name: "Table", status: "Propozycja")
+
+    generator = ProjectPdfGenerator.new(@project, @user, item_ids: [ proposal.id ])
+    generator.generate
+
+    assert generator.send(:has_proposals?)
+  end
 end

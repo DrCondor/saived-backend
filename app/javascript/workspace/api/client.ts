@@ -1,5 +1,5 @@
 // Get CSRF token from Rails meta tag
-function getCsrfToken(): string {
+export function getCsrfToken(): string {
   const meta = document.querySelector('meta[name="csrf-token"]');
   return meta?.getAttribute('content') || '';
 }

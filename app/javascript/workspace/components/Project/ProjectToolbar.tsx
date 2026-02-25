@@ -2,9 +2,11 @@ import { useState, useRef, useEffect } from 'react';
 import type { SortOption, FilterState, ViewMode, CustomStatus, CustomCategory } from '../../types';
 import { getStatusConfig } from '../../utils/statusHelpers';
 import { getCategoryLabel } from '../../utils/categoryHelpers';
+import { downloadPdf } from '../../api/projects';
 
 interface ProjectToolbarProps {
   projectId: number;
+  itemIds: number[];
   searchQuery: string;
   onSearchChange: (query: string) => void;
   sortBy: SortOption;
@@ -34,6 +36,7 @@ const SORT_OPTIONS: { value: SortOption; label: string }[] = [
 
 export default function ProjectToolbar({
   projectId,
+  itemIds,
   searchQuery,
   onSearchChange,
   sortBy,
@@ -53,6 +56,7 @@ export default function ProjectToolbar({
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isPdfLoading, setIsPdfLoading] = useState(false);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const sortDropdownRef = useRef<HTMLDivElement>(null);
@@ -121,6 +125,21 @@ export default function ProjectToolbar({
     onSortChange('default');
   };
 
+  const handleDownloadPdf = async () => {
+    setIsPdfLoading(true);
+    try {
+      const blob = await downloadPdf(projectId, itemIds);
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+      // Revoke after a delay to allow the browser to load the PDF
+      setTimeout(() => URL.revokeObjectURL(url), 10000);
+    } catch (error) {
+      console.error('PDF download failed:', error);
+    } finally {
+      setIsPdfLoading(false);
+    }
+  };
+
   const activeFilterCount =
     filters.statuses.length +
     filters.categories.length +
@@ -186,22 +205,29 @@ export default function ProjectToolbar({
       </div>
 
       {/* PDF Preview */}
-      <a
-        href={`/api/v1/projects/${projectId}/pdf`}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex items-center gap-1.5 rounded-full border border-neutral-300 bg-white px-4 py-2 text-xs font-medium text-neutral-700 hover:bg-neutral-50 transition-colors whitespace-nowrap flex-shrink-0"
+      <button
+        type="button"
+        onClick={handleDownloadPdf}
+        disabled={isPdfLoading}
+        className="inline-flex items-center gap-1.5 rounded-full border border-neutral-300 bg-white px-4 py-2 text-xs font-medium text-neutral-700 hover:bg-neutral-50 transition-colors whitespace-nowrap flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-          />
-        </svg>
-        Podglad PDF
-      </a>
+        {isPdfLoading ? (
+          <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+          </svg>
+        ) : (
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+            />
+          </svg>
+        )}
+        {isPdfLoading ? 'Generowanie...' : 'Podglad PDF'}
+      </button>
 
       {/* Search */}
       <div className="relative">
