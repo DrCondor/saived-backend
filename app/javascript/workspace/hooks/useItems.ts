@@ -269,8 +269,98 @@ export function useDuplicateItem(projectId: number, sectionId: number) {
 
   return useMutation({
     mutationFn: (itemId: number) => duplicateItem(sectionId, itemId),
+
+    // Optimistic update — insert clone instantly
+    onMutate: async (itemId) => {
+      await queryClient.cancelQueries({ queryKey: ['project', projectId] });
+
+      const previousProject = queryClient.getQueryData<Project>(['project', projectId]);
+
+      if (previousProject) {
+        // Find the original item
+        let originalItem: ProjectItem | undefined;
+        for (const section of previousProject.sections) {
+          originalItem = section.items?.find((i) => i.id === itemId);
+          if (originalItem) break;
+        }
+
+        if (originalItem) {
+          const tempId = -Date.now();
+          const clonedItem: ProjectItem = {
+            ...originalItem,
+            id: tempId,
+            favorite: false,
+          };
+
+          const updatedProject = {
+            ...previousProject,
+            sections: previousProject.sections.map((section) => {
+              if (section.id !== sectionId) return section;
+
+              // Insert clone right after original, shift positions
+              const newItems = (section.items || []).flatMap((item) => {
+                if (item.id === itemId) {
+                  return [
+                    item,
+                    { ...clonedItem, position: item.position + 1 },
+                  ];
+                }
+                // Shift items after original
+                if (item.position > originalItem!.position) {
+                  return [{ ...item, position: item.position + 1 }];
+                }
+                return [item];
+              });
+
+              return {
+                ...section,
+                items: newItems,
+                total_price: newItems.reduce((sum, item) => sum + (item.total_price || 0), 0),
+              };
+            }),
+          };
+
+          updatedProject.total_price = updatedProject.sections.reduce(
+            (sum, section) => sum + (section.total_price || 0),
+            0
+          );
+
+          queryClient.setQueryData(['project', projectId], updatedProject);
+        }
+      }
+
+      return { previousProject };
+    },
+
+    onError: (_err, _itemId, context) => {
+      // Rollback on failure
+      if (context?.previousProject) {
+        queryClient.setQueryData(['project', projectId], context.previousProject);
+      }
+    },
+
     onSuccess: (duplicatedItem, originalItemId) => {
-      queryClient.invalidateQueries({ queryKey: ['project', projectId] });
+      // Replace temp item with real server response
+      queryClient.setQueryData<Project>(['project', projectId], (oldProject) => {
+        if (!oldProject) return oldProject;
+
+        const updatedProject = {
+          ...oldProject,
+          sections: oldProject.sections.map((section) => {
+            if (section.id !== sectionId) return section;
+
+            return {
+              ...section,
+              items: section.items?.map((item) =>
+                // Replace the temp item (negative ID) with real data
+                item.id < 0 ? { ...duplicatedItem } : item
+              ),
+            };
+          }),
+        };
+
+        return updatedProject;
+      });
 
       pushUndo({
         description: `duplikowanie pozycji '${duplicatedItem.name}'`,
@@ -283,6 +373,10 @@ export function useDuplicateItem(projectId: number, sectionId: number) {
           queryClient.invalidateQueries({ queryKey: ['project', projectId] });
         },
       });
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['project', projectId] });
     },
   });
 }
