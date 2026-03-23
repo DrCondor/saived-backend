@@ -3,7 +3,7 @@ import { Droppable, Draggable, type DraggableProvidedDragHandleProps } from '@he
 import type { ProjectSection, CreateItemInput, UpdateItemInput, ViewMode, ItemType } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
 import { shouldIncludeInSum } from '../../utils/statusHelpers';
-import { useCreateItem, useUpdateItem, useDeleteItem } from '../../hooks/useItems';
+import { useCreateItem, useUpdateItem, useDeleteItem, useDuplicateItem } from '../../hooks/useItems';
 import { useUpdateSection, useDeleteSection } from '../../hooks/useSections';
 import { useCurrentUser } from '../../hooks/useUser';
 import { useToggleFavorite } from '../../hooks/useFavorites';
@@ -69,6 +69,7 @@ export default function Section({ section, projectId, viewMode, isDnDEnabled, is
   const createItem = useCreateItem(projectId, section.id);
   const updateItem = useUpdateItem(projectId, section.id);
   const deleteItem = useDeleteItem(projectId, section.id);
+  const duplicateItemMutation = useDuplicateItem(projectId, section.id);
   const toggleFavorite = useToggleFavorite();
 
   useEffect(() => {
@@ -127,6 +128,10 @@ export default function Section({ section, projectId, viewMode, isDnDEnabled, is
     deleteItem.mutate(itemId);
   }, [deleteItem]);
 
+  const handleDuplicateItem = useCallback((itemId: number) => {
+    duplicateItemMutation.mutate(itemId);
+  }, [duplicateItemMutation]);
+
   const handleToggleFavorite = useCallback((itemId: number, favorite: boolean) => {
     toggleFavorite.mutate({ itemId, favorite });
   }, [toggleFavorite]);
@@ -157,6 +162,7 @@ export default function Section({ section, projectId, viewMode, isDnDEnabled, is
           item={item}
           onUpdate={handleUpdateItem}
           onDelete={handleDeleteItem}
+          onDuplicate={handleDuplicateItem}
           onToggleFavorite={handleToggleFavorite}
           customStatuses={customStatuses}
           customCategories={customCategories}
@@ -169,6 +175,7 @@ export default function Section({ section, projectId, viewMode, isDnDEnabled, is
         item={item}
         onUpdate={handleUpdateItem}
         onDelete={handleDeleteItem}
+        onDuplicate={handleDuplicateItem}
         onToggleFavorite={handleToggleFavorite}
         customStatuses={customStatuses}
         customCategories={customCategories}

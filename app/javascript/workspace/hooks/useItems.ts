@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createItem, updateItem, deleteItem, restoreItem } from '../api/items';
+import { createItem, updateItem, deleteItem, duplicateItem, restoreItem } from '../api/items';
 import { useOptionalUndoRedo } from '../contexts/UndoRedoContext';
 import type { CreateItemInput, UpdateItemInput, Project, ProjectItem } from '../types';
 
@@ -259,6 +259,30 @@ export function useDeleteItem(projectId: number, sectionId: number) {
 
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['project', projectId] });
+    },
+  });
+}
+
+export function useDuplicateItem(projectId: number, sectionId: number) {
+  const queryClient = useQueryClient();
+  const { pushUndo } = useOptionalUndoRedo();
+
+  return useMutation({
+    mutationFn: (itemId: number) => duplicateItem(sectionId, itemId),
+    onSuccess: (duplicatedItem, originalItemId) => {
+      queryClient.invalidateQueries({ queryKey: ['project', projectId] });
+
+      pushUndo({
+        description: `duplikowanie pozycji '${duplicatedItem.name}'`,
+        undo: async () => {
+          await deleteItem(sectionId, duplicatedItem.id);
+          queryClient.invalidateQueries({ queryKey: ['project', projectId] });
+        },
+        redo: async () => {
+          await duplicateItem(sectionId, originalItemId);
+          queryClient.invalidateQueries({ queryKey: ['project', projectId] });
+        },
+      });
     },
   });
 }

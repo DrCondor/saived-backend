@@ -792,7 +792,7 @@ export default function ProjectView({ project }: ProjectViewProps) {
                 if (entry.type === 'group') {
                   const groupSections = entry.sections.map((s) => {
                     const processed = processedSections.find((ps) => ps.id === s.id);
-                    return processed || s;
+                    return processed || { ...s, items: [] };
                   }).filter((s) => {
                     const hasFiltersActive = searchQuery.trim() || filters.statuses.length > 0 || filters.categories.length > 0;
                     return !hasFiltersActive || (s.items && s.items.length > 0);
@@ -879,7 +879,7 @@ export default function ProjectView({ project }: ProjectViewProps) {
             .filter((s) => s.section_group_id === null)
             .map((s) => {
               const processed = processedSections.find((ps) => ps.id === s.id);
-              return processed || s;
+              return processed || { ...s, items: [] };
             })
             .filter((s) => {
               const hasFiltersActive = searchQuery.trim() || filters.statuses.length > 0 || filters.categories.length > 0;

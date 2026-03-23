@@ -77,6 +77,16 @@ export async function deleteItem(
   });
 }
 
+export async function duplicateItem(
+  sectionId: number,
+  itemId: number
+): Promise<ProjectItem> {
+  return apiClient<ProjectItem>(
+    `/project_sections/${sectionId}/items/${itemId}/duplicate`,
+    { method: 'POST' }
+  );
+}
+
 export async function restoreItem(
   sectionId: number,
   itemId: number

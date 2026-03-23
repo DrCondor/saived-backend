@@ -70,6 +70,7 @@ Rails.application.routes.draw do
       resources :project_sections, only: [] do
         resources :items, controller: "project_items", path: "items", only: [ :create, :update, :destroy ] do
           post :restore, on: :member
+          post :duplicate, on: :member
         end
       end
 

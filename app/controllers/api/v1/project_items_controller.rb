@@ -4,7 +4,7 @@ module Api
       include Rails.application.routes.url_helpers
 
       before_action :set_section
-      before_action :set_item, only: [ :update, :destroy ]
+      before_action :set_item, only: [ :update, :destroy, :duplicate ]
       before_action :set_section_for_restore, only: [ :restore ]
       before_action :set_deleted_item, only: [ :restore ]
 
@@ -44,6 +44,29 @@ module Api
       def destroy
         @item.soft_delete!
         head :no_content
+      end
+
+      # POST /api/v1/project_sections/:section_id/items/:id/duplicate
+      def duplicate
+        new_item = @item.dup
+        new_item.deleted_at = nil
+
+        # Shift positions of items after the original to make room
+        @section.items.where("position > ?", @item.position).update_all("position = position + 1")
+        new_item.position = @item.position + 1
+
+        new_item.save!
+
+        # Duplicate ActiveStorage attachment if present
+        if @item.attachment.attached?
+          new_item.attachment.attach(
+            io: StringIO.new(@item.attachment.download),
+            filename: @item.attachment.filename.to_s,
+            content_type: @item.attachment.content_type
+          )
+        end
+
+        render json: item_json(new_item), status: :created
       end
 
       # POST /api/v1/project_sections/:section_id/items/:id/restore

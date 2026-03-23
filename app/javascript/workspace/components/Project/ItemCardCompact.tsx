@@ -31,6 +31,7 @@ interface ItemCardCompactProps {
   item: ProjectItem;
   onUpdate?: (itemId: number, input: UpdateItemInput) => void;
   onDelete?: (itemId: number) => void;
+  onDuplicate?: (itemId: number) => void;
   onToggleFavorite?: (itemId: number, favorite: boolean) => void;
   dragHandleProps?: React.HTMLAttributes<HTMLDivElement>;
   isDragging?: boolean;
@@ -42,6 +43,7 @@ const ItemCardCompact = memo(function ItemCardCompact({
   item,
   onUpdate,
   onDelete,
+  onDuplicate,
   onToggleFavorite,
   dragHandleProps,
   isDragging,
@@ -276,6 +278,25 @@ const ItemCardCompact = memo(function ItemCardCompact({
           >
             <svg className="w-3.5 h-3.5 transition-transform duration-200" fill={item.favorite ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+          </button>
+        )}
+
+        {/* Duplicate button */}
+        {onDuplicate && (
+          <button
+            type="button"
+            onClick={() => onDuplicate(item.id)}
+            className="p-1 rounded text-neutral-300 hover:text-emerald-500 hover:bg-emerald-50 transition-colors"
+            title="Duplikuj"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+              />
             </svg>
           </button>
         )}
