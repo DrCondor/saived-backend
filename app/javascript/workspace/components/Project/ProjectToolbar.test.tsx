@@ -36,7 +36,7 @@ describe('ProjectToolbar PDF button', () => {
 
   it('renders PDF button', () => {
     render(<ProjectToolbar {...defaultProps} />);
-    expect(screen.getByText('Podglad PDF')).toBeInTheDocument();
+    expect(screen.getByText('Podgląd PDF')).toBeInTheDocument();
   });
 
   it('calls downloadPdf with correct item IDs and opens blob URL', async () => {
@@ -56,7 +56,7 @@ describe('ProjectToolbar PDF button', () => {
 
     render(<ProjectToolbar {...defaultProps} itemIds={[10, 20, 30]} />);
 
-    fireEvent.click(screen.getByText('Podglad PDF'));
+    fireEvent.click(screen.getByText('Podgląd PDF'));
 
     await waitFor(() => {
       expect(downloadPdf).toHaveBeenCalledWith(1, [10, 20, 30]);
@@ -88,7 +88,7 @@ describe('ProjectToolbar PDF button', () => {
     render(<ProjectToolbar {...defaultProps} />);
 
     // Click PDF button
-    fireEvent.click(screen.getByText('Podglad PDF'));
+    fireEvent.click(screen.getByText('Podgląd PDF'));
 
     // Should show loading state
     await waitFor(() => {
@@ -104,7 +104,7 @@ describe('ProjectToolbar PDF button', () => {
 
     // Should return to normal state
     await waitFor(() => {
-      expect(screen.getByText('Podglad PDF')).toBeInTheDocument();
+      expect(screen.getByText('Podgląd PDF')).toBeInTheDocument();
     });
   });
 });

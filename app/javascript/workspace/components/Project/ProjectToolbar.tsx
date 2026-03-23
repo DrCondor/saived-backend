@@ -226,7 +226,7 @@ export default function ProjectToolbar({
             />
           </svg>
         )}
-        {isPdfLoading ? 'Generowanie...' : 'Podglad PDF'}
+        {isPdfLoading ? 'Generowanie...' : 'Podgląd PDF'}
       </button>
 
       {/* Search */}
@@ -288,7 +288,7 @@ export default function ProjectToolbar({
                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
               />
             </svg>
-            Znajdz
+            Znajdź
             <kbd className="hidden sm:inline-flex items-center gap-0.5 text-[10px] text-neutral-400 ml-1">
               <span className="text-xs">⌘</span>F
             </kbd>
