@@ -45,7 +45,7 @@ export const COLOR_PALETTE = [
   { id: 'blue', bg: 'bg-blue-500', text: 'text-white', label: 'Niebieski' },
   { id: 'cyan', bg: 'bg-cyan-500', text: 'text-white', label: 'Cyjan' },
   { id: 'teal', bg: 'bg-teal-500', text: 'text-white', label: 'Morski' },
-  { id: 'orange', bg: 'bg-orange-500', text: 'text-white', label: 'Pomaranczowy' },
+  { id: 'orange', bg: 'bg-orange-500', text: 'text-white', label: 'Pomarańczowy' },
   { id: 'amber', bg: 'bg-amber-500', text: 'text-white', label: 'Bursztynowy' },
   { id: 'slate', bg: 'bg-slate-500', text: 'text-white', label: 'Szary' },
 ] as const;

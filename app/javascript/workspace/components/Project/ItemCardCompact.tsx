@@ -60,7 +60,7 @@ const ItemCardCompact = memo(function ItemCardCompact({
   ].filter(Boolean).join(' ');
 
   const handleDelete = () => {
-    if (onDelete && confirm('Usunac te pozycje?')) {
+    if (onDelete && confirm('Usunąć tę pozycję?')) {
       onDelete(item.id);
     }
   };
@@ -286,7 +286,7 @@ const ItemCardCompact = memo(function ItemCardCompact({
             type="button"
             onClick={handleDelete}
             className="p-1 rounded text-neutral-300 hover:text-red-500 hover:bg-red-50 transition-colors"
-            title="Usun"
+            title="Usuń"
           >
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path

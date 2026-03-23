@@ -454,7 +454,7 @@ export default function ProjectToolbar({
                   onClick={handleClearFilters}
                   className="w-full text-center text-sm text-red-600 hover:text-red-700 py-1"
                 >
-                  Wyczysc wszystkie filtry
+                  Wyczyść wszystkie filtry
                 </button>
               </div>
             )}
@@ -462,7 +462,7 @@ export default function ProjectToolbar({
             {/* Empty state */}
             {availableStatuses.length === 0 && availableCategories.length === 0 && (
               <div className="px-4 py-4 text-center text-sm text-neutral-500">
-                Brak dostepnych filtrow
+                Brak dostępnych filtrów
               </div>
             )}
           </div>
@@ -479,7 +479,7 @@ export default function ProjectToolbar({
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
-          Wyczysc
+          Wyczyść
         </button>
       )}
     </div>

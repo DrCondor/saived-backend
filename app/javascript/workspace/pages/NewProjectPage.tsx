@@ -35,14 +35,14 @@ export default function NewProjectPage() {
               d="M15 19l-7-7 7-7"
             />
           </svg>
-          Powrot do projektow
+          Powrót do projektów
         </Link>
       </div>
 
       <div className="rounded-3xl bg-white border border-neutral-200 p-8">
         <h1 className="text-2xl font-bold text-neutral-900 mb-2">Nowy projekt</h1>
         <p className="text-sm text-neutral-500 mb-8">
-          Utworz nowy projekt kosztorysowy dla swojego klienta.
+          Utwórz nowy projekt kosztorysowy dla swojego klienta.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -55,7 +55,7 @@ export default function NewProjectPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="w-full rounded-xl border border-neutral-300 bg-white px-4 py-3 text-sm placeholder-neutral-400 focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900"
-              placeholder="np. Mieszkanie przy Marszalkowskiej"
+              placeholder="np. Mieszkanie przy Marszałkowskiej"
               autoFocus
             />
           </div>
@@ -69,7 +69,7 @@ export default function NewProjectPage() {
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
               className="w-full rounded-xl border border-neutral-300 bg-white px-4 py-3 text-sm placeholder-neutral-400 focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900"
-              placeholder="Krotki opis projektu lub informacje o kliencie..."
+              placeholder="Krótki opis projektu lub informacje o kliencie..."
             />
           </div>
 

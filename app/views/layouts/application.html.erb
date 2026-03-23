@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="pl">
   <head>
-    <title>SAIVED - Kosztorysy dla architektow wnetrz</title>
+    <title>SAIVED - Kosztorysy dla architektów wnętrz</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="description" content="SAIVED pomaga architektom wnetrz zbierac produkty, sledzic ceny i tworzyc profesjonalne kosztorysy dla klientow.">
+    <meta name="description" content="SAIVED pomaga architektom wnętrz zbierać produkty, śledzić ceny i tworzyć profesjonalne kosztorysy dla klientów.">
 
     <%# Favicon %>
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -56,7 +56,7 @@
                 <% end %>
               <% else %>
                 <%= link_to new_user_session_path, class: "hidden sm:inline-flex items-center gap-2 rounded-full bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800 transition-colors" do %>
-                  Zaloguj sie
+                  Zaloguj się
                 <% end %>
               <% end %>
 
@@ -96,13 +96,13 @@
                           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                           </svg>
-                          Przejdz do panelu
+                          Przejdź do panelu
                         <% end %>
                       <% else %>
                         <%= link_to new_user_session_path,
                             class: "flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-white bg-neutral-900 rounded-lg hover:bg-neutral-800",
                             data: { action: "click->mobile-menu#close" } do %>
-                          Zaloguj sie
+                          Zaloguj się
                         <% end %>
                       <% end %>
                     </div>
@@ -154,7 +154,7 @@
               </div>
               <p class="text-[10px] text-neutral-500 tracking-wide uppercase mb-4">Design More. Manage Less.</p>
               <p class="text-sm text-neutral-400 mb-4">
-                Inteligentne kosztorysy dla architektow wnetrz.
+                Inteligentne kosztorysy dla architektów wnętrz.
               </p>
               <div class="flex gap-3">
                 <a href="#" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
@@ -196,7 +196,7 @@
               <h4 class="font-semibold text-sm mb-4">Prawne</h4>
               <ul class="space-y-2">
                 <li><a href="#" class="text-sm text-neutral-400 hover:text-white transition-colors">Regulamin</a></li>
-                <li><a href="#" class="text-sm text-neutral-400 hover:text-white transition-colors">Polityka prywatnosci</a></li>
+                <li><a href="#" class="text-sm text-neutral-400 hover:text-white transition-colors">Polityka prywatności</a></li>
                 <li><a href="#" class="text-sm text-neutral-400 hover:text-white transition-colors">Cookies</a></li>
                 <li><a href="#" class="text-sm text-neutral-400 hover:text-white transition-colors">RODO</a></li>
               </ul>
@@ -206,7 +206,7 @@
           <%# Bottom bar %>
           <div class="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
             <p class="text-sm text-neutral-500">
-              &copy; <%= Time.current.year %> SAIVED. Wszystkie prawa zastrzezone.
+              &copy; <%= Time.current.year %> SAIVED. Wszystkie prawa zastrzeżone.
             </p>
             <p class="text-sm text-neutral-500">
               Made with <span class="text-red-400">&#10084;</span> in Poland

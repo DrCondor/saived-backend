@@ -57,9 +57,9 @@ export default function AccountSettings() {
 
     try {
       await updateProfile.mutateAsync(profileForm);
-      setProfileMessage({ type: 'success', text: 'Profil zostal zaktualizowany' });
+      setProfileMessage({ type: 'success', text: 'Profil został zaktualizowany' });
     } catch (error: any) {
-      setProfileMessage({ type: 'error', text: error.message || 'Wystapil blad' });
+      setProfileMessage({ type: 'error', text: error.message || 'Wystąpił błąd' });
     }
   };
 
@@ -68,16 +68,16 @@ export default function AccountSettings() {
     setPasswordMessage(null);
 
     if (passwordForm.password !== passwordForm.password_confirmation) {
-      setPasswordMessage({ type: 'error', text: 'Hasla nie sa zgodne' });
+      setPasswordMessage({ type: 'error', text: 'Hasła nie są zgodne' });
       return;
     }
 
     try {
       await updatePassword.mutateAsync(passwordForm);
-      setPasswordMessage({ type: 'success', text: 'Haslo zostalo zmienione' });
+      setPasswordMessage({ type: 'success', text: 'Hasło zostało zmienione' });
       setPasswordForm({ current_password: '', password: '', password_confirmation: '' });
     } catch (error: any) {
-      setPasswordMessage({ type: 'error', text: error.message || 'Wystapil blad' });
+      setPasswordMessage({ type: 'error', text: error.message || 'Wystąpił błąd' });
     }
   };
 
@@ -88,17 +88,17 @@ export default function AccountSettings() {
     try {
       await uploadAvatar.mutateAsync(file);
     } catch (error: any) {
-      alert(error.message || 'Nie udalo sie przeslac zdjecia');
+      alert(error.message || 'Nie udało się przesłać zdjęcia');
     }
   };
 
   const handleDeleteAvatar = async () => {
-    if (!confirm('Czy na pewno chcesz usunac zdjecie profilowe?')) return;
+    if (!confirm('Czy na pewno chcesz usunąć zdjęcie profilowe?')) return;
 
     try {
       await deleteAvatar.mutateAsync();
     } catch (error: any) {
-      alert(error.message || 'Nie udalo sie usunac zdjecia');
+      alert(error.message || 'Nie udało się usunąć zdjęcia');
     }
   };
 
@@ -106,7 +106,7 @@ export default function AccountSettings() {
     <div className="space-y-8">
       {/* Avatar Section */}
       <section className="rounded-2xl border border-neutral-200 bg-white p-6">
-        <h2 className="text-lg font-semibold text-neutral-900 mb-4">Zdjecie profilowe</h2>
+        <h2 className="text-lg font-semibold text-neutral-900 mb-4">Zdjęcie profilowe</h2>
 
         <div className="flex items-center gap-6">
           {/* Avatar preview */}
@@ -147,7 +147,7 @@ export default function AccountSettings() {
                   d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                 />
               </svg>
-              {uploadAvatar.isPending ? 'Przesylanie...' : 'Zmien zdjecie'}
+              {uploadAvatar.isPending ? 'Przesyłanie...' : 'Zmień zdjęcie'}
             </button>
 
             {user?.avatar_url && (
@@ -157,7 +157,7 @@ export default function AccountSettings() {
                 disabled={deleteAvatar.isPending}
                 className="block text-sm text-red-600 hover:text-red-700"
               >
-                Usun zdjecie
+                Usuń zdjęcie
               </button>
             )}
           </div>
@@ -172,7 +172,7 @@ export default function AccountSettings() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label htmlFor="first_name" className="block text-sm font-medium text-neutral-700 mb-1">
-                Imie
+                Imię
               </label>
               <input
                 type="text"
@@ -209,7 +209,7 @@ export default function AccountSettings() {
               value={profileForm.title}
               onChange={(e) => setProfileForm({ ...profileForm, title: e.target.value })}
               className="w-full rounded-xl border border-neutral-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-              placeholder="np. Projektant wnetrz"
+              placeholder="np. Projektant wnętrz"
             />
           </div>
 
@@ -260,19 +260,19 @@ export default function AccountSettings() {
               disabled
               className="flex-1 rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-2.5 text-sm text-neutral-500"
             />
-            <span className="text-xs text-neutral-400">Skontaktuj sie z nami, aby zmienic adres e-mail</span>
+            <span className="text-xs text-neutral-400">Skontaktuj się z nami, aby zmienić adres e-mail</span>
           </div>
         </div>
       </section>
 
       {/* Password Section */}
       <section className="rounded-2xl border border-neutral-200 bg-white p-6">
-        <h2 className="text-lg font-semibold text-neutral-900 mb-4">Zmiana hasla</h2>
+        <h2 className="text-lg font-semibold text-neutral-900 mb-4">Zmiana hasła</h2>
 
         <form onSubmit={handlePasswordSubmit} className="space-y-4">
           <div>
             <label htmlFor="current_password" className="block text-sm font-medium text-neutral-700 mb-1">
-              Aktualne haslo
+              Aktualne hasło
             </label>
             <input
               type="password"
@@ -286,7 +286,7 @@ export default function AccountSettings() {
 
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-neutral-700 mb-1">
-              Nowe haslo
+              Nowe hasło
             </label>
             <input
               type="password"
@@ -301,7 +301,7 @@ export default function AccountSettings() {
 
           <div>
             <label htmlFor="password_confirmation" className="block text-sm font-medium text-neutral-700 mb-1">
-              Powtorz nowe haslo
+              Powtórz nowe hasło
             </label>
             <input
               type="password"
@@ -329,7 +329,7 @@ export default function AccountSettings() {
             disabled={updatePassword.isPending}
             className="inline-flex items-center gap-2 rounded-full bg-neutral-900 px-6 py-2.5 text-sm font-medium text-white hover:bg-neutral-800 transition-colors disabled:opacity-50"
           >
-            {updatePassword.isPending ? 'Zmienianie...' : 'Zmien haslo'}
+            {updatePassword.isPending ? 'Zmienianie...' : 'Zmień hasło'}
           </button>
         </form>
       </section>

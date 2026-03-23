@@ -107,17 +107,17 @@ export default function SettingsPage() {
           {activeTab === 'personalization' && (
             <div className="space-y-6">
               <section className="rounded-2xl border border-neutral-200 bg-white p-6">
-                <h2 className="text-lg font-semibold text-neutral-900 mb-4">Statusy produktow</h2>
+                <h2 className="text-lg font-semibold text-neutral-900 mb-4">Statusy produktów</h2>
                 <p className="text-sm text-neutral-500 mb-6">
-                  Statusy pomagaja organizowac produkty w projektach. Mozesz dodac do 3 wlasnych statusow.
+                  Statusy pomagają organizować produkty w projektach. Możesz dodać do 3 własnych statusów.
                 </p>
                 <StatusSettings />
               </section>
 
               <section className="rounded-2xl border border-neutral-200 bg-white p-6">
-                <h2 className="text-lg font-semibold text-neutral-900 mb-4">Kategorie produktow</h2>
+                <h2 className="text-lg font-semibold text-neutral-900 mb-4">Kategorie produktów</h2>
                 <p className="text-sm text-neutral-500 mb-6">
-                  Kategorie pomagaja organizowac produkty w projektach. Mozesz dodac do 10 wlasnych kategorii.
+                  Kategorie pomagają organizować produkty w projektach. Możesz dodać do 10 własnych kategorii.
                 </p>
                 <CategorySettings />
               </section>
@@ -125,7 +125,7 @@ export default function SettingsPage() {
               <section className="rounded-2xl border border-neutral-200 bg-white p-6">
                 <h2 className="text-lg font-semibold text-neutral-900 mb-4">Rabaty</h2>
                 <p className="text-sm text-neutral-500 mb-6">
-                  Zdefiniuj rabaty dla wybranych sklepow. Przy dodawaniu produktow z tych domen rabat zostanie automatycznie naliczony.
+                  Zdefiniuj rabaty dla wybranych sklepów. Przy dodawaniu produktów z tych domen rabat zostanie automatycznie naliczony.
                 </p>
                 <DiscountSettings />
               </section>

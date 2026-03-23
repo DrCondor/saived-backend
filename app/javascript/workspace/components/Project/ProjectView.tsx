@@ -780,7 +780,7 @@ export default function ProjectView({ project }: ProjectViewProps) {
               }}
               className="text-sm text-emerald-600 hover:text-emerald-700 font-medium"
             >
-              Wyczysc filtry
+              Wyczyść filtry
             </button>
           </div>
         )}

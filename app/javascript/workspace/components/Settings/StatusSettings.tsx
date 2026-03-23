@@ -65,16 +65,16 @@ export default function StatusSettings() {
       }
 
       await updateStatuses.mutateAsync(newStatuses);
-      setMessage({ type: 'success', text: isAddingNew ? 'Status zostal dodany' : 'Status zostal zaktualizowany' });
+      setMessage({ type: 'success', text: isAddingNew ? 'Status został dodany' : 'Status został zaktualizowany' });
       setEditingStatus(null);
       setIsAddingNew(false);
     } catch (error: any) {
-      setMessage({ type: 'error', text: error.message || 'Wystapil blad' });
+      setMessage({ type: 'error', text: error.message || 'Wystąpił błąd' });
     }
   };
 
   const handleDeleteStatus = async (statusId: string) => {
-    if (!confirm('Usunac ten status? Produkty z tym statusem zostana zmienione na "BEZ STATUSU".')) {
+    if (!confirm('Usunąć ten status? Produkty z tym statusem zostaną zmienione na "BEZ STATUSU".')) {
       return;
     }
 
@@ -83,9 +83,9 @@ export default function StatusSettings() {
     try {
       const newStatuses = customStatuses.filter((s) => s.id !== statusId);
       await updateStatuses.mutateAsync(newStatuses);
-      setMessage({ type: 'success', text: 'Status zostal usuniety' });
+      setMessage({ type: 'success', text: 'Status został usunięty' });
     } catch (error: any) {
-      setMessage({ type: 'error', text: error.message || 'Wystapil blad' });
+      setMessage({ type: 'error', text: error.message || 'Wystąpił błąd' });
     }
   };
 
@@ -187,7 +187,7 @@ export default function StatusSettings() {
                       onClick={() => handleDeleteStatus(status.id)}
                       disabled={updateStatuses.isPending}
                       className="p-1.5 rounded-lg text-neutral-400 hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50"
-                      title="Usun"
+                      title="Usuń"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
@@ -243,7 +243,7 @@ export default function StatusSettings() {
                         className={`w-8 h-8 rounded-full ${color.bg} transition-all ${
                           isSelected ? 'ring-2 ring-offset-2 ring-neutral-900' : ''
                         } ${isUsed ? 'opacity-30 cursor-not-allowed' : 'hover:scale-110'}`}
-                        title={isUsed ? 'Kolor jest juz uzywany' : color.label}
+                        title={isUsed ? 'Kolor jest już używany' : color.label}
                       />
                     );
                   })}
@@ -296,12 +296,12 @@ export default function StatusSettings() {
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
-            Dodaj wlasny status
+            Dodaj własny status
           </button>
         )}
 
         {!canAddMore && !editingStatus && (
-          <p className="text-xs text-neutral-400">Osiagnieto limit wlasnych statusow</p>
+          <p className="text-xs text-neutral-400">Osiągnięto limit własnych statusów</p>
         )}
       </div>
     </div>

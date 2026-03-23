@@ -44,7 +44,7 @@ export default function DiscountSettings() {
     }
 
     if (editingDiscount.percentage < 0 || editingDiscount.percentage > 100) {
-      setMessage({ type: 'error', text: 'Procent musi byc miedzy 0 a 100' });
+      setMessage({ type: 'error', text: 'Procent musi być między 0 a 100' });
       return;
     }
 
@@ -53,7 +53,7 @@ export default function DiscountSettings() {
       (d) => d.domain === normalizedDomain && d.id !== editingDiscount.id
     );
     if (isDuplicate) {
-      setMessage({ type: 'error', text: `Rabat dla domeny ${normalizedDomain} juz istnieje` });
+      setMessage({ type: 'error', text: `Rabat dla domeny ${normalizedDomain} już istnieje` });
       return;
     }
 
@@ -84,16 +84,16 @@ export default function DiscountSettings() {
       }
 
       await updateDiscounts.mutateAsync(newDiscounts);
-      setMessage({ type: 'success', text: isAddingNew ? 'Rabat zostal dodany' : 'Rabat zostal zaktualizowany' });
+      setMessage({ type: 'success', text: isAddingNew ? 'Rabat został dodany' : 'Rabat został zaktualizowany' });
       setEditingDiscount(null);
       setIsAddingNew(false);
     } catch (error: any) {
-      setMessage({ type: 'error', text: error.message || 'Wystapil blad' });
+      setMessage({ type: 'error', text: error.message || 'Wystąpił błąd' });
     }
   };
 
   const handleDeleteDiscount = async (discountId: string) => {
-    if (!confirm('Usunac ten rabat?')) {
+    if (!confirm('Usunąć ten rabat?')) {
       return;
     }
 
@@ -102,9 +102,9 @@ export default function DiscountSettings() {
     try {
       const newDiscounts = discounts.filter((d) => d.id !== discountId);
       await updateDiscounts.mutateAsync(newDiscounts);
-      setMessage({ type: 'success', text: 'Rabat zostal usuniety' });
+      setMessage({ type: 'success', text: 'Rabat został usunięty' });
     } catch (error: any) {
-      setMessage({ type: 'error', text: error.message || 'Wystapil blad' });
+      setMessage({ type: 'error', text: error.message || 'Wystąpił błąd' });
     }
   };
 
@@ -187,7 +187,7 @@ export default function DiscountSettings() {
                     onClick={() => handleDeleteDiscount(discount.id)}
                     disabled={updateDiscounts.isPending}
                     className="p-1.5 rounded-lg text-neutral-400 hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50"
-                    title="Usun"
+                    title="Usuń"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
@@ -205,7 +205,7 @@ export default function DiscountSettings() {
         )}
 
         {discounts.length === 0 && !editingDiscount && (
-          <p className="text-sm text-neutral-400 mb-4">Nie masz jeszcze zadnych rabatow.</p>
+          <p className="text-sm text-neutral-400 mb-4">Nie masz jeszcze żadnych rabatów.</p>
         )}
 
         {/* Edit/Add form */}
@@ -227,7 +227,7 @@ export default function DiscountSettings() {
                   className="w-full rounded-xl border border-neutral-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                 />
                 <p className="text-xs text-neutral-400 mt-1">
-                  Podaj nazwe domeny bez https:// i www.
+                  Podaj nazwę domeny bez https:// i www.
                 </p>
               </div>
 
@@ -304,7 +304,7 @@ export default function DiscountSettings() {
         )}
 
         {!canAddMore && !editingDiscount && (
-          <p className="text-xs text-neutral-400">Osiagnieto limit rabatow</p>
+          <p className="text-xs text-neutral-400">Osiągnięto limit rabatów</p>
         )}
       </div>
     </div>

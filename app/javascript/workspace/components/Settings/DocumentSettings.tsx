@@ -41,17 +41,17 @@ export default function DocumentSettings() {
     try {
       await uploadCompanyLogo.mutateAsync(file);
     } catch (error: any) {
-      alert(error.message || 'Nie udalo sie przeslac logo');
+      alert(error.message || 'Nie udało się przesłać logo');
     }
   };
 
   const handleDeleteCompanyLogo = async () => {
-    if (!confirm('Czy na pewno chcesz usunac logo firmy?')) return;
+    if (!confirm('Czy na pewno chcesz usunąć logo firmy?')) return;
 
     try {
       await deleteCompanyLogo.mutateAsync();
     } catch (error: any) {
-      alert(error.message || 'Nie udalo sie usunac logo');
+      alert(error.message || 'Nie udało się usunąć logo');
     }
   };
 
@@ -66,9 +66,9 @@ export default function DocumentSettings() {
         phone: phone,
         company_info: companyInfo,
       });
-      setMessage({ type: 'success', text: 'Dane organizacji zostaly zapisane' });
+      setMessage({ type: 'success', text: 'Dane organizacji zostały zapisane' });
     } catch (error: any) {
-      setMessage({ type: 'error', text: error.message || 'Wystapil blad' });
+      setMessage({ type: 'error', text: error.message || 'Wystąpił błąd' });
     }
   };
 
@@ -78,7 +78,7 @@ export default function DocumentSettings() {
       <section className="rounded-2xl border border-neutral-200 bg-white p-6">
         <h2 className="text-lg font-semibold text-neutral-900 mb-2">Logo firmy</h2>
         <p className="text-sm text-neutral-500 mb-4">
-          Logo bedzie widoczne na wszystkich generowanych kosztorysach PDF.
+          Logo będzie widoczne na wszystkich generowanych kosztorysach PDF.
         </p>
 
         <div className="flex items-center gap-6">
@@ -127,7 +127,7 @@ export default function DocumentSettings() {
                   d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
                 />
               </svg>
-              {uploadCompanyLogo.isPending ? 'Przesylanie...' : 'Wybierz logo'}
+              {uploadCompanyLogo.isPending ? 'Przesyłanie...' : 'Wybierz logo'}
             </button>
 
             {user?.company_logo_url && (
@@ -137,7 +137,7 @@ export default function DocumentSettings() {
                 disabled={deleteCompanyLogo.isPending}
                 className="block text-sm text-red-600 hover:text-red-700"
               >
-                Usun logo
+                Usuń logo
               </button>
             )}
           </div>
@@ -163,7 +163,7 @@ export default function DocumentSettings() {
               value={companyName}
               onChange={(e) => setCompanyName(e.target.value)}
               className="w-full rounded-xl border border-neutral-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-              placeholder="np. Studio Wnetrz ABC"
+              placeholder="np. Studio Wnętrz ABC"
             />
           </div>
 
@@ -182,7 +182,7 @@ export default function DocumentSettings() {
               maxLength={13}
             />
             <p className="mt-1 text-xs text-neutral-500">
-              Numer identyfikacji podatkowej wyswietlany na dokumentach.
+              Numer identyfikacji podatkowej wyświetlany na dokumentach.
             </p>
           </div>
 
@@ -200,7 +200,7 @@ export default function DocumentSettings() {
               placeholder="np. +48 123 456 789"
             />
             <p className="mt-1 text-xs text-neutral-500">
-              Numer telefonu wyswietlany na dokumentach PDF.
+              Numer telefonu wyświetlany na dokumentach PDF.
             </p>
           </div>
 
@@ -210,7 +210,7 @@ export default function DocumentSettings() {
               Dodatkowe informacje
             </label>
             <p className="text-xs text-neutral-500 mb-2">
-              Dodatkowy tekst widoczny w naglowku dokumentow. Mozesz uzywac formatowania.
+              Dodatkowy tekst widoczny w nagłówku dokumentów. Możesz używać formatowania.
             </p>
             <RichTextEditor
               value={companyInfo}

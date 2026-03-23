@@ -51,16 +51,16 @@ export default function CategorySettings() {
       }
 
       await updateCategories.mutateAsync(newCategories);
-      setMessage({ type: 'success', text: isAddingNew ? 'Kategoria zostala dodana' : 'Kategoria zostala zaktualizowana' });
+      setMessage({ type: 'success', text: isAddingNew ? 'Kategoria została dodana' : 'Kategoria została zaktualizowana' });
       setEditingCategory(null);
       setIsAddingNew(false);
     } catch (error: any) {
-      setMessage({ type: 'error', text: error.message || 'Wystapil blad' });
+      setMessage({ type: 'error', text: error.message || 'Wystąpił błąd' });
     }
   };
 
   const handleDeleteCategory = async (categoryId: string) => {
-    if (!confirm('Usunac te kategorie? Produkty z ta kategoria zostana zmienione na "BRAK".')) {
+    if (!confirm('Usunąć tę kategorię? Produkty z tą kategorią zostaną zmienione na "BRAK".')) {
       return;
     }
 
@@ -69,9 +69,9 @@ export default function CategorySettings() {
     try {
       const newCategories = customCategories.filter((c) => c.id !== categoryId);
       await updateCategories.mutateAsync(newCategories);
-      setMessage({ type: 'success', text: 'Kategoria zostala usunieta' });
+      setMessage({ type: 'success', text: 'Kategoria została usunięta' });
     } catch (error: any) {
-      setMessage({ type: 'error', text: error.message || 'Wystapil blad' });
+      setMessage({ type: 'error', text: error.message || 'Wystąpił błąd' });
     }
   };
 
@@ -158,7 +158,7 @@ export default function CategorySettings() {
                     onClick={() => handleDeleteCategory(category.id)}
                     disabled={updateCategories.isPending}
                     className="p-1.5 rounded-lg text-neutral-400 hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50"
-                    title="Usun"
+                    title="Usuń"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
@@ -179,7 +179,7 @@ export default function CategorySettings() {
         {editingCategory && (
           <div className="rounded-xl border border-neutral-200 bg-white p-4 mb-4">
             <h4 className="text-sm font-medium text-neutral-700 mb-3">
-              {isAddingNew ? 'Nowa kategoria' : 'Edytuj kategorie'}
+              {isAddingNew ? 'Nowa kategoria' : 'Edytuj kategorię'}
             </h4>
 
             <div className="space-y-4">
@@ -233,12 +233,12 @@ export default function CategorySettings() {
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
-            Dodaj wlasna kategorie
+            Dodaj własną kategorię
           </button>
         )}
 
         {!canAddMore && !editingCategory && (
-          <p className="text-xs text-neutral-400">Osiagnieto limit wlasnych kategorii</p>
+          <p className="text-xs text-neutral-400">Osiągnięto limit własnych kategorii</p>
         )}
       </div>
     </div>

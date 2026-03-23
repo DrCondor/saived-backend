@@ -32,10 +32,10 @@ export default function ExtensionPage() {
           Rozszerzenie
         </p>
         <h1 className="text-2xl font-bold tracking-tight text-neutral-900">
-          Pobierz wtyczke SAIVED
+          Pobierz wtyczkę SAIVED
         </h1>
         <p className="text-neutral-500 mt-1">
-          Zbieraj produkty ze sklepow internetowych jednym kliknieciem
+          Zbieraj produkty ze sklepów internetowych jednym kliknięciem
         </p>
       </header>
 
@@ -66,7 +66,7 @@ export default function ExtensionPage() {
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                 </svg>
-                Pobierz wtyczke (ZIP)
+                Pobierz wtyczkę (ZIP)
               </a>
             </div>
           </div>
@@ -130,7 +130,7 @@ export default function ExtensionPage() {
                   </span>
                   <div>
                     <p className="text-sm text-neutral-700">
-                      Otworz <code className="px-1.5 py-0.5 rounded bg-neutral-100 text-neutral-800 text-xs font-mono">chrome://extensions</code> w przegladarce
+                      Otwórz <code className="px-1.5 py-0.5 rounded bg-neutral-100 text-neutral-800 text-xs font-mono">chrome://extensions</code> w przeglądarce
                     </p>
                   </div>
                 </li>
@@ -140,7 +140,7 @@ export default function ExtensionPage() {
                   </span>
                   <div>
                     <p className="text-sm text-neutral-700">
-                      Wlacz <strong>&quot;Tryb dewelopera&quot;</strong> (przelacznik w prawym gornym rogu)
+                      Włącz <strong>&quot;Tryb dewelopera&quot;</strong> (przełącznik w prawym górnym rogu)
                     </p>
                   </div>
                 </li>
@@ -150,7 +150,7 @@ export default function ExtensionPage() {
                   </span>
                   <div>
                     <p className="text-sm text-neutral-700">
-                      Kliknij <strong>&quot;Zaladuj rozpakowane&quot;</strong> (Load unpacked)
+                      Kliknij <strong>&quot;Załaduj rozpakowane&quot;</strong> (Load unpacked)
                     </p>
                   </div>
                 </li>
@@ -160,7 +160,7 @@ export default function ExtensionPage() {
                   </span>
                   <div>
                     <p className="text-sm text-neutral-700">
-                      Wybierz folder z rozpakowana wtyczka
+                      Wybierz folder z rozpakowaną wtyczką
                     </p>
                   </div>
                 </li>
@@ -172,7 +172,7 @@ export default function ExtensionPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   <p className="text-sm text-amber-800">
-                    <strong>Wskazowka:</strong> Przypnij wtyczke do paska narzedzi klikajac ikone puzzla i wybierajac pin przy SAIVED.
+                    <strong>Wskazówka:</strong> Przypnij wtyczkę do paska narzędzi klikając ikonę puzzla i wybierając pin przy SAIVED.
                   </p>
                 </div>
               </div>
@@ -199,7 +199,7 @@ export default function ExtensionPage() {
                   </span>
                   <div>
                     <p className="text-sm text-neutral-700">
-                      Otworz <code className="px-1.5 py-0.5 rounded bg-neutral-100 text-neutral-800 text-xs font-mono">about:debugging#/runtime/this-firefox</code>
+                      Otwórz <code className="px-1.5 py-0.5 rounded bg-neutral-100 text-neutral-800 text-xs font-mono">about:debugging#/runtime/this-firefox</code>
                     </p>
                   </div>
                 </li>
@@ -209,7 +209,7 @@ export default function ExtensionPage() {
                   </span>
                   <div>
                     <p className="text-sm text-neutral-700">
-                      Kliknij <strong>&quot;Zaladuj tymczasowy dodatek...&quot;</strong> (Load Temporary Add-on)
+                      Kliknij <strong>&quot;Załaduj tymczasowy dodatek...&quot;</strong> (Load Temporary Add-on)
                     </p>
                   </div>
                 </li>
@@ -231,7 +231,7 @@ export default function ExtensionPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                   </svg>
                   <p className="text-sm text-amber-800">
-                    <strong>Uwaga:</strong> Firefox wymaga ponownego zaladowania wtyczki po kazdym restarcie przegladarki. To ograniczenie tymczasowych dodatkow.
+                    <strong>Uwaga:</strong> Firefox wymaga ponownego załadowania wtyczki po każdym restarcie przeglądarki. To ograniczenie tymczasowych dodatków.
                   </p>
                 </div>
               </div>
@@ -251,7 +251,7 @@ export default function ExtensionPage() {
                 1
               </span>
               <p className="text-sm text-neutral-700">
-                Kliknij ikone wtyczki SAIVED w pasku przegladarki
+                Kliknij ikonę wtyczki SAIVED w pasku przeglądarki
               </p>
             </li>
             <li className="flex gap-3">
@@ -259,7 +259,7 @@ export default function ExtensionPage() {
                 2
               </span>
               <p className="text-sm text-neutral-700">
-                Wklej swoj token API (skopiuj go ponizej)
+                Wklej swój token API (skopiuj go poniżej)
               </p>
             </li>
             <li className="flex gap-3">
@@ -267,7 +267,7 @@ export default function ExtensionPage() {
                 3
               </span>
               <p className="text-sm text-neutral-700">
-                <strong>Gotowe!</strong> Mozesz teraz zbierac produkty ze sklepow
+                <strong>Gotowe!</strong> Możesz teraz zbierać produkty ze sklepów
               </p>
             </li>
           </ol>
@@ -275,7 +275,7 @@ export default function ExtensionPage() {
           {/* Token display */}
           <div className="rounded-xl bg-neutral-50 border border-neutral-200 p-4">
             <label className="block text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-2">
-              Twoj token API
+              Twój token API
             </label>
             <div className="flex items-center gap-3">
               <code className="flex-1 rounded-lg border border-neutral-200 bg-white px-4 py-2.5 text-sm font-mono text-neutral-600 truncate">
@@ -301,7 +301,7 @@ export default function ExtensionPage() {
             Potrzebujesz pomocy?
           </h2>
           <p className="text-sm text-neutral-500">
-            Jesli masz pytania lub problemy z instalacja, napisz do nas na{' '}
+            Jeśli masz pytania lub problemy z instalacją, napisz do nas na{' '}
             <a href="mailto:support@saived.ai" className="text-emerald-600 hover:text-emerald-700 font-medium">
               support@saived.ai
             </a>

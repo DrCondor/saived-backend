@@ -67,7 +67,7 @@ export default function WorkspacePage() {
         {/* Loading specific project */}
         {projectLoading && currentProjectId && (
           <div className="flex items-center justify-center py-20">
-            <div className="text-neutral-500">Ladowanie projektu...</div>
+            <div className="text-neutral-500">Ładowanie projektu...</div>
           </div>
         )}
 
@@ -103,9 +103,9 @@ function EmptyState() {
           />
         </svg>
       </div>
-      <h2 className="text-lg font-semibold text-neutral-900 mb-2">Brak projektow</h2>
+      <h2 className="text-lg font-semibold text-neutral-900 mb-2">Brak projektów</h2>
       <p className="text-sm text-neutral-500 mb-6 max-w-sm">
-        Utworz swoj pierwszy projekt, aby rozpoczac tworzenie kosztorysow dla klientow.
+        Utwórz swój pierwszy projekt, aby rozpocząć tworzenie kosztorysów dla klientów.
       </p>
       <Link
         to="/workspace/projects/new"
@@ -119,7 +119,7 @@ function EmptyState() {
             d="M12 4v16m8-8H4"
           />
         </svg>
-        Utworz pierwszy projekt
+        Utwórz pierwszy projekt
       </Link>
     </div>
   );
