@@ -38,6 +38,12 @@ yarn test         # Run React tests (watch mode)
 yarn test:run     # Run React tests (single run)
 ```
 
+## Deployment
+
+- **Platform**: Fly.io
+- **Deploy command**: `fly deploy`
+- **Deploy after pushing**: Always deploy with `fly deploy` after pushing to main
+
 ## Data Model
 
 ```
