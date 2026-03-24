@@ -69,10 +69,10 @@ export default function SettingsPage() {
     <div>
       {/* Page header */}
       <header className="mb-6">
-        <p className="text-xs font-bold tracking-[0.15em] uppercase text-neutral-400 mb-1">
+        <p className="text-xs font-bold tracking-[0.15em] uppercase text-text-muted mb-1">
           Ustawienia
         </p>
-        <h1 className="text-2xl font-bold tracking-tight text-neutral-900">Twoje konto</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-text-primary">Twoje konto</h1>
       </header>
 
       {/* Main content with sidebar */}
@@ -87,11 +87,11 @@ export default function SettingsPage() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-left text-sm font-medium transition-colors ${
                   activeTab === tab.id
-                    ? 'bg-neutral-100 text-neutral-900'
-                    : 'text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900'
+                    ? 'bg-surface-muted text-text-primary'
+                    : 'text-text-tertiary hover:bg-surface-hover hover:text-text-primary'
                 }`}
               >
-                <span className={activeTab === tab.id ? 'text-neutral-700' : 'text-neutral-400'}>
+                <span className={activeTab === tab.id ? 'text-text-secondary' : 'text-text-muted'}>
                   {tab.icon}
                 </span>
                 {tab.label}
@@ -106,25 +106,25 @@ export default function SettingsPage() {
           {activeTab === 'documents' && <DocumentSettings />}
           {activeTab === 'personalization' && (
             <div className="space-y-6">
-              <section className="rounded-2xl border border-neutral-200 bg-white p-6">
-                <h2 className="text-lg font-semibold text-neutral-900 mb-4">Statusy produktów</h2>
-                <p className="text-sm text-neutral-500 mb-6">
+              <section className="rounded-2xl border border-border bg-surface p-6">
+                <h2 className="text-lg font-semibold text-text-primary mb-4">Statusy produktów</h2>
+                <p className="text-sm text-text-tertiary mb-6">
                   Statusy pomagają organizować produkty w projektach. Możesz dodać do 3 własnych statusów.
                 </p>
                 <StatusSettings />
               </section>
 
-              <section className="rounded-2xl border border-neutral-200 bg-white p-6">
-                <h2 className="text-lg font-semibold text-neutral-900 mb-4">Kategorie produktów</h2>
-                <p className="text-sm text-neutral-500 mb-6">
+              <section className="rounded-2xl border border-border bg-surface p-6">
+                <h2 className="text-lg font-semibold text-text-primary mb-4">Kategorie produktów</h2>
+                <p className="text-sm text-text-tertiary mb-6">
                   Kategorie pomagają organizować produkty w projektach. Możesz dodać do 10 własnych kategorii.
                 </p>
                 <CategorySettings />
               </section>
 
-              <section className="rounded-2xl border border-neutral-200 bg-white p-6">
-                <h2 className="text-lg font-semibold text-neutral-900 mb-4">Rabaty</h2>
-                <p className="text-sm text-neutral-500 mb-6">
+              <section className="rounded-2xl border border-border bg-surface p-6">
+                <h2 className="text-lg font-semibold text-text-primary mb-4">Rabaty</h2>
+                <p className="text-sm text-text-tertiary mb-6">
                   Zdefiniuj rabaty dla wybranych sklepów. Przy dodawaniu produktów z tych domen rabat zostanie automatycznie naliczony.
                 </p>
                 <DiscountSettings />

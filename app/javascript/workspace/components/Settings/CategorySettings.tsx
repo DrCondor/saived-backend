@@ -103,11 +103,11 @@ export default function CategorySettings() {
     <div className="space-y-6">
       {/* System categories */}
       <div>
-        <h3 className="text-sm font-semibold text-neutral-700 mb-3">Kategorie systemowe</h3>
-        <div className="rounded-xl border border-neutral-200 bg-neutral-50 divide-y divide-neutral-200">
+        <h3 className="text-sm font-semibold text-text-secondary mb-3">Kategorie systemowe</h3>
+        <div className="rounded-xl border border-border bg-surface-hover divide-y divide-border">
           {systemCategories.map((category) => (
             <div key={category.id} className="flex items-center gap-4 px-4 py-3">
-              <span className="flex-1 text-sm font-medium text-neutral-700">{category.label}</span>
+              <span className="flex-1 text-sm font-medium text-text-secondary">{category.label}</span>
             </div>
           ))}
         </div>
@@ -117,7 +117,7 @@ export default function CategorySettings() {
       {message && (
         <div
           className={`rounded-xl px-4 py-3 text-sm ${
-            message.type === 'success' ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'
+            message.type === 'success' ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400' : 'bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400'
           }`}
         >
           {message.text}
@@ -127,21 +127,21 @@ export default function CategorySettings() {
       {/* Custom categories */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-neutral-700">
+          <h3 className="text-sm font-semibold text-text-secondary">
             Twoje kategorie ({customCategories.length}/{MAX_CUSTOM_CATEGORIES})
           </h3>
         </div>
 
         {customCategories.length > 0 && (
-          <div className="rounded-xl border border-neutral-200 bg-white divide-y divide-neutral-200 mb-4">
+          <div className="rounded-xl border border-border bg-surface divide-y divide-border mb-4">
             {customCategories.map((category) => (
               <div key={category.id} className="flex items-center gap-4 px-4 py-3">
-                <span className="flex-1 text-sm font-medium text-neutral-700">{category.name.toUpperCase()}</span>
+                <span className="flex-1 text-sm font-medium text-text-secondary">{category.name.toUpperCase()}</span>
                 <div className="flex items-center gap-1">
                   <button
                     type="button"
                     onClick={() => startEditing(category)}
-                    className="p-1.5 rounded-lg text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 transition-colors"
+                    className="p-1.5 rounded-lg text-text-muted hover:text-text-tertiary hover:bg-surface-muted transition-colors"
                     title="Edytuj"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -157,7 +157,7 @@ export default function CategorySettings() {
                     type="button"
                     onClick={() => handleDeleteCategory(category.id)}
                     disabled={updateCategories.isPending}
-                    className="p-1.5 rounded-lg text-neutral-400 hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50"
+                    className="p-1.5 rounded-lg text-text-muted hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors disabled:opacity-50"
                     title="Usuń"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -177,15 +177,15 @@ export default function CategorySettings() {
 
         {/* Edit/Add form */}
         {editingCategory && (
-          <div className="rounded-xl border border-neutral-200 bg-white p-4 mb-4">
-            <h4 className="text-sm font-medium text-neutral-700 mb-3">
+          <div className="rounded-xl border border-border bg-surface p-4 mb-4">
+            <h4 className="text-sm font-medium text-text-secondary mb-3">
               {isAddingNew ? 'Nowa kategoria' : 'Edytuj kategorię'}
             </h4>
 
             <div className="space-y-4">
               {/* Name */}
               <div>
-                <label className="block text-xs font-medium text-neutral-600 mb-1">Nazwa</label>
+                <label className="block text-xs font-medium text-text-tertiary mb-1">Nazwa</label>
                 <input
                   type="text"
                   value={editingCategory.name}
@@ -196,7 +196,7 @@ export default function CategorySettings() {
                   }}
                   placeholder="np. PODŁOGI"
                   maxLength={30}
-                  className="w-full rounded-xl border border-neutral-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                   autoFocus
                 />
               </div>
@@ -207,14 +207,14 @@ export default function CategorySettings() {
                   type="button"
                   onClick={handleSaveCategory}
                   disabled={updateCategories.isPending}
-                  className="inline-flex items-center gap-2 rounded-full bg-neutral-900 px-5 py-2 text-sm font-medium text-white hover:bg-neutral-800 transition-colors disabled:opacity-50"
+                  className="inline-flex items-center gap-2 rounded-full bg-neutral-900 dark:bg-neutral-100 px-5 py-2 text-sm font-medium text-white dark:text-neutral-900 hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors disabled:opacity-50"
                 >
                   {updateCategories.isPending ? 'Zapisywanie...' : 'Zapisz'}
                 </button>
                 <button
                   type="button"
                   onClick={cancelEditing}
-                  className="inline-flex items-center gap-2 rounded-full border border-neutral-300 bg-white px-5 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-colors"
+                  className="inline-flex items-center gap-2 rounded-full border border-border-hover bg-surface px-5 py-2 text-sm font-medium text-text-secondary hover:bg-surface-hover transition-colors"
                 >
                   Anuluj
                 </button>
@@ -228,7 +228,7 @@ export default function CategorySettings() {
           <button
             type="button"
             onClick={startAddingNew}
-            className="flex items-center gap-2 text-sm font-medium text-emerald-600 hover:text-emerald-700 transition-colors"
+            className="flex items-center gap-2 text-sm font-medium text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -238,7 +238,7 @@ export default function CategorySettings() {
         )}
 
         {!canAddMore && !editingCategory && (
-          <p className="text-xs text-neutral-400">Osiągnięto limit własnych kategorii</p>
+          <p className="text-xs text-text-muted">Osiągnięto limit własnych kategorii</p>
         )}
       </div>
     </div>

@@ -66,7 +66,7 @@ export default function UnitTypeSelect({
         type="button"
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
-        className={`text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100 rounded px-1 py-0.5 -mx-1 transition-colors ${
+        className={`text-text-tertiary hover:text-text-secondary hover:bg-surface-muted rounded px-1 py-0.5 -mx-1 transition-colors ${
           !disabled ? 'cursor-pointer' : 'cursor-default'
         }`}
       >
@@ -77,7 +77,7 @@ export default function UnitTypeSelect({
         createPortal(
           <div
             ref={dropdownRef}
-            className="fixed bg-white rounded-lg shadow-lg border border-neutral-200 py-1 min-w-[120px]"
+            className="fixed bg-surface rounded-lg shadow-lg dark:shadow-none dark:ring-1 dark:ring-border border border-border py-1 min-w-[120px]"
             style={{
               top: dropdownPosition.top,
               left: dropdownPosition.left,
@@ -89,12 +89,12 @@ export default function UnitTypeSelect({
                 key={unit.id}
                 type="button"
                 onClick={() => handleSelect(unit.id)}
-                className={`w-full text-left px-3 py-1.5 text-xs hover:bg-neutral-50 flex items-center justify-between gap-3 ${
-                  unit.id === value ? 'bg-neutral-50 font-medium' : ''
+                className={`w-full text-left px-3 py-1.5 text-xs hover:bg-surface-hover flex items-center justify-between gap-3 ${
+                  unit.id === value ? 'bg-surface-hover font-medium' : ''
                 }`}
               >
                 <span>{unit.label}</span>
-                <span className="text-neutral-400 text-[10px]">{unit.fullName}</span>
+                <span className="text-text-muted text-[10px]">{unit.fullName}</span>
               </button>
             ))}
           </div>,

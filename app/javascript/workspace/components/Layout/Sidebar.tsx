@@ -145,8 +145,8 @@ function ProjectItem({
     <div
       className={`group rounded-xl ${
         isActive
-          ? 'bg-white shadow-sm border border-neutral-200/80'
-          : 'hover:bg-white/60'
+          ? 'bg-surface shadow-sm border border-border/80'
+          : 'hover:bg-surface/60'
       } ${isDragging ? 'shadow-lg ring-2 ring-emerald-300' : ''} transition-all`}
       onContextMenu={(e) => onContextMenu(e, project.id)}
     >
@@ -169,7 +169,7 @@ function ProjectItem({
 
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between gap-2">
-              <span className="text-sm font-medium text-neutral-900 truncate">
+              <span className="text-sm font-medium text-text-primary truncate">
                 {project.name || 'Bez nazwy'}
               </span>
               {/* Chevron button - show for ANY project with sections */}
@@ -181,10 +181,10 @@ function ProjectItem({
                     e.stopPropagation();
                     onToggleSections(project.id);
                   }}
-                  className="p-0.5 rounded hover:bg-neutral-100 transition-colors"
+                  className="p-0.5 rounded hover:bg-surface-muted transition-colors"
                 >
                   <svg
-                    className={`w-4 h-4 text-neutral-400 shrink-0 transition-transform ${
+                    className={`w-4 h-4 text-text-muted shrink-0 transition-transform ${
                       !isSectionsExpanded ? '-rotate-90' : ''
                     }`}
                     fill="none"
@@ -201,7 +201,7 @@ function ProjectItem({
                 </button>
               )}
             </div>
-            <span className="text-[11px] text-neutral-400">
+            <span className="text-[11px] text-text-muted">
               {formatCurrency(project.total_price)}
             </span>
           </div>
@@ -239,16 +239,16 @@ function ProjectItem({
                               <div
                                 ref={groupDragProvided.innerRef}
                                 {...groupDragProvided.draggableProps}
-                                className={groupDragSnapshot.isDragging ? 'bg-white rounded-lg shadow-md ring-1 ring-emerald-300' : ''}
+                                className={groupDragSnapshot.isDragging ? 'bg-surface rounded-lg shadow-md ring-1 ring-emerald-300' : ''}
                               >
                                 <div className="flex items-center" {...groupDragProvided.dragHandleProps}>
                                   <button
                                     type="button"
                                     onClick={() => toggleGroupCollapse(group.id)}
-                                    className="p-0.5 rounded hover:bg-neutral-200 transition-colors"
+                                    className="p-0.5 rounded hover:bg-surface-inset transition-colors"
                                   >
                                     <svg
-                                      className={`w-3 h-3 text-neutral-400 transition-transform ${isGroupCollapsed ? '-rotate-90' : ''}`}
+                                      className={`w-3 h-3 text-text-muted transition-transform ${isGroupCollapsed ? '-rotate-90' : ''}`}
                                       fill="none"
                                       stroke="currentColor"
                                       viewBox="0 0 24 24"
@@ -262,9 +262,9 @@ function ProjectItem({
                                     onMouseDown={handleGroupNameMouseDown}
                                     onClick={(e) => handleGroupNameClick(e, group.id)}
                                     onKeyDown={(e) => e.key === 'Enter' && handleGroupClick(e as unknown as React.MouseEvent, group.id)}
-                                    className="group/sge flex items-center gap-1.5 px-1.5 py-1.5 text-xs font-semibold text-neutral-500 uppercase tracking-wider flex-1 text-left hover:bg-neutral-100 rounded-lg transition-colors cursor-pointer"
+                                    className="group/sge flex items-center gap-1.5 px-1.5 py-1.5 text-xs font-semibold text-text-tertiary uppercase tracking-wider flex-1 text-left hover:bg-surface-muted rounded-lg transition-colors cursor-pointer"
                                   >
-                                    <svg className="w-3.5 h-3.5 text-neutral-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="w-3.5 h-3.5 text-text-muted shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                                     </svg>
                                     <span className="truncate">{group.name}</span>
@@ -277,7 +277,7 @@ function ProjectItem({
                                         ref={dropProvided.innerRef}
                                         {...dropProvided.droppableProps}
                                         className={`min-h-[4px] rounded transition-colors ${
-                                          dropSnapshot.isDraggingOver ? 'bg-emerald-100' : ''
+                                          dropSnapshot.isDraggingOver ? 'bg-emerald-100 dark:bg-emerald-950/30' : ''
                                         }`}
                                       >
                                         {groupSections.map((section, idx) => (
@@ -291,13 +291,13 @@ function ProjectItem({
                                                 onClick={(e) => handleSectionClick(e, section.id)}
                                                 className={`flex items-center gap-2 rounded-xl px-2.5 py-1.5 pl-6 text-xs transition-colors ${
                                                   dragSnapshot.isDragging
-                                                    ? 'bg-white shadow-md ring-1 ring-emerald-300'
+                                                    ? 'bg-surface shadow-md ring-1 ring-emerald-300'
                                                     : isActive
-                                                      ? 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
-                                                      : 'text-neutral-500 hover:bg-neutral-100/50 hover:text-neutral-700'
+                                                      ? 'text-text-tertiary hover:bg-surface-muted hover:text-text-primary'
+                                                      : 'text-text-tertiary hover:bg-surface-muted/50 hover:text-text-secondary'
                                                 }`}
                                               >
-                                                <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-neutral-300' : 'bg-neutral-300/70'}`} />
+                                                <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-text-muted' : 'bg-text-muted/70'}`} />
                                                 <span className="truncate">{section.name}</span>
                                               </a>
                                             )}
@@ -325,7 +325,7 @@ function ProjectItem({
                       ref={dropProvided.innerRef}
                       {...dropProvided.droppableProps}
                       className={`min-h-[4px] rounded transition-colors ${
-                        dropSnapshot.isDraggingOver ? 'bg-emerald-100' : ''
+                        dropSnapshot.isDraggingOver ? 'bg-emerald-100 dark:bg-emerald-950/30' : ''
                       }`}
                     >
                       {ungroupedSections.map((section, idx) => (
@@ -339,13 +339,13 @@ function ProjectItem({
                               onClick={(e) => handleSectionClick(e, section.id)}
                               className={`flex items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs transition-colors ${
                                 dragSnapshot.isDragging
-                                  ? 'bg-white shadow-md ring-1 ring-emerald-300'
+                                  ? 'bg-surface shadow-md ring-1 ring-emerald-300'
                                   : isActive
-                                    ? 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
-                                    : 'text-neutral-500 hover:bg-neutral-100/50 hover:text-neutral-700'
+                                    ? 'text-text-tertiary hover:bg-surface-muted hover:text-text-primary'
+                                    : 'text-text-tertiary hover:bg-surface-muted/50 hover:text-text-secondary'
                               }`}
                             >
-                              <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-neutral-300' : 'bg-neutral-300/70'}`} />
+                              <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-text-muted' : 'bg-text-muted/70'}`} />
                               <span className="truncate">{section.name}</span>
                             </a>
                           )}
@@ -706,12 +706,12 @@ export default function Sidebar({
   return (
     <aside className="w-72 shrink-0">
       <div className="sticky top-24">
-        <div className="rounded-3xl bg-neutral-100/80 border border-neutral-200/50 px-4 py-5">
+        <div className="rounded-3xl bg-surface-muted/80 border border-border/50 px-4 py-5">
           {/* New project button */}
           <div className="mb-6">
             <button
               onClick={handleNewProject}
-              className="flex items-center justify-center gap-2 w-full rounded-full border border-neutral-300 bg-white px-4 py-2.5 text-sm font-medium text-neutral-800 hover:bg-neutral-50 hover:border-neutral-400 transition-colors shadow-sm"
+              className="flex items-center justify-center gap-2 w-full rounded-full border border-border-hover bg-surface px-4 py-2.5 text-sm font-medium text-text-primary hover:bg-surface-hover hover:border-neutral-400 dark:hover:border-neutral-500 transition-colors shadow-sm"
             >
               <svg
                 className="w-4 h-4"
@@ -752,7 +752,7 @@ export default function Sidebar({
                         ref={provided.innerRef}
                         {...provided.droppableProps}
                         className={`space-y-1 min-h-[40px] rounded-xl transition-colors ${
-                          snapshot.isDraggingOver ? 'bg-amber-50' : ''
+                          snapshot.isDraggingOver ? 'bg-amber-50 dark:bg-amber-950/30' : ''
                         }`}
                       >
                         {favoriteProjects.map((project, index) => (
@@ -792,7 +792,7 @@ export default function Sidebar({
 
               {/* All projects section */}
               <div>
-                <p className="mb-3 px-1 text-[10px] font-bold tracking-[0.2em] uppercase text-neutral-400">
+                <p className="mb-3 px-1 text-[10px] font-bold tracking-[0.2em] uppercase text-text-muted">
                   Projekty
                 </p>
 
@@ -802,7 +802,7 @@ export default function Sidebar({
                       ref={provided.innerRef}
                       {...provided.droppableProps}
                       className={`space-y-1 min-h-[40px] rounded-xl transition-colors ${
-                        snapshot.isDraggingOver ? 'bg-emerald-50' : ''
+                        snapshot.isDraggingOver ? 'bg-emerald-50 dark:bg-emerald-950/30' : ''
                       }`}
                     >
                       {regularProjects.map((project, index) => (
@@ -835,7 +835,7 @@ export default function Sidebar({
                 </Droppable>
 
                 {localProjects.length === 0 && (
-                  <p className="px-3 py-2 text-xs text-neutral-400">
+                  <p className="px-3 py-2 text-xs text-text-muted">
                     Brak projektów. Utwórz pierwszy!
                   </p>
                 )}
@@ -844,13 +844,13 @@ export default function Sidebar({
           </DragDropContext>
 
           {/* Favorites link */}
-          <div className="mt-6 pt-4 border-t border-neutral-200/50">
+          <div className="mt-6 pt-4 border-t border-border/50">
             <Link
               to="/workspace/favorites"
               className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm transition-all ${
                 location.pathname === '/workspace/favorites'
-                  ? 'bg-white shadow-sm text-rose-600 font-medium'
-                  : 'text-neutral-500 hover:bg-white/50 hover:text-neutral-700'
+                  ? 'bg-surface shadow-sm text-rose-600 dark:text-rose-400 font-medium'
+                  : 'text-text-tertiary hover:bg-surface/50 hover:text-text-secondary'
               }`}
             >
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -866,7 +866,7 @@ export default function Sidebar({
       {contextMenu.visible && contextMenuProject && (
         <div
           ref={contextMenuRef}
-          className="fixed z-50 min-w-[160px] rounded-xl bg-white shadow-xl border border-neutral-200 py-1.5 overflow-hidden"
+          className="fixed z-50 min-w-[160px] rounded-xl bg-surface shadow-xl border border-border py-1.5 overflow-hidden"
           style={{
             left: contextMenu.x,
             top: contextMenu.y,
@@ -874,11 +874,11 @@ export default function Sidebar({
         >
           <button
             onClick={handleToggleFavorite}
-            className="flex items-center gap-2.5 w-full px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors"
+            className="flex items-center gap-2.5 w-full px-3 py-2 text-sm text-text-secondary hover:bg-surface-hover transition-colors"
           >
             {contextMenuProject.favorite ? (
               <>
-                <svg className="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
                 </svg>
                 Usuń z ulubionych
@@ -893,11 +893,11 @@ export default function Sidebar({
             )}
           </button>
 
-          <div className="h-px bg-neutral-100 my-1" />
+          <div className="h-px bg-border-subtle my-1" />
 
           <button
             onClick={handleDeleteProject}
-            className="flex items-center gap-2.5 w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+            className="flex items-center gap-2.5 w-full px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path

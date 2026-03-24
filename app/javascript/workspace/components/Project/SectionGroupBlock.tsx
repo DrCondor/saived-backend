@@ -128,7 +128,7 @@ export default function SectionGroupBlock({
   return (
     <div id={`group-${group.id}`} className="mb-8 scroll-mt-28">
       {/* Group header */}
-      <div className={`group/grp flex items-center justify-between ${headerSpacing} border-b-2 border-neutral-300`}>
+      <div className={`group/grp flex items-center justify-between ${headerSpacing} border-b-2 border-border-hover`}>
         <div className="flex items-center gap-3 flex-1" {...dragHandleProps} style={{ cursor: 'default' }}>
           <button
             type="button"
@@ -137,10 +137,10 @@ export default function SectionGroupBlock({
               setIsCollapsed(next);
               setCollapsedGroup(group.id, next);
             }}
-            className="p-1 hover:bg-neutral-100 rounded-lg transition-colors"
+            className="p-1 hover:bg-surface-muted rounded-lg transition-colors"
           >
             <svg
-              className={`${chevronSize} text-neutral-500 transition-transform ${isCollapsed ? '-rotate-90' : ''}`}
+              className={`${chevronSize} text-text-tertiary transition-transform ${isCollapsed ? '-rotate-90' : ''}`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -150,7 +150,7 @@ export default function SectionGroupBlock({
           </button>
 
           {/* Folder icon */}
-          <svg className={`${folderIconSize} text-neutral-400 shrink-0`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className={`${folderIconSize} text-text-muted shrink-0`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
           </svg>
 
@@ -162,7 +162,7 @@ export default function SectionGroupBlock({
               onChange={(e) => setEditName(e.target.value)}
               onBlur={handleNameSubmit}
               onKeyDown={handleKeyDown}
-              className={`${titleClass} text-neutral-900 bg-transparent border-0 p-0 focus:ring-0 focus:outline-none w-full uppercase tracking-wide`}
+              className={`${titleClass} text-text-primary bg-transparent border-0 p-0 focus:ring-0 focus:outline-none w-full uppercase tracking-wide`}
             />
           ) : (
             <div
@@ -171,11 +171,11 @@ export default function SectionGroupBlock({
               onMouseDown={handleNameMouseDown}
               onClick={handleNameClick}
               onKeyDown={(e) => e.key === 'Enter' && setIsEditing(true)}
-              className={`group/name ${titleClass} text-neutral-900 hover:text-neutral-700 text-left flex-1 flex items-center gap-2 uppercase tracking-wide select-none`}
+              className={`group/name ${titleClass} text-text-primary hover:text-text-secondary text-left flex-1 flex items-center gap-2 uppercase tracking-wide select-none`}
             >
               {editName}
               <svg
-                className="w-4 h-4 text-neutral-300 opacity-0 group-hover/name:opacity-100 transition-opacity"
+                className="w-4 h-4 text-text-muted opacity-0 group-hover/name:opacity-100 transition-opacity"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -188,8 +188,8 @@ export default function SectionGroupBlock({
 
         <div className="flex items-center gap-3">
           {/* Group total */}
-          <div className={`inline-flex items-center rounded-full bg-neutral-100 border border-neutral-200 ${badgeClass}`}>
-            <span className={`${badgeTextClass} text-neutral-700`}>
+          <div className={`inline-flex items-center rounded-full bg-surface-muted border border-border ${badgeClass}`}>
+            <span className={`${badgeTextClass} text-text-secondary`}>
               {formatCurrency(groupTotal)}
             </span>
           </div>
@@ -203,7 +203,7 @@ export default function SectionGroupBlock({
               }
             }}
             disabled={deleteGroup.isPending}
-            className="p-2 rounded-lg text-neutral-400 hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50"
+            className="p-2 rounded-lg text-text-muted hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors disabled:opacity-50"
             title="Usuń grupę"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -215,7 +215,7 @@ export default function SectionGroupBlock({
 
       {/* Group content - children rendered by parent */}
       {!isCollapsed && (
-        <div className="pl-4 border-l-2 border-neutral-200">
+        <div className="pl-4 border-l-2 border-border">
           {children}
 
           {/* Add section inside group */}
@@ -224,7 +224,7 @@ export default function SectionGroupBlock({
               type="button"
               onClick={handleAddSectionInGroup}
               disabled={createSection.isPending}
-              className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-neutral-400 hover:text-neutral-600 hover:bg-neutral-50 transition-colors disabled:opacity-50"
+              className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-text-muted hover:text-text-tertiary hover:bg-surface-hover transition-colors disabled:opacity-50"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />

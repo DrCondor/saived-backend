@@ -10,7 +10,7 @@ export default function ToastContainer() {
       {toasts.map(toast => (
         <div
           key={toast.id}
-          className={`px-4 py-2 rounded-lg shadow-lg text-sm font-medium pointer-events-auto animate-in fade-in slide-in-from-bottom-2 duration-200 ${
+          className={`px-4 py-2 rounded-lg shadow-lg dark:shadow-none dark:ring-1 dark:ring-border text-sm font-medium pointer-events-auto animate-in fade-in slide-in-from-bottom-2 duration-200 ${
             toast.type === 'error'
               ? 'bg-red-600 text-white'
               : 'bg-gray-800 text-white'

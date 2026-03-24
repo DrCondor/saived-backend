@@ -1,5 +1,70 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ── Light theme (default) ── */
+:root {
+  --color-surface: white;
+  --color-surface-page: #fafafa;
+  --color-surface-hover: #fafafa;
+  --color-surface-muted: #f5f5f5;
+  --color-surface-inset: #e5e5e5;
+  --color-surface-header: rgba(255, 255, 255, 0.9);
+  --color-text-primary: #171717;
+  --color-text-secondary: #404040;
+  --color-text-tertiary: #525252;
+  --color-text-muted: #a3a3a3;
+  --color-border: #e5e5e5;
+  --color-border-subtle: #f5f5f5;
+  --color-border-hover: #d4d4d4;
+}
+
+/* ── Dark theme ── */
+.dark {
+  --color-surface: #0a0a0a;
+  --color-surface-page: #0c0c0e;
+  --color-surface-hover: #262626;
+  --color-surface-muted: #262626;
+  --color-surface-inset: #404040;
+  --color-surface-header: rgba(10, 10, 10, 0.9);
+  --color-text-primary: #f5f5f5;
+  --color-text-secondary: #d4d4d4;
+  --color-text-tertiary: #a3a3a3;
+  --color-text-muted: #525252;
+  --color-border: #262626;
+  --color-border-subtle: rgba(38, 38, 38, 0.5);
+  --color-border-hover: #404040;
+}
+
+/* ── Register semantic tokens for Tailwind utility generation ── */
+@theme {
+  --color-surface: var(--color-surface);
+  --color-surface-page: var(--color-surface-page);
+  --color-surface-hover: var(--color-surface-hover);
+  --color-surface-muted: var(--color-surface-muted);
+  --color-surface-inset: var(--color-surface-inset);
+  --color-surface-header: var(--color-surface-header);
+  --color-text-primary: var(--color-text-primary);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-text-tertiary: var(--color-text-tertiary);
+  --color-text-muted: var(--color-text-muted);
+  --color-border: var(--color-border);
+  --color-border-subtle: var(--color-border-subtle);
+  --color-border-hover: var(--color-border-hover);
+}
+
+/* ── Smooth transition only during theme toggle ── */
+.transitioning,
+.transitioning *,
+.transitioning *::before,
+.transitioning *::after {
+  transition: background-color 200ms ease,
+              color 200ms ease,
+              border-color 200ms ease,
+              fill 200ms ease,
+              stroke 200ms ease !important;
+}
+
 html {
   scroll-behavior: smooth;
 }

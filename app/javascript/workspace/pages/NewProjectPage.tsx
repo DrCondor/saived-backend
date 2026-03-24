@@ -25,7 +25,7 @@ export default function NewProjectPage() {
       <div className="mb-8">
         <Link
           to="/workspace"
-          className="inline-flex items-center gap-2 text-sm text-neutral-500 hover:text-neutral-700 transition-colors"
+          className="inline-flex items-center gap-2 text-sm text-text-tertiary hover:text-text-secondary transition-colors"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
@@ -39,36 +39,36 @@ export default function NewProjectPage() {
         </Link>
       </div>
 
-      <div className="rounded-3xl bg-white border border-neutral-200 p-8">
-        <h1 className="text-2xl font-bold text-neutral-900 mb-2">Nowy projekt</h1>
-        <p className="text-sm text-neutral-500 mb-8">
+      <div className="rounded-3xl bg-surface border border-border p-8">
+        <h1 className="text-2xl font-bold text-text-primary mb-2">Nowy projekt</h1>
+        <p className="text-sm text-text-tertiary mb-8">
           Utwórz nowy projekt kosztorysowy dla swojego klienta.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-neutral-700 mb-2">
+            <label className="block text-sm font-medium text-text-secondary mb-2">
               Nazwa projektu
             </label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full rounded-xl border border-neutral-300 bg-white px-4 py-3 text-sm placeholder-neutral-400 focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+              className="w-full rounded-xl border border-border bg-surface px-4 py-3 text-sm text-text-primary placeholder-text-muted focus:border-neutral-900 dark:focus:border-neutral-100 focus:outline-none focus:ring-1 focus:ring-neutral-900 dark:focus:ring-neutral-100"
               placeholder="np. Mieszkanie przy Marszałkowskiej"
               autoFocus
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-neutral-700 mb-2">
+            <label className="block text-sm font-medium text-text-secondary mb-2">
               Opis (opcjonalny)
             </label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
-              className="w-full rounded-xl border border-neutral-300 bg-white px-4 py-3 text-sm placeholder-neutral-400 focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+              className="w-full rounded-xl border border-border bg-surface px-4 py-3 text-sm text-text-primary placeholder-text-muted focus:border-neutral-900 dark:focus:border-neutral-100 focus:outline-none focus:ring-1 focus:ring-neutral-900 dark:focus:ring-neutral-100"
               placeholder="Krótki opis projektu lub informacje o kliencie..."
             />
           </div>
@@ -76,14 +76,14 @@ export default function NewProjectPage() {
           <div className="flex items-center justify-end gap-3 pt-4">
             <Link
               to="/workspace"
-              className="inline-flex items-center rounded-full border border-neutral-300 bg-white px-5 py-2.5 text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-colors"
+              className="inline-flex items-center rounded-full border border-border-hover bg-surface px-5 py-2.5 text-sm font-medium text-text-secondary hover:bg-surface-hover transition-colors"
             >
               Anuluj
             </Link>
             <button
               type="submit"
               disabled={createProject.isPending}
-              className="inline-flex items-center gap-2 rounded-full bg-neutral-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-neutral-800 transition-colors disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-full bg-neutral-900 dark:bg-neutral-100 px-5 py-2.5 text-sm font-medium text-white dark:text-neutral-900 hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors disabled:opacity-50"
             >
               {createProject.isPending ? (
                 'Tworzenie...'

@@ -149,14 +149,14 @@ export default function ProjectToolbar({
   return (
     <div className="flex items-center gap-2 flex-shrink-0">
       {/* View mode toggle */}
-      <div className="inline-flex items-stretch rounded-full border border-neutral-200 bg-white overflow-hidden flex-shrink-0">
+      <div className="inline-flex items-stretch rounded-full border border-border bg-surface overflow-hidden flex-shrink-0">
         <button
           type="button"
           onClick={() => onViewModeChange('grid')}
           className={`flex items-center justify-center px-2.5 py-2 transition-colors ${
             viewMode === 'grid'
-              ? 'bg-neutral-100 text-neutral-700'
-              : 'text-neutral-400 hover:text-neutral-600 hover:bg-neutral-50'
+              ? 'bg-surface-muted text-text-secondary'
+              : 'text-text-muted hover:text-text-tertiary hover:bg-surface-hover'
           }`}
           title="Widok kart"
         >
@@ -176,8 +176,8 @@ export default function ProjectToolbar({
           onClick={() => onViewModeChange('list')}
           className={`flex items-center justify-center px-2.5 py-2 transition-colors ${
             viewMode === 'list'
-              ? 'bg-neutral-100 text-neutral-700'
-              : 'text-neutral-400 hover:text-neutral-600 hover:bg-neutral-50'
+              ? 'bg-surface-muted text-text-secondary'
+              : 'text-text-muted hover:text-text-tertiary hover:bg-surface-hover'
           }`}
           title="Widok listy"
         >
@@ -190,8 +190,8 @@ export default function ProjectToolbar({
           onClick={() => onViewModeChange('moodboard')}
           className={`flex items-center justify-center px-2.5 py-2 transition-colors ${
             viewMode === 'moodboard'
-              ? 'bg-neutral-100 text-neutral-700'
-              : 'text-neutral-400 hover:text-neutral-600 hover:bg-neutral-50'
+              ? 'bg-surface-muted text-text-secondary'
+              : 'text-text-muted hover:text-text-tertiary hover:bg-surface-hover'
           }`}
           title="Moodboard"
         >
@@ -209,7 +209,7 @@ export default function ProjectToolbar({
         type="button"
         onClick={handleDownloadPdf}
         disabled={isPdfLoading}
-        className="inline-flex items-center gap-1.5 rounded-full border border-neutral-300 bg-white px-4 py-2 text-xs font-medium text-neutral-700 hover:bg-neutral-50 transition-colors whitespace-nowrap flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="inline-flex items-center gap-1.5 rounded-full border border-border-hover bg-surface px-4 py-2 text-xs font-medium text-text-secondary hover:bg-surface-hover transition-colors whitespace-nowrap flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isPdfLoading ? (
           <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -235,7 +235,7 @@ export default function ProjectToolbar({
           <div className="flex items-center gap-2">
             <div className="relative">
               <svg
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400"
+                className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -253,10 +253,10 @@ export default function ProjectToolbar({
                 value={searchQuery}
                 onChange={(e) => onSearchChange(e.target.value)}
                 placeholder="Szukaj produktow..."
-                className="w-56 rounded-full border border-neutral-300 bg-white pl-9 pr-4 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                className="w-56 rounded-full border border-border-hover bg-surface pl-9 pr-4 py-2 text-xs text-text-primary focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
               />
               {searchQuery && (
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-neutral-400">
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-text-muted">
                   {matchCount}/{totalCount}
                 </span>
               )}
@@ -267,7 +267,7 @@ export default function ProjectToolbar({
                 setIsSearchOpen(false);
                 onSearchChange('');
               }}
-              className="p-1.5 rounded-full text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100"
+              className="p-1.5 rounded-full text-text-muted hover:text-text-tertiary hover:bg-surface-muted"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -278,7 +278,7 @@ export default function ProjectToolbar({
           <button
             type="button"
             onClick={() => setIsSearchOpen(true)}
-            className="inline-flex items-center gap-1.5 rounded-full border border-neutral-300 bg-white px-4 py-2 text-xs font-medium text-neutral-700 hover:bg-neutral-50 transition-colors whitespace-nowrap flex-shrink-0"
+            className="inline-flex items-center gap-1.5 rounded-full border border-border-hover bg-surface px-4 py-2 text-xs font-medium text-text-secondary hover:bg-surface-hover transition-colors whitespace-nowrap flex-shrink-0"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -289,7 +289,7 @@ export default function ProjectToolbar({
               />
             </svg>
             Znajdź
-            <kbd className="hidden sm:inline-flex items-center gap-0.5 text-[10px] text-neutral-400 ml-1">
+            <kbd className="hidden sm:inline-flex items-center gap-0.5 text-[10px] text-text-muted ml-1">
               <span className="text-xs">⌘</span>F
             </kbd>
           </button>
@@ -306,8 +306,8 @@ export default function ProjectToolbar({
           }}
           className={`inline-flex items-center gap-1.5 rounded-full border px-4 py-2 text-xs font-medium transition-colors whitespace-nowrap flex-shrink-0 ${
             sortBy !== 'default'
-              ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
-              : 'border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-50'
+              ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400'
+              : 'border-border-hover bg-surface text-text-secondary hover:bg-surface-hover'
           }`}
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -325,7 +325,7 @@ export default function ProjectToolbar({
         </button>
 
         {isSortOpen && (
-          <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-neutral-200 py-1 z-50">
+          <div className="absolute right-0 mt-2 w-56 bg-surface rounded-xl shadow-lg dark:shadow-none dark:ring-1 dark:ring-border border border-border py-1 z-50">
             {SORT_OPTIONS.map((option) => (
               <button
                 key={option.value}
@@ -336,8 +336,8 @@ export default function ProjectToolbar({
                 }}
                 className={`w-full flex items-center justify-between px-4 py-2 text-sm text-left transition-colors ${
                   sortBy === option.value
-                    ? 'bg-emerald-50 text-emerald-700'
-                    : 'text-neutral-700 hover:bg-neutral-50'
+                    ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400'
+                    : 'text-text-secondary hover:bg-surface-hover'
                 }`}
               >
                 {option.label}
@@ -366,8 +366,8 @@ export default function ProjectToolbar({
           }}
           className={`inline-flex items-center gap-1.5 rounded-full border px-4 py-2 text-xs font-medium transition-colors whitespace-nowrap flex-shrink-0 ${
             filters.statuses.length > 0 || filters.categories.length > 0
-              ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
-              : 'border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-50'
+              ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400'
+              : 'border-border-hover bg-surface text-text-secondary hover:bg-surface-hover'
           }`}
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -387,11 +387,11 @@ export default function ProjectToolbar({
         </button>
 
         {isFilterOpen && (
-          <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-lg border border-neutral-200 py-2 z-50">
+          <div className="absolute right-0 mt-2 w-64 bg-surface rounded-xl shadow-lg dark:shadow-none dark:ring-1 dark:ring-border border border-border py-2 z-50">
             {/* Status filters */}
             {availableStatuses.length > 0 && (
               <div className="px-4 py-2">
-                <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-2">
+                <p className="text-xs font-semibold text-text-tertiary uppercase tracking-wide mb-2">
                   Status
                 </p>
                 <div className="space-y-1">
@@ -406,9 +406,9 @@ export default function ProjectToolbar({
                           type="checkbox"
                           checked={filters.statuses.includes(status)}
                           onChange={() => handleToggleStatus(status)}
-                          className="w-4 h-4 rounded border-neutral-300 text-emerald-500 focus:ring-emerald-500"
+                          className="w-4 h-4 rounded border-border-hover text-emerald-500 focus:ring-emerald-500"
                         />
-                        <span className="flex-1 text-sm text-neutral-700 group-hover:text-neutral-900">
+                        <span className="flex-1 text-sm text-text-secondary group-hover:text-text-primary">
                           {statusConfig.label}
                         </span>
                         <span className={`w-3 h-3 rounded-full ${statusConfig.bgColor}`} />
@@ -421,8 +421,8 @@ export default function ProjectToolbar({
 
             {/* Category filters */}
             {availableCategories.length > 0 && (
-              <div className="px-4 py-2 border-t border-neutral-100">
-                <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-2">
+              <div className="px-4 py-2 border-t border-border-subtle">
+                <p className="text-xs font-semibold text-text-tertiary uppercase tracking-wide mb-2">
                   Kategoria
                 </p>
                 <div className="space-y-1">
@@ -435,9 +435,9 @@ export default function ProjectToolbar({
                         type="checkbox"
                         checked={filters.categories.includes(category)}
                         onChange={() => handleToggleCategory(category)}
-                        className="w-4 h-4 rounded border-neutral-300 text-emerald-500 focus:ring-emerald-500"
+                        className="w-4 h-4 rounded border-border-hover text-emerald-500 focus:ring-emerald-500"
                       />
-                      <span className="text-sm text-neutral-700 group-hover:text-neutral-900">
+                      <span className="text-sm text-text-secondary group-hover:text-text-primary">
                         {getCategoryLabel(category, customCategories)}
                       </span>
                     </label>
@@ -448,7 +448,7 @@ export default function ProjectToolbar({
 
             {/* Clear filters */}
             {hasActiveFilters && (
-              <div className="px-4 py-2 border-t border-neutral-100">
+              <div className="px-4 py-2 border-t border-border-subtle">
                 <button
                   type="button"
                   onClick={handleClearFilters}
@@ -461,7 +461,7 @@ export default function ProjectToolbar({
 
             {/* Empty state */}
             {availableStatuses.length === 0 && availableCategories.length === 0 && (
-              <div className="px-4 py-4 text-center text-sm text-neutral-500">
+              <div className="px-4 py-4 text-center text-sm text-text-tertiary">
                 Brak dostępnych filtrów
               </div>
             )}
@@ -474,7 +474,7 @@ export default function ProjectToolbar({
         <button
           type="button"
           onClick={handleClearFilters}
-          className="inline-flex items-center gap-1 text-xs text-neutral-500 hover:text-neutral-700"
+          className="inline-flex items-center gap-1 text-xs text-text-tertiary hover:text-text-secondary"
         >
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

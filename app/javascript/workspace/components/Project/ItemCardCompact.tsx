@@ -8,8 +8,8 @@ import StatusSelect from '../shared/StatusSelect';
 // Contractor icon - small version
 function ContractorIconSmall() {
   return (
-    <div className="h-full w-full rounded bg-neutral-200 flex items-center justify-center">
-      <svg className="w-4 h-4 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div className="h-full w-full rounded bg-surface-inset flex items-center justify-center">
+      <svg className="w-4 h-4 text-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
       </svg>
     </div>
@@ -19,8 +19,8 @@ function ContractorIconSmall() {
 // Note icon - small version
 function NoteIconSmall() {
   return (
-    <div className="h-full w-full rounded bg-amber-100 flex items-center justify-center">
-      <svg className="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div className="h-full w-full rounded bg-amber-100 dark:bg-amber-900/20 flex items-center justify-center">
+      <svg className="w-4 h-4 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
       </svg>
     </div>
@@ -56,9 +56,9 @@ const ItemCardCompact = memo(function ItemCardCompact({
   const isProposal = item.status?.toLowerCase() === 'propozycja';
   const cardClasses = [
     isDragging ? 'ring-2 ring-emerald-500 shadow-lg opacity-60' : '',
-    isContractor ? 'border-neutral-300' : '',
-    isNote ? 'border-amber-200 bg-amber-50/50' : '',
-    isProposal && !isNote ? 'opacity-50 bg-neutral-100' : '',
+    isContractor ? 'border-border-hover' : '',
+    isNote ? 'border-amber-200 dark:border-amber-700/30 bg-amber-50/50 dark:bg-amber-900/20' : '',
+    isProposal && !isNote ? 'opacity-50 bg-surface-muted' : '',
   ].filter(Boolean).join(' ');
 
   const handleDelete = () => {
@@ -89,7 +89,7 @@ const ItemCardCompact = memo(function ItemCardCompact({
       {/* Main card - single row, entire card is draggable (Trello-style) */}
       <div
         {...dragHandleProps}
-        className={`flex-1 min-w-0 flex items-center gap-3 rounded-lg border border-neutral-200 bg-white px-3 py-2 hover:shadow-sm hover:border-neutral-300 transition-all overflow-hidden touch-none ${cardClasses}`}
+        className={`flex-1 min-w-0 flex items-center gap-3 rounded-lg border border-border bg-surface px-3 py-2 hover:shadow-sm dark:hover:shadow-none hover:border-border-hover transition-all overflow-hidden touch-none ${cardClasses}`}
       >
         {/* Thumbnail / Icon */}
         <div
@@ -100,7 +100,7 @@ const ItemCardCompact = memo(function ItemCardCompact({
           ) : isNote ? (
             <NoteIconSmall />
           ) : (
-            <div className="h-full w-full rounded bg-neutral-100 overflow-hidden">
+            <div className="h-full w-full rounded bg-surface-muted overflow-hidden">
               {item.thumbnail_url ? (
                 <img
                   src={item.thumbnail_url}
@@ -108,7 +108,7 @@ const ItemCardCompact = memo(function ItemCardCompact({
                   className="h-full w-full object-cover"
                 />
               ) : (
-                <div className="h-full w-full flex items-center justify-center text-neutral-300">
+                <div className="h-full w-full flex items-center justify-center text-text-muted">
                   <svg
                     className="w-4 h-4"
                     fill="none"
@@ -132,12 +132,12 @@ const ItemCardCompact = memo(function ItemCardCompact({
         <div className="flex-1 min-w-0 max-w-[45%] flex items-center gap-1">
           {isNote ? (
             // Notes: show name (if any) + note content
-            <span className="text-sm text-neutral-700 truncate">
-              {item.name && <span className="font-medium text-neutral-900">{item.name}: </span>}
-              {item.note || <span className="text-neutral-400 italic">Pusta notatka</span>}
+            <span className="text-sm text-text-secondary truncate">
+              {item.name && <span className="font-medium text-text-primary">{item.name}: </span>}
+              {item.note || <span className="text-text-muted italic">Pusta notatka</span>}
             </span>
           ) : (
-            <span className="font-medium text-sm text-neutral-900 truncate">
+            <span className="font-medium text-sm text-text-primary truncate">
               {item.name}
             </span>
           )}
@@ -147,7 +147,7 @@ const ItemCardCompact = memo(function ItemCardCompact({
               href={item.external_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="shrink-0 p-0.5 rounded text-neutral-300 hover:text-emerald-500 transition-colors"
+              className="shrink-0 p-0.5 rounded text-text-muted hover:text-emerald-500 dark:hover:text-emerald-400 transition-colors"
               title="Otwórz link"
               onClick={(e) => e.stopPropagation()}
             >
@@ -165,7 +165,7 @@ const ItemCardCompact = memo(function ItemCardCompact({
           {isContractor && item.phone && (
             <a
               href={`tel:${item.phone.replace(/\s/g, '')}`}
-              className="shrink-0 p-0.5 rounded text-neutral-300 hover:text-neutral-600 transition-colors"
+              className="shrink-0 p-0.5 rounded text-text-muted hover:text-text-tertiary transition-colors"
               title="Zadzwoń"
               onClick={(e) => e.stopPropagation()}
             >
@@ -185,7 +185,7 @@ const ItemCardCompact = memo(function ItemCardCompact({
                 value={item.category || ''}
                 onChange={(e) => handleUpdate('category', e.target.value)}
                 onPointerDown={(e) => e.stopPropagation()}
-                className="text-[11px] text-neutral-500 bg-transparent border-0 p-0 pr-3 cursor-pointer hover:text-neutral-700 focus:outline-none focus:ring-0 appearance-none truncate"
+                className="text-[11px] text-text-tertiary bg-transparent border-0 p-0 pr-3 cursor-pointer hover:text-text-secondary focus:outline-none focus:ring-0 appearance-none truncate"
                 style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 20 20\'%3E%3Cpath stroke=\'%236b7280\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'1.5\' d=\'m6 8 4 4 4-4\'/%3E%3C/svg%3E")', backgroundPosition: 'right 0 center', backgroundRepeat: 'no-repeat', backgroundSize: '12px' }}
               >
                 {getAllCategories(customCategories).map((cat) => (
@@ -206,13 +206,13 @@ const ItemCardCompact = memo(function ItemCardCompact({
             <div className="w-64 flex items-center justify-end gap-1 text-sm">
               {isContractor ? (
                 // Contractor: just show total (flat price)
-                <span className="font-semibold text-neutral-900 whitespace-nowrap">
+                <span className="font-semibold text-text-primary whitespace-nowrap">
                   {formatCurrency(item.total_price)}
                 </span>
               ) : (
                 // Product: Quantity x Unit Price = Total
                 <>
-                  <span className="text-neutral-400 hidden sm:inline text-xs whitespace-nowrap">
+                  <span className="text-text-muted hidden sm:inline text-xs whitespace-nowrap">
                     {item.quantity} x
                   </span>
                   <div className="hidden sm:block">
@@ -221,21 +221,21 @@ const ItemCardCompact = memo(function ItemCardCompact({
                       onChange={(v) => handleUpdate('unit_price', v)}
                       type="number"
                       placeholder="0"
-                      className="text-neutral-500 text-xs"
+                      className="text-text-tertiary text-xs"
                       inputClassName="w-16 text-xs"
                     />
                   </div>
-                  <span className="text-neutral-400 hidden sm:inline text-xs">=</span>
+                  <span className="text-text-muted hidden sm:inline text-xs">=</span>
                   {item.original_unit_price && (
-                    <span className="text-neutral-400 line-through text-[10px] hidden sm:inline whitespace-nowrap">
+                    <span className="text-text-muted line-through text-[10px] hidden sm:inline whitespace-nowrap">
                       {formatCurrency(item.original_unit_price * item.quantity)}
                     </span>
                   )}
-                  <span className="font-semibold text-neutral-900 whitespace-nowrap">
+                  <span className="font-semibold text-text-primary whitespace-nowrap">
                     {formatCurrency(item.total_price)}
                   </span>
                   {item.discount_label && (
-                    <span className="px-1 py-0.5 rounded bg-emerald-100 text-emerald-700 text-[10px] font-medium whitespace-nowrap">
+                    <span className="px-1 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-medium whitespace-nowrap">
                       {item.discount_label.split(' ')[0]}
                     </span>
                   )}
@@ -272,7 +272,7 @@ const ItemCardCompact = memo(function ItemCardCompact({
             className={`p-1 rounded transition-colors active:scale-125 ${
               item.favorite
                 ? 'text-rose-500 hover:text-rose-600'
-                : 'text-neutral-300 hover:text-rose-400'
+                : 'text-text-muted hover:text-rose-400'
             }`}
             title={item.favorite ? 'Usuń z ulubionych' : 'Dodaj do ulubionych'}
           >
@@ -287,7 +287,7 @@ const ItemCardCompact = memo(function ItemCardCompact({
           <button
             type="button"
             onClick={() => onDuplicate(item.id)}
-            className="p-1 rounded text-neutral-300 hover:text-emerald-500 hover:bg-emerald-50 transition-colors"
+            className="p-1 rounded text-text-muted hover:text-emerald-500 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-colors"
             title="Duplikuj"
           >
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -306,7 +306,7 @@ const ItemCardCompact = memo(function ItemCardCompact({
           <button
             type="button"
             onClick={handleDelete}
-            className="p-1 rounded text-neutral-300 hover:text-red-500 hover:bg-red-50 transition-colors"
+            className="p-1 rounded text-text-muted hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
             title="Usuń"
           >
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -9,6 +9,7 @@ import FavoritesPage from './pages/FavoritesPage';
 import ExtensionUpdateModal from './components/shared/ExtensionUpdateModal';
 import { useCurrentUser, useDismissExtensionUpdate } from './hooks/useUser';
 import { ToastProvider } from './contexts/ToastContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import ToastContainer from './components/shared/ToastContainer';
 
 const queryClient = new QueryClient({
@@ -59,12 +60,14 @@ function AppContent() {
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ToastProvider>
-        <BrowserRouter>
-          <AppContent />
-        </BrowserRouter>
-        <ToastContainer />
-      </ToastProvider>
+      <ThemeProvider>
+        <ToastProvider>
+          <BrowserRouter>
+            <AppContent />
+          </BrowserRouter>
+          <ToastContainer />
+        </ToastProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

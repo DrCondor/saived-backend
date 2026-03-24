@@ -199,10 +199,10 @@ export default function Section({ section, projectId, viewMode, isDnDEnabled, is
     <div
       className={`group/section flex items-center justify-between ${headerSpacing} border-b transition-colors rounded-lg ${
         isDroppingOver
-          ? 'border-emerald-400 bg-emerald-50 ring-2 ring-emerald-300'
+          ? 'border-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 ring-2 ring-emerald-300'
           : isDraggingItem && canReceiveDropsWhenCollapsed
-            ? 'border-neutral-300 bg-neutral-50'
-            : 'border-neutral-200'
+            ? 'border-border-hover bg-surface-hover'
+            : 'border-border'
       }`}
     >
       <div className="flex items-center gap-3 flex-1" {...dragHandleProps} style={{ cursor: 'default' }}>
@@ -213,10 +213,10 @@ export default function Section({ section, projectId, viewMode, isDnDEnabled, is
             setIsCollapsed(newCollapsed);
             setCollapsedSection(section.id, newCollapsed);
           }}
-          className="p-1 hover:bg-neutral-100 rounded-lg transition-colors"
+          className="p-1 hover:bg-surface-muted rounded-lg transition-colors"
         >
           <svg
-            className={`${chevronSize} text-neutral-400 transition-transform ${isCollapsed ? '-rotate-90' : ''}`}
+            className={`${chevronSize} text-text-muted transition-transform ${isCollapsed ? '-rotate-90' : ''}`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -238,7 +238,7 @@ export default function Section({ section, projectId, viewMode, isDnDEnabled, is
             onChange={(e) => setEditName(e.target.value)}
             onBlur={handleNameSubmit}
             onKeyDown={handleKeyDown}
-            className={`${titleClass} text-neutral-900 bg-transparent border-0 p-0 focus:ring-0 focus:outline-none w-full`}
+            className={`${titleClass} text-text-primary bg-transparent border-0 p-0 focus:ring-0 focus:outline-none w-full`}
           />
         ) : (
           <div
@@ -247,11 +247,11 @@ export default function Section({ section, projectId, viewMode, isDnDEnabled, is
             onMouseDown={handleNameMouseDown}
             onClick={handleNameClick}
             onKeyDown={(e) => e.key === 'Enter' && setIsEditing(true)}
-            className={`group/name ${titleClass} text-neutral-900 hover:text-neutral-700 text-left flex-1 flex items-center gap-2 select-none`}
+            className={`group/name ${titleClass} text-text-primary hover:text-text-secondary text-left flex-1 flex items-center gap-2 select-none`}
           >
             {editName}
             <svg
-              className="w-4 h-4 text-neutral-300 opacity-0 group-hover/name:opacity-100 transition-opacity"
+              className="w-4 h-4 text-text-muted opacity-0 group-hover/name:opacity-100 transition-opacity"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -269,8 +269,8 @@ export default function Section({ section, projectId, viewMode, isDnDEnabled, is
 
       <div className="flex items-center gap-3">
         {/* Section total */}
-        <div className={`inline-flex items-center rounded-full bg-emerald-50 border border-emerald-200 ${badgeClass}`}>
-          <span className={`${badgeTextClass} text-emerald-700`}>
+        <div className={`inline-flex items-center rounded-full bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-300/30 ${badgeClass}`}>
+          <span className={`${badgeTextClass} text-emerald-700 dark:text-emerald-400`}>
             {formatCurrency(sectionTotal)}
           </span>
         </div>
@@ -284,7 +284,7 @@ export default function Section({ section, projectId, viewMode, isDnDEnabled, is
             }
           }}
           disabled={deleteSection.isPending}
-          className="p-2 rounded-lg text-neutral-400 hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50"
+          className="p-2 rounded-lg text-text-muted hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors disabled:opacity-50"
           title="Usuń sekcję"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -338,8 +338,8 @@ export default function Section({ section, projectId, viewMode, isDnDEnabled, is
                 </div>
               ))}
               {items.length === 0 && (
-                <div className="col-span-full rounded-2xl border-2 border-dashed border-neutral-200 py-8 text-center">
-                  <p className="text-sm text-neutral-400">Brak pozycji w tej sekcji</p>
+                <div className="col-span-full rounded-2xl border-2 border-dashed border-border py-8 text-center">
+                  <p className="text-sm text-text-muted">Brak pozycji w tej sekcji</p>
                 </div>
               )}
             </div>
@@ -356,7 +356,7 @@ export default function Section({ section, projectId, viewMode, isDnDEnabled, is
                   ref={provided.innerRef}
                   {...provided.droppableProps}
                   className={`min-h-[40px] rounded-xl transition-colors space-y-2 ${
-                    snapshot.isDraggingOver ? 'bg-emerald-50 ring-2 ring-emerald-300 ring-dashed' : ''
+                    snapshot.isDraggingOver ? 'bg-emerald-50 dark:bg-emerald-950/30 ring-2 ring-emerald-300 ring-dashed' : ''
                   }`}
                 >
                   {items.map((item, index) => (
@@ -383,8 +383,8 @@ export default function Section({ section, projectId, viewMode, isDnDEnabled, is
                   ))}
                   {provided.placeholder}
                   {items.length === 0 && !snapshot.isDraggingOver && (
-                    <div className="rounded-2xl border-2 border-dashed border-neutral-200 py-8 text-center">
-                      <p className="text-sm text-neutral-400">Brak pozycji w tej sekcji</p>
+                    <div className="rounded-2xl border-2 border-dashed border-border py-8 text-center">
+                      <p className="text-sm text-text-muted">Brak pozycji w tej sekcji</p>
                     </div>
                   )}
                 </div>
@@ -394,12 +394,12 @@ export default function Section({ section, projectId, viewMode, isDnDEnabled, is
 
           {/* Add item buttons / form */}
           {openForm === null ? (
-            <div className="mt-3 flex rounded-lg border border-dashed border-neutral-200 overflow-hidden">
+            <div className="mt-3 flex rounded-lg border border-dashed border-border overflow-hidden">
               {/* Left: + Produkt */}
               <button
                 type="button"
                 onClick={() => setOpenForm('product')}
-                className="flex-1 inline-flex items-center justify-center gap-1 py-2 text-xs font-medium text-neutral-400 hover:text-neutral-700 hover:bg-neutral-50 transition-colors"
+                className="flex-1 inline-flex items-center justify-center gap-1 py-2 text-xs font-medium text-text-muted hover:text-text-secondary hover:bg-surface-hover transition-colors"
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -408,13 +408,13 @@ export default function Section({ section, projectId, viewMode, isDnDEnabled, is
               </button>
 
               {/* Divider */}
-              <div className="w-px bg-neutral-200" />
+              <div className="w-px bg-border" />
 
               {/* Middle: + Wykonawca */}
               <button
                 type="button"
                 onClick={() => setOpenForm('contractor')}
-                className="flex-1 inline-flex items-center justify-center gap-1 py-2 text-xs font-medium text-neutral-400 hover:text-neutral-700 hover:bg-neutral-50 transition-colors"
+                className="flex-1 inline-flex items-center justify-center gap-1 py-2 text-xs font-medium text-text-muted hover:text-text-secondary hover:bg-surface-hover transition-colors"
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -423,13 +423,13 @@ export default function Section({ section, projectId, viewMode, isDnDEnabled, is
               </button>
 
               {/* Divider */}
-              <div className="w-px bg-neutral-200" />
+              <div className="w-px bg-border" />
 
               {/* Right: + Notatka */}
               <button
                 type="button"
                 onClick={() => setOpenForm('note')}
-                className="flex-1 inline-flex items-center justify-center gap-1 py-2 text-xs font-medium text-neutral-400 hover:text-neutral-700 hover:bg-neutral-50 transition-colors"
+                className="flex-1 inline-flex items-center justify-center gap-1 py-2 text-xs font-medium text-text-muted hover:text-text-secondary hover:bg-surface-hover transition-colors"
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />

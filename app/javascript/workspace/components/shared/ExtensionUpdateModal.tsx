@@ -14,7 +14,7 @@ export default function ExtensionUpdateModal({
 
   return createPortal(
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div className="bg-surface rounded-2xl shadow-2xl max-w-md w-full overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
         <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 px-6 py-4 text-white">
           <div className="flex items-center gap-3">
@@ -43,7 +43,7 @@ export default function ExtensionUpdateModal({
 
         {/* Body */}
         <div className="p-6 space-y-4">
-          <p className="text-neutral-600">
+          <p className="text-text-tertiary">
             Dostępna jest nowa wersja rozszerzenia SAIVED z poprawkami i ulepszeniami.
           </p>
 
@@ -54,8 +54,8 @@ export default function ExtensionUpdateModal({
               onClick={() => setBrowser('chrome')}
               className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                 browser === 'chrome'
-                  ? 'bg-neutral-900 text-white'
-                  : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
+                  ? 'bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900'
+                  : 'bg-surface-muted text-text-tertiary hover:bg-surface-inset'
               }`}
             >
               {/* Chrome icon */}
@@ -69,8 +69,8 @@ export default function ExtensionUpdateModal({
               onClick={() => setBrowser('firefox')}
               className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                 browser === 'firefox'
-                  ? 'bg-neutral-900 text-white'
-                  : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
+                  ? 'bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900'
+                  : 'bg-surface-muted text-text-tertiary hover:bg-surface-inset'
               }`}
             >
               {/* Firefox icon */}
@@ -82,52 +82,52 @@ export default function ExtensionUpdateModal({
           </div>
 
           {/* Instructions */}
-          <div className="bg-neutral-50 rounded-xl p-4">
-            <h3 className="font-semibold text-neutral-900 mb-3">Jak zaktualizować:</h3>
+          <div className="bg-surface-hover rounded-xl p-4">
+            <h3 className="font-semibold text-text-primary mb-3">Jak zaktualizować:</h3>
 
             {/* Chrome instructions */}
             {browser === 'chrome' && (
               <ol className="space-y-2.5">
                 <li className="flex gap-3">
-                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-sm font-semibold flex items-center justify-center">
+                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 text-sm font-semibold flex items-center justify-center">
                     1
                   </span>
-                  <p className="text-sm text-neutral-700">
+                  <p className="text-sm text-text-secondary">
                     Pobierz nowy plik ZIP poniżej
                   </p>
                 </li>
                 <li className="flex gap-3">
-                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-sm font-semibold flex items-center justify-center">
+                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 text-sm font-semibold flex items-center justify-center">
                     2
                   </span>
-                  <p className="text-sm text-neutral-700">
+                  <p className="text-sm text-text-secondary">
                     <strong>Rozpakuj</strong> archiwum do wybranego folderu
                   </p>
                 </li>
                 <li className="flex gap-3">
-                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-sm font-semibold flex items-center justify-center">
+                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 text-sm font-semibold flex items-center justify-center">
                     3
                   </span>
-                  <p className="text-sm text-neutral-700">
+                  <p className="text-sm text-text-secondary">
                     Otwórz{' '}
-                    <code className="px-1.5 py-0.5 rounded bg-neutral-200 text-neutral-800 text-xs font-mono">
+                    <code className="px-1.5 py-0.5 rounded bg-surface-inset text-text-primary text-xs font-mono">
                       chrome://extensions
                     </code>
                   </p>
                 </li>
                 <li className="flex gap-3">
-                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-sm font-semibold flex items-center justify-center">
+                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 text-sm font-semibold flex items-center justify-center">
                     4
                   </span>
-                  <p className="text-sm text-neutral-700">
+                  <p className="text-sm text-text-secondary">
                     Znajdź SAIVED i kliknij <strong>„Usuń"</strong>
                   </p>
                 </li>
                 <li className="flex gap-3">
-                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-sm font-semibold flex items-center justify-center">
+                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 text-sm font-semibold flex items-center justify-center">
                     5
                   </span>
-                  <p className="text-sm text-neutral-700">
+                  <p className="text-sm text-text-secondary">
                     Kliknij <strong>„Załaduj rozpakowane"</strong> i wybierz folder
                   </p>
                 </li>
@@ -138,55 +138,55 @@ export default function ExtensionUpdateModal({
             {browser === 'firefox' && (
               <ol className="space-y-2.5">
                 <li className="flex gap-3">
-                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-sm font-semibold flex items-center justify-center">
+                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 text-sm font-semibold flex items-center justify-center">
                     1
                   </span>
-                  <p className="text-sm text-neutral-700">
+                  <p className="text-sm text-text-secondary">
                     Pobierz nowy plik ZIP poniżej
                   </p>
                 </li>
                 <li className="flex gap-3">
-                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-sm font-semibold flex items-center justify-center">
+                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 text-sm font-semibold flex items-center justify-center">
                     2
                   </span>
-                  <p className="text-sm text-neutral-700">
+                  <p className="text-sm text-text-secondary">
                     <strong>Rozpakuj</strong> archiwum do wybranego folderu
                   </p>
                 </li>
                 <li className="flex gap-3">
-                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-sm font-semibold flex items-center justify-center">
+                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 text-sm font-semibold flex items-center justify-center">
                     3
                   </span>
-                  <p className="text-sm text-neutral-700">
+                  <p className="text-sm text-text-secondary">
                     Otwórz{' '}
-                    <code className="px-1.5 py-0.5 rounded bg-neutral-200 text-neutral-800 text-xs font-mono">
+                    <code className="px-1.5 py-0.5 rounded bg-surface-inset text-text-primary text-xs font-mono">
                       about:debugging#/runtime/this-firefox
                     </code>
                   </p>
                 </li>
                 <li className="flex gap-3">
-                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-sm font-semibold flex items-center justify-center">
+                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 text-sm font-semibold flex items-center justify-center">
                     4
                   </span>
-                  <p className="text-sm text-neutral-700">
+                  <p className="text-sm text-text-secondary">
                     Znajdź SAIVED i kliknij <strong>„Usuń"</strong>
                   </p>
                 </li>
                 <li className="flex gap-3">
-                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-sm font-semibold flex items-center justify-center">
+                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 text-sm font-semibold flex items-center justify-center">
                     5
                   </span>
-                  <p className="text-sm text-neutral-700">
+                  <p className="text-sm text-text-secondary">
                     Kliknij <strong>„Załaduj tymczasowy dodatek..."</strong>
                   </p>
                 </li>
                 <li className="flex gap-3">
-                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-sm font-semibold flex items-center justify-center">
+                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 text-sm font-semibold flex items-center justify-center">
                     6
                   </span>
-                  <p className="text-sm text-neutral-700">
+                  <p className="text-sm text-text-secondary">
                     Wybierz plik{' '}
-                    <code className="px-1.5 py-0.5 rounded bg-neutral-200 text-neutral-800 text-xs font-mono">
+                    <code className="px-1.5 py-0.5 rounded bg-surface-inset text-text-primary text-xs font-mono">
                       manifest.json
                     </code>{' '}
                     z folderu
@@ -252,7 +252,7 @@ export default function ExtensionUpdateModal({
             type="button"
             onClick={onDismiss}
             disabled={isLoading}
-            className="flex-1 px-4 py-2.5 bg-neutral-100 text-neutral-700 rounded-xl font-medium hover:bg-neutral-200 transition-colors disabled:opacity-50"
+            className="flex-1 px-4 py-2.5 bg-surface-muted text-text-secondary rounded-xl font-medium hover:bg-surface-inset transition-colors disabled:opacity-50"
           >
             Później
           </button>

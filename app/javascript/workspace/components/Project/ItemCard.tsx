@@ -9,8 +9,8 @@ import UnitTypeSelect from '../shared/UnitTypeSelect';
 // Contractor icon component
 function ContractorIcon() {
   return (
-    <div className="h-full w-full rounded-lg bg-neutral-200 flex items-center justify-center">
-      <svg className="w-7 h-7 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div className="h-full w-full rounded-lg bg-surface-inset flex items-center justify-center">
+      <svg className="w-7 h-7 text-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
       </svg>
     </div>
@@ -20,8 +20,8 @@ function ContractorIcon() {
 // Note icon component
 function NoteIcon() {
   return (
-    <div className="h-full w-full rounded-lg bg-amber-100 flex items-center justify-center">
-      <svg className="w-7 h-7 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div className="h-full w-full rounded-lg bg-amber-100 dark:bg-amber-900/20 flex items-center justify-center">
+      <svg className="w-7 h-7 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
       </svg>
     </div>
@@ -63,8 +63,8 @@ const ItemCard = memo(function ItemCard({
   const cardClasses = [
     isProposal && !isNote ? 'opacity-70' : '',
     isDragging ? 'ring-2 ring-emerald-500 shadow-lg opacity-60' : '',
-    isContractor ? 'border-neutral-300' : '',
-    isNote ? 'border-amber-200 bg-amber-50/50' : '',
+    isContractor ? 'border-border-hover' : '',
+    isNote ? 'border-amber-200 dark:border-amber-700/30 bg-amber-50/50 dark:bg-amber-900/20' : '',
   ].filter(Boolean).join(' ');
 
   const handleUpdate = (field: keyof UpdateItemInput, value: string) => {
@@ -128,7 +128,7 @@ const ItemCard = memo(function ItemCard({
       {/* Item card - entire card is draggable (Trello-style) */}
       <div
         {...dragHandleProps}
-        className={`flex-1 rounded-xl border border-neutral-200 bg-white p-3 hover:shadow-md hover:border-neutral-300 transition-all touch-none ${cardClasses}`}
+        className={`flex-1 rounded-xl border border-border bg-surface p-3 hover:shadow-md dark:hover:shadow-none hover:border-border-hover transition-all touch-none ${cardClasses}`}
       >
         <div className="flex gap-3">
           {/* Thumbnail / Icon */}
@@ -144,7 +144,7 @@ const ItemCard = memo(function ItemCard({
             ) : (
               // Product: editable thumbnail
               <>
-                <div className="h-full w-full rounded-lg bg-neutral-100 overflow-hidden">
+                <div className="h-full w-full rounded-lg bg-surface-muted overflow-hidden">
                   {item.thumbnail_url ? (
                     <img
                       src={item.thumbnail_url}
@@ -152,7 +152,7 @@ const ItemCard = memo(function ItemCard({
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    <div className="h-full w-full flex items-center justify-center text-xs text-neutral-300">
+                    <div className="h-full w-full flex items-center justify-center text-xs text-text-muted">
                       <svg
                         className="w-6 h-6"
                         fill="none"
@@ -188,8 +188,8 @@ const ItemCard = memo(function ItemCard({
                 {/* Thumbnail URL edit modal */}
                 {isEditingThumbnail && (
                   <div className="absolute top-0 left-0 z-50 mt-[-8px] ml-[-8px]">
-                    <div className="bg-white rounded-xl shadow-xl border border-neutral-200 p-3 w-72">
-                      <label className="text-[10px] text-neutral-500 uppercase tracking-wide block mb-1">
+                    <div className="bg-surface rounded-xl shadow-xl dark:shadow-none dark:ring-1 dark:ring-border border border-border p-3 w-72">
+                      <label className="text-[10px] text-text-tertiary uppercase tracking-wide block mb-1">
                         URL miniaturki
                       </label>
                       <input
@@ -201,7 +201,7 @@ const ItemCard = memo(function ItemCard({
                           if (e.key === 'Escape') setIsEditingThumbnail(false);
                         }}
                         placeholder="https://..."
-                        className="w-full text-xs bg-neutral-50 border border-neutral-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
+                        className="w-full text-xs bg-surface-hover border border-border rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
                         autoFocus
                       />
                       <div className="flex gap-2 mt-2">
@@ -215,7 +215,7 @@ const ItemCard = memo(function ItemCard({
                         <button
                           type="button"
                           onClick={() => setIsEditingThumbnail(false)}
-                          className="flex-1 text-xs bg-neutral-100 text-neutral-600 rounded-lg py-1.5 hover:bg-neutral-200 transition-colors"
+                          className="flex-1 text-xs bg-surface-muted text-text-tertiary rounded-lg py-1.5 hover:bg-surface-inset transition-colors"
                         >
                           Anuluj
                         </button>
@@ -232,7 +232,7 @@ const ItemCard = memo(function ItemCard({
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0 flex-1">
                 {/* Name - editable */}
-                <div className="font-medium text-neutral-900">
+                <div className="font-medium text-text-primary">
                   <EditableField
                     value={item.name}
                     onChange={(v) => handleUpdate('name', v)}
@@ -243,7 +243,7 @@ const ItemCard = memo(function ItemCard({
                 </div>
 
                 {/* Note - editable */}
-                <div className="mt-0.5 text-sm text-neutral-500">
+                <div className="mt-0.5 text-sm text-text-tertiary">
                   <EditableField
                     value={item.note}
                     onChange={(v) => handleUpdate('note', v)}
@@ -259,7 +259,7 @@ const ItemCard = memo(function ItemCard({
                     href={item.external_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 mt-1 text-xs text-emerald-600 hover:text-emerald-700 font-medium"
+                    className="inline-flex items-center gap-1 mt-1 text-xs text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-400 font-medium"
                   >
                     <svg
                       className="w-3 h-3"
@@ -282,22 +282,22 @@ const ItemCard = memo(function ItemCard({
               {/* Sum + Status (right side) - hidden for notes */}
               {!isNote && (
                 <div className="shrink-0 text-right space-y-2">
-                  <div className="inline-flex items-center rounded-lg border border-neutral-200 px-3 py-1.5 bg-neutral-50">
-                    <span className="text-[10px] text-neutral-400 uppercase tracking-wide mr-2">
+                  <div className="inline-flex items-center rounded-lg border border-border px-3 py-1.5 bg-surface-hover">
+                    <span className="text-[10px] text-text-muted uppercase tracking-wide mr-2">
                       Suma
                     </span>
                     <div className="flex flex-col items-end">
                       {item.original_unit_price && item.discount_percent && item.discount_percent > 0 && (
-                        <span className="text-xs text-neutral-400 line-through">
+                        <span className="text-xs text-text-muted line-through">
                           {formatCurrency(item.original_unit_price * item.quantity)}
                         </span>
                       )}
-                      <span className="font-semibold text-neutral-900">
+                      <span className="font-semibold text-text-primary">
                         {formatCurrency(item.total_price)}
                       </span>
                     </div>
                     {item.discount_label && (
-                      <span className="ml-2 text-xs text-emerald-600 font-medium">
+                      <span className="ml-2 text-xs text-emerald-600 dark:text-emerald-400 font-medium">
                         {item.discount_label}
                       </span>
                     )}
@@ -320,7 +320,7 @@ const ItemCard = memo(function ItemCard({
               <div className="mt-2 grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-1.5 text-xs">
                 {/* Service price */}
                 <div>
-                  <span className="text-neutral-400 uppercase tracking-wide text-[10px] block mb-0.5">
+                  <span className="text-text-muted uppercase tracking-wide text-[10px] block mb-0.5">
                     Cena usługi
                   </span>
                   <div className="flex items-center gap-1">
@@ -329,16 +329,16 @@ const ItemCard = memo(function ItemCard({
                       onChange={(v) => handleUpdate('unit_price', v)}
                       type="number"
                       placeholder="0.00"
-                      className="text-neutral-700 font-medium"
+                      className="text-text-secondary font-medium"
                       inputClassName="w-24"
                     />
-                    <span className="text-neutral-500">zł</span>
+                    <span className="text-text-tertiary">zł</span>
                   </div>
                 </div>
 
                 {/* Phone */}
                 <div>
-                  <span className="text-neutral-400 uppercase tracking-wide text-[10px] block mb-0.5">
+                  <span className="text-text-muted uppercase tracking-wide text-[10px] block mb-0.5">
                     Telefon
                   </span>
                   <div className="flex items-center gap-1">
@@ -346,12 +346,12 @@ const ItemCard = memo(function ItemCard({
                       value={item.phone}
                       onChange={(v) => handleUpdate('phone', v)}
                       placeholder="np. 123 456 789"
-                      className="text-neutral-700 font-medium"
+                      className="text-text-secondary font-medium"
                     />
                     {item.phone && (
                       <a
                         href={`tel:${item.phone.replace(/\s/g, '')}`}
-                        className="shrink-0 p-1 rounded hover:bg-neutral-100 text-neutral-600"
+                        className="shrink-0 p-1 rounded hover:bg-surface-muted text-text-tertiary"
                         title="Zadzwoń"
                       >
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -364,20 +364,20 @@ const ItemCard = memo(function ItemCard({
 
                 {/* Address */}
                 <div className="sm:col-span-2">
-                  <span className="text-neutral-400 uppercase tracking-wide text-[10px] block mb-0.5">
+                  <span className="text-text-muted uppercase tracking-wide text-[10px] block mb-0.5">
                     Adres
                   </span>
                   <EditableField
                     value={item.address}
                     onChange={(v) => handleUpdate('address', v)}
                     placeholder="np. ul. Przykładowa 10, Warszawa"
-                    className="text-neutral-700 font-medium"
+                    className="text-text-secondary font-medium"
                   />
                 </div>
 
                 {/* Attachment */}
                 <div className="sm:col-span-4">
-                  <span className="text-neutral-400 uppercase tracking-wide text-[10px] block mb-0.5">
+                  <span className="text-text-muted uppercase tracking-wide text-[10px] block mb-0.5">
                     Załącznik
                   </span>
                   <div className="flex items-center gap-2">
@@ -394,7 +394,7 @@ const ItemCard = memo(function ItemCard({
                           href={item.attachment_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 text-neutral-600 hover:text-neutral-800 font-medium"
+                          className="inline-flex items-center gap-1.5 text-text-tertiary hover:text-text-primary font-medium"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
@@ -404,7 +404,7 @@ const ItemCard = memo(function ItemCard({
                         <button
                           type="button"
                           onClick={() => fileInputRef.current?.click()}
-                          className="text-xs text-neutral-500 hover:text-neutral-700"
+                          className="text-xs text-text-tertiary hover:text-text-secondary"
                         >
                           (zmień)
                         </button>
@@ -413,7 +413,7 @@ const ItemCard = memo(function ItemCard({
                       <button
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
-                        className="inline-flex items-center gap-1.5 text-xs text-neutral-500 hover:text-neutral-700"
+                        className="inline-flex items-center gap-1.5 text-xs text-text-tertiary hover:text-text-secondary"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
@@ -430,27 +430,27 @@ const ItemCard = memo(function ItemCard({
               <div className="mt-2 grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-1.5 text-xs">
                 {/* Dimensions */}
                 <div>
-                  <span className="text-neutral-400 uppercase tracking-wide text-[10px] block mb-0.5">
+                  <span className="text-text-muted uppercase tracking-wide text-[10px] block mb-0.5">
                     Wymiary
                   </span>
                   <EditableField
                     value={item.dimensions}
                     onChange={(v) => handleUpdate('dimensions', v)}
                     placeholder="np. 120x80x45"
-                    className="text-neutral-700 font-medium"
+                    className="text-text-secondary font-medium"
                   />
                 </div>
 
                 {/* Category */}
                 <div>
-                  <span className="text-neutral-400 uppercase tracking-wide text-[10px] block mb-0.5">
+                  <span className="text-text-muted uppercase tracking-wide text-[10px] block mb-0.5">
                     Kategoria
                   </span>
                   <select
                     value={item.category || ''}
                     onChange={(e) => handleUpdate('category', e.target.value)}
                     onPointerDown={(e) => e.stopPropagation()}
-                    className="text-xs text-neutral-700 font-medium bg-transparent border-0 p-0 pr-4 cursor-pointer hover:text-neutral-900 focus:outline-none focus:ring-0 appearance-none"
+                    className="text-xs text-text-secondary font-medium bg-transparent border-0 p-0 pr-4 cursor-pointer hover:text-text-primary focus:outline-none focus:ring-0 appearance-none"
                     style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 20 20\'%3E%3Cpath stroke=\'%236b7280\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'1.5\' d=\'m6 8 4 4 4-4\'/%3E%3C/svg%3E")', backgroundPosition: 'right 0 center', backgroundRepeat: 'no-repeat', backgroundSize: '16px' }}
                   >
                     {getAllCategories(customCategories).map((cat) => (
@@ -463,7 +463,7 @@ const ItemCard = memo(function ItemCard({
 
                 {/* Quantity */}
                 <div>
-                  <span className="text-neutral-400 uppercase tracking-wide text-[10px] block mb-0.5">
+                  <span className="text-text-muted uppercase tracking-wide text-[10px] block mb-0.5">
                     Ilość
                   </span>
                   <div className="flex items-center gap-1">
@@ -472,7 +472,7 @@ const ItemCard = memo(function ItemCard({
                       onChange={(v) => handleUpdate('quantity', v)}
                       type="number"
                       placeholder="1"
-                      className="text-neutral-700 font-medium"
+                      className="text-text-secondary font-medium"
                       inputClassName="w-16"
                     />
                     <UnitTypeSelect
@@ -484,7 +484,7 @@ const ItemCard = memo(function ItemCard({
 
                 {/* Unit price */}
                 <div>
-                  <span className="text-neutral-400 uppercase tracking-wide text-[10px] block mb-0.5">
+                  <span className="text-text-muted uppercase tracking-wide text-[10px] block mb-0.5">
                     Cena jedn.
                   </span>
                   <div className="flex items-center gap-1">
@@ -493,30 +493,30 @@ const ItemCard = memo(function ItemCard({
                       onChange={(v) => handleUpdate('unit_price', v)}
                       type="number"
                       placeholder="0.00"
-                      className="text-neutral-700 font-medium"
+                      className="text-text-secondary font-medium"
                       inputClassName="w-20"
                     />
-                    <span className="text-neutral-500">zł</span>
+                    <span className="text-text-tertiary">zł</span>
                   </div>
                 </div>
 
                 {/* Currency */}
                 <div>
-                  <span className="text-neutral-400 uppercase tracking-wide text-[10px] block mb-0.5">
+                  <span className="text-text-muted uppercase tracking-wide text-[10px] block mb-0.5">
                     Waluta
                   </span>
                   <EditableField
                     value={item.currency || 'PLN'}
                     onChange={(v) => handleUpdate('currency', v)}
                     placeholder="PLN"
-                    className="text-neutral-700 font-medium"
+                    className="text-text-secondary font-medium"
                     inputClassName="w-16"
                   />
                 </div>
 
                 {/* Discount percent */}
                 <div>
-                  <span className="text-neutral-400 uppercase tracking-wide text-[10px] block mb-0.5">
+                  <span className="text-text-muted uppercase tracking-wide text-[10px] block mb-0.5">
                     Rabat (%)
                   </span>
                   <div className="flex items-center gap-1">
@@ -525,30 +525,30 @@ const ItemCard = memo(function ItemCard({
                       onChange={(v) => handleUpdate('discount_percent', v)}
                       type="number"
                       placeholder="0"
-                      className={item.discount_percent ? 'text-emerald-600 font-medium' : 'text-neutral-700 font-medium'}
+                      className={item.discount_percent ? 'text-emerald-600 dark:text-emerald-400 font-medium' : 'text-text-secondary font-medium'}
                       inputClassName="w-16"
                     />
-                    <span className="text-neutral-500">%</span>
+                    <span className="text-text-tertiary">%</span>
                   </div>
                 </div>
 
                 {/* Discount code */}
                 <div>
-                  <span className="text-neutral-400 uppercase tracking-wide text-[10px] block mb-0.5">
+                  <span className="text-text-muted uppercase tracking-wide text-[10px] block mb-0.5">
                     Kod rabatowy
                   </span>
                   <EditableField
                     value={item.discount_code}
                     onChange={(v) => handleUpdate('discount_code', v)}
                     placeholder="np. PROMO10"
-                    className="text-neutral-700 font-medium"
+                    className="text-text-secondary font-medium"
                     inputClassName="w-24"
                   />
                 </div>
 
                 {/* External URL */}
                 <div className="sm:col-span-2">
-                  <span className="text-neutral-400 uppercase tracking-wide text-[10px] block mb-0.5">
+                  <span className="text-text-muted uppercase tracking-wide text-[10px] block mb-0.5">
                     Link do produktu
                   </span>
                   <div className="flex items-center gap-2">
@@ -557,14 +557,14 @@ const ItemCard = memo(function ItemCard({
                       onChange={(v) => handleUpdate('external_url', v)}
                       type="url"
                       placeholder="https://..."
-                      className="text-neutral-700 font-medium truncate flex-1 max-w-[200px]"
+                      className="text-text-secondary font-medium truncate flex-1 max-w-[200px]"
                     />
                     {item.external_url && (
                       <a
                         href={item.external_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="shrink-0 p-1 rounded hover:bg-emerald-50 text-emerald-600"
+                        className="shrink-0 p-1 rounded hover:bg-emerald-50 dark:hover:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400"
                         title="Otwórz link"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -597,7 +597,7 @@ const ItemCard = memo(function ItemCard({
             className={`p-1.5 rounded transition-colors active:scale-125 ${
               item.favorite
                 ? 'text-rose-500 hover:text-rose-600'
-                : 'text-neutral-300 hover:text-rose-400'
+                : 'text-text-muted hover:text-rose-400'
             }`}
             title={item.favorite ? 'Usuń z ulubionych' : 'Dodaj do ulubionych'}
           >
@@ -612,7 +612,7 @@ const ItemCard = memo(function ItemCard({
           <button
             type="button"
             onClick={() => onDuplicate(item.id)}
-            className="p-1.5 rounded text-neutral-300 hover:text-emerald-500 hover:bg-emerald-50 transition-colors"
+            className="p-1.5 rounded text-text-muted hover:text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-colors"
             title="Duplikuj"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -631,7 +631,7 @@ const ItemCard = memo(function ItemCard({
           <button
             type="button"
             onClick={handleDelete}
-            className="p-1.5 rounded text-neutral-300 hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50"
+            className="p-1.5 rounded text-text-muted hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors disabled:opacity-50"
             title="Usuń"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

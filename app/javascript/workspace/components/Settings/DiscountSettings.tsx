@@ -139,7 +139,7 @@ export default function DiscountSettings() {
       {message && (
         <div
           className={`rounded-xl px-4 py-3 text-sm ${
-            message.type === 'success' ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'
+            message.type === 'success' ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400' : 'bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400'
           }`}
         >
           {message.text}
@@ -149,28 +149,28 @@ export default function DiscountSettings() {
       {/* Discounts list */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-neutral-700">
+          <h3 className="text-sm font-semibold text-text-secondary">
             Twoje rabaty ({discounts.length}/{MAX_DISCOUNTS})
           </h3>
         </div>
 
         {discounts.length > 0 && (
-          <div className="rounded-xl border border-neutral-200 bg-white divide-y divide-neutral-200 mb-4">
+          <div className="rounded-xl border border-border bg-surface divide-y divide-border mb-4">
             {discounts.map((discount) => (
               <div key={discount.id} className="flex items-center gap-4 px-4 py-3">
                 <span className="w-3 h-3 rounded-full bg-emerald-500 flex-shrink-0" />
                 <div className="flex-1 min-w-0">
-                  <span className="text-sm font-medium text-neutral-700">{discount.domain}</span>
+                  <span className="text-sm font-medium text-text-secondary">{discount.domain}</span>
                   {discount.code && (
-                    <span className="ml-2 text-xs text-neutral-400">({discount.code})</span>
+                    <span className="ml-2 text-xs text-text-muted">({discount.code})</span>
                   )}
                 </div>
-                <span className="text-sm font-semibold text-emerald-600">-{discount.percentage}%</span>
+                <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">-{discount.percentage}%</span>
                 <div className="flex items-center gap-1">
                   <button
                     type="button"
                     onClick={() => startEditing(discount)}
-                    className="p-1.5 rounded-lg text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 transition-colors"
+                    className="p-1.5 rounded-lg text-text-muted hover:text-text-tertiary hover:bg-surface-muted transition-colors"
                     title="Edytuj"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -186,7 +186,7 @@ export default function DiscountSettings() {
                     type="button"
                     onClick={() => handleDeleteDiscount(discount.id)}
                     disabled={updateDiscounts.isPending}
-                    className="p-1.5 rounded-lg text-neutral-400 hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50"
+                    className="p-1.5 rounded-lg text-text-muted hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors disabled:opacity-50"
                     title="Usuń"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -205,35 +205,35 @@ export default function DiscountSettings() {
         )}
 
         {discounts.length === 0 && !editingDiscount && (
-          <p className="text-sm text-neutral-400 mb-4">Nie masz jeszcze żadnych rabatów.</p>
+          <p className="text-sm text-text-muted mb-4">Nie masz jeszcze żadnych rabatów.</p>
         )}
 
         {/* Edit/Add form */}
         {editingDiscount && (
-          <div className="rounded-xl border border-neutral-200 bg-white p-4 mb-4">
-            <h4 className="text-sm font-medium text-neutral-700 mb-3">
+          <div className="rounded-xl border border-border bg-surface p-4 mb-4">
+            <h4 className="text-sm font-medium text-text-secondary mb-3">
               {isAddingNew ? 'Nowy rabat' : 'Edytuj rabat'}
             </h4>
 
             <div className="space-y-4">
               {/* Domain */}
               <div>
-                <label className="block text-xs font-medium text-neutral-600 mb-1">Domena sklepu</label>
+                <label className="block text-xs font-medium text-text-tertiary mb-1">Domena sklepu</label>
                 <input
                   type="text"
                   value={editingDiscount.domain}
                   onChange={(e) => setEditingDiscount({ ...editingDiscount, domain: e.target.value })}
                   placeholder="np. ikea.pl"
-                  className="w-full rounded-xl border border-neutral-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                 />
-                <p className="text-xs text-neutral-400 mt-1">
+                <p className="text-xs text-text-muted mt-1">
                   Podaj nazwę domeny bez https:// i www.
                 </p>
               </div>
 
               {/* Percentage */}
               <div>
-                <label className="block text-xs font-medium text-neutral-600 mb-1">Procent rabatu</label>
+                <label className="block text-xs font-medium text-text-tertiary mb-1">Procent rabatu</label>
                 <div className="flex items-center gap-2">
                   <input
                     type="number"
@@ -243,16 +243,16 @@ export default function DiscountSettings() {
                     onChange={(e) =>
                       setEditingDiscount({ ...editingDiscount, percentage: parseInt(e.target.value) || 0 })
                     }
-                    className="w-24 rounded-xl border border-neutral-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    className="w-24 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                   />
-                  <span className="text-sm text-neutral-600">%</span>
+                  <span className="text-sm text-text-tertiary">%</span>
                 </div>
               </div>
 
               {/* Code (optional) */}
               <div>
-                <label className="block text-xs font-medium text-neutral-600 mb-1">
-                  Kod rabatowy <span className="text-neutral-400">(opcjonalnie)</span>
+                <label className="block text-xs font-medium text-text-tertiary mb-1">
+                  Kod rabatowy <span className="text-text-muted">(opcjonalnie)</span>
                 </label>
                 <input
                   type="text"
@@ -260,9 +260,9 @@ export default function DiscountSettings() {
                   onChange={(e) => setEditingDiscount({ ...editingDiscount, code: e.target.value })}
                   placeholder="np. PROMO10"
                   maxLength={50}
-                  className="w-full rounded-xl border border-neutral-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                 />
-                <p className="text-xs text-neutral-400 mt-1">
+                <p className="text-xs text-text-muted mt-1">
                   Kod zostanie dodany do etykiety rabatu na produkcie
                 </p>
               </div>
@@ -273,14 +273,14 @@ export default function DiscountSettings() {
                   type="button"
                   onClick={handleSaveDiscount}
                   disabled={updateDiscounts.isPending}
-                  className="inline-flex items-center gap-2 rounded-full bg-neutral-900 px-5 py-2 text-sm font-medium text-white hover:bg-neutral-800 transition-colors disabled:opacity-50"
+                  className="inline-flex items-center gap-2 rounded-full bg-neutral-900 dark:bg-neutral-100 px-5 py-2 text-sm font-medium text-white dark:text-neutral-900 hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors disabled:opacity-50"
                 >
                   {updateDiscounts.isPending ? 'Zapisywanie...' : 'Zapisz'}
                 </button>
                 <button
                   type="button"
                   onClick={cancelEditing}
-                  className="inline-flex items-center gap-2 rounded-full border border-neutral-300 bg-white px-5 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-colors"
+                  className="inline-flex items-center gap-2 rounded-full border border-border-hover bg-surface px-5 py-2 text-sm font-medium text-text-secondary hover:bg-surface-hover transition-colors"
                 >
                   Anuluj
                 </button>
@@ -294,7 +294,7 @@ export default function DiscountSettings() {
           <button
             type="button"
             onClick={startAddingNew}
-            className="flex items-center gap-2 text-sm font-medium text-emerald-600 hover:text-emerald-700 transition-colors"
+            className="flex items-center gap-2 text-sm font-medium text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -304,7 +304,7 @@ export default function DiscountSettings() {
         )}
 
         {!canAddMore && !editingDiscount && (
-          <p className="text-xs text-neutral-400">Osiągnięto limit rabatów</p>
+          <p className="text-xs text-text-muted">Osiągnięto limit rabatów</p>
         )}
       </div>
     </div>

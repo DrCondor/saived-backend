@@ -628,7 +628,7 @@ export default function ProjectView({ project }: ProjectViewProps) {
         {/* Top row: Project name + Toolbar */}
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div className="min-w-0">
-            <p className="text-xs font-bold tracking-[0.15em] uppercase text-neutral-400 mb-1">
+            <p className="text-xs font-bold tracking-[0.15em] uppercase text-text-muted mb-1">
               Projekt
             </p>
             {isEditingName ? (
@@ -639,17 +639,17 @@ export default function ProjectView({ project }: ProjectViewProps) {
                 onChange={(e) => setEditName(e.target.value)}
                 onBlur={handleNameSubmit}
                 onKeyDown={handleNameKeyDown}
-                className="text-xl font-bold tracking-tight text-neutral-900 bg-transparent border-0 p-0 focus:ring-0 focus:outline-none w-full"
+                className="text-xl font-bold tracking-tight text-text-primary bg-transparent border-0 p-0 focus:ring-0 focus:outline-none w-full"
               />
             ) : (
               <button
                 type="button"
                 onClick={() => setIsEditingName(true)}
-                className="group/name text-xl font-bold tracking-tight text-neutral-900 hover:text-neutral-700 text-left flex items-center gap-2"
+                className="group/name text-xl font-bold tracking-tight text-text-primary hover:text-text-secondary text-left flex items-center gap-2"
               >
                 {editName}
                 <svg
-                  className="w-4 h-4 text-neutral-300 opacity-0 group-hover/name:opacity-100 transition-opacity"
+                  className="w-4 h-4 text-text-muted opacity-0 group-hover/name:opacity-100 transition-opacity"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -674,7 +674,7 @@ export default function ProjectView({ project }: ProjectViewProps) {
                 onKeyDown={handleDescriptionKeyDown}
                 placeholder="Dodaj opis projektu (opcjonalnie)..."
                 rows={2}
-                className="mt-1 text-sm text-neutral-600 bg-transparent border-0 p-0 focus:ring-0 focus:outline-none w-full resize-none"
+                className="mt-1 text-sm text-text-tertiary bg-transparent border-0 p-0 focus:ring-0 focus:outline-none w-full resize-none"
               />
             ) : (
               <button
@@ -683,16 +683,16 @@ export default function ProjectView({ project }: ProjectViewProps) {
                 className="group/desc mt-1 text-sm text-left flex items-center gap-1.5"
               >
                 {editDescription ? (
-                  <span className="text-neutral-600 hover:text-neutral-800 transition-colors">
+                  <span className="text-text-tertiary hover:text-text-primary transition-colors">
                     {editDescription}
                   </span>
                 ) : (
-                  <span className="text-neutral-400 hover:text-neutral-600 transition-colors">
+                  <span className="text-text-muted hover:text-text-tertiary transition-colors">
                     + Dodaj opis projektu
                   </span>
                 )}
                 <svg
-                  className="w-3 h-3 text-neutral-300 opacity-0 group-hover/desc:opacity-100 transition-opacity shrink-0"
+                  className="w-3 h-3 text-text-muted opacity-0 group-hover/desc:opacity-100 transition-opacity shrink-0"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -732,20 +732,20 @@ export default function ProjectView({ project }: ProjectViewProps) {
 
         {/* Sum row - separate to avoid layout conflicts */}
         <div className="mt-3 flex items-center gap-2">
-          <span className="text-sm text-neutral-500">
+          <span className="text-sm text-text-tertiary">
             {hasActiveFilters ? 'Suma wynikow:' : 'Suma projektu:'}
           </span>
           <span
             className={`inline-flex items-center rounded-full px-4 py-1.5 text-sm font-bold whitespace-nowrap ${
               hasActiveFilters
                 ? 'bg-emerald-500 text-white'
-                : 'bg-neutral-900 text-white'
+                : 'bg-text-primary text-white dark:text-neutral-900'
             }`}
           >
             {formatCurrency(filteredTotal)}
           </span>
           {hasActiveFilters && (
-            <span className="text-xs text-neutral-400 whitespace-nowrap">
+            <span className="text-xs text-text-muted whitespace-nowrap">
               ({matchCount} z {totalItemCount} produktow)
             </span>
           )}
@@ -757,8 +757,8 @@ export default function ProjectView({ project }: ProjectViewProps) {
         {/* No results message */}
         {hasActiveFilters && processedSections.length === 0 && (
           <div className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="w-12 h-12 rounded-full bg-neutral-100 flex items-center justify-center mb-4">
-              <svg className="w-6 h-6 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-12 h-12 rounded-full bg-surface-muted flex items-center justify-center mb-4">
+              <svg className="w-6 h-6 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -767,8 +767,8 @@ export default function ProjectView({ project }: ProjectViewProps) {
                 />
               </svg>
             </div>
-            <p className="text-neutral-600 font-medium mb-1">Brak wynikow</p>
-            <p className="text-sm text-neutral-400 mb-4">
+            <p className="text-text-tertiary font-medium mb-1">Brak wynikow</p>
+            <p className="text-sm text-text-muted mb-4">
               Nie znaleziono produktow pasujacych do kryteriow
             </p>
             <button
@@ -778,7 +778,7 @@ export default function ProjectView({ project }: ProjectViewProps) {
                 setSortBy('default');
                 setFilters({ statuses: [], categories: [] });
               }}
-              className="text-sm text-emerald-600 hover:text-emerald-700 font-medium"
+              className="text-sm text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300 font-medium"
             >
               Wyczyść filtry
             </button>
@@ -809,7 +809,7 @@ export default function ProjectView({ project }: ProjectViewProps) {
                         <div
                           ref={provided.innerRef}
                           {...provided.draggableProps}
-                          className={snapshot.isDragging ? 'bg-white rounded-xl shadow-lg ring-2 ring-emerald-300' : ''}
+                          className={snapshot.isDragging ? 'bg-surface rounded-xl shadow-lg dark:shadow-none ring-2 ring-emerald-300' : ''}
                         >
                           <SectionGroupBlock
                             group={entry.group}
@@ -825,7 +825,7 @@ export default function ProjectView({ project }: ProjectViewProps) {
                                   ref={dropProvided.innerRef}
                                   {...dropProvided.droppableProps}
                                   className={`min-h-[20px] rounded-lg transition-colors ${
-                                    dropSnapshot.isDraggingOver ? 'bg-emerald-50 ring-2 ring-emerald-300 ring-dashed' : ''
+                                    dropSnapshot.isDraggingOver ? 'bg-emerald-50 dark:bg-emerald-950/30 ring-2 ring-emerald-300 ring-dashed' : ''
                                   }`}
                                 >
                                   {groupSections.map((section, sectionIndex) => (
@@ -839,7 +839,7 @@ export default function ProjectView({ project }: ProjectViewProps) {
                                         <div
                                           ref={dragProvided.innerRef}
                                           {...dragProvided.draggableProps}
-                                          className={dragSnapshot.isDragging ? 'bg-white rounded-xl shadow-lg ring-2 ring-emerald-300' : ''}
+                                          className={dragSnapshot.isDragging ? 'bg-surface rounded-xl shadow-lg dark:shadow-none ring-2 ring-emerald-300' : ''}
                                         >
                                           <Section
                                             section={section}
@@ -896,7 +896,7 @@ export default function ProjectView({ project }: ProjectViewProps) {
                   ref={dropProvided.innerRef}
                   {...dropProvided.droppableProps}
                   className={`min-h-[20px] rounded-lg transition-colors ${
-                    dropSnapshot.isDraggingOver ? 'bg-emerald-50 ring-2 ring-emerald-300 ring-dashed' : ''
+                    dropSnapshot.isDraggingOver ? 'bg-emerald-50 dark:bg-emerald-950/30 ring-2 ring-emerald-300 ring-dashed' : ''
                   }`}
                 >
                   {ungroupedSections.map((section, index) => (
@@ -910,7 +910,7 @@ export default function ProjectView({ project }: ProjectViewProps) {
                         <div
                           ref={dragProvided.innerRef}
                           {...dragProvided.draggableProps}
-                          className={dragSnapshot.isDragging ? 'bg-white rounded-xl shadow-lg ring-2 ring-emerald-300' : ''}
+                          className={dragSnapshot.isDragging ? 'bg-surface rounded-xl shadow-lg dark:shadow-none ring-2 ring-emerald-300' : ''}
                         >
                           <Section
                             section={section}
@@ -939,7 +939,7 @@ export default function ProjectView({ project }: ProjectViewProps) {
           type="button"
           onClick={handleAddSection}
           disabled={createSection.isPending}
-          className="flex items-center justify-center gap-2 flex-1 rounded-xl border-2 border-dashed border-neutral-300 py-4 text-neutral-500 hover:border-neutral-400 hover:text-neutral-600 hover:bg-neutral-50 transition-colors disabled:opacity-50"
+          className="flex items-center justify-center gap-2 flex-1 rounded-xl border-2 border-dashed border-border-hover py-4 text-text-tertiary hover:border-text-muted hover:text-text-tertiary hover:bg-surface-hover transition-colors disabled:opacity-50"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -952,7 +952,7 @@ export default function ProjectView({ project }: ProjectViewProps) {
           type="button"
           onClick={handleAddGroup}
           disabled={createSectionGroup.isPending}
-          className="flex items-center justify-center gap-2 flex-1 rounded-xl border-2 border-dashed border-neutral-300 py-4 text-neutral-500 hover:border-neutral-400 hover:text-neutral-600 hover:bg-neutral-50 transition-colors disabled:opacity-50"
+          className="flex items-center justify-center gap-2 flex-1 rounded-xl border-2 border-dashed border-border-hover py-4 text-text-tertiary hover:border-text-muted hover:text-text-tertiary hover:bg-surface-hover transition-colors disabled:opacity-50"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />

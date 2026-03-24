@@ -28,20 +28,20 @@ export default function ExtensionPage() {
     <div className="max-w-3xl mx-auto">
       {/* Page header */}
       <header className="mb-8">
-        <p className="text-xs font-bold tracking-[0.15em] uppercase text-neutral-400 mb-1">
+        <p className="text-xs font-bold tracking-[0.15em] uppercase text-text-muted mb-1">
           Rozszerzenie
         </p>
-        <h1 className="text-2xl font-bold tracking-tight text-neutral-900">
+        <h1 className="text-2xl font-bold tracking-tight text-text-primary">
           Pobierz wtyczkę SAIVED
         </h1>
-        <p className="text-neutral-500 mt-1">
+        <p className="text-text-tertiary mt-1">
           Zbieraj produkty ze sklepów internetowych jednym kliknięciem
         </p>
       </header>
 
       <div className="space-y-8">
         {/* Download Section */}
-        <section className="rounded-2xl border border-neutral-200 bg-white p-6">
+        <section className="rounded-2xl border border-border bg-surface p-6">
           <div className="flex items-start gap-4">
             {/* Extension icon */}
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center flex-shrink-0">
@@ -51,10 +51,10 @@ export default function ExtensionPage() {
             </div>
 
             <div className="flex-1">
-              <h2 className="text-lg font-semibold text-neutral-900 mb-1">
+              <h2 className="text-lg font-semibold text-text-primary mb-1">
                 Wtyczka SAIVED
               </h2>
-              <p className="text-sm text-neutral-500 mb-4">
+              <p className="text-sm text-text-tertiary mb-4">
                 Wersja 0.1.0 &middot; Kompatybilna z Chrome i Firefox
               </p>
 
@@ -73,8 +73,8 @@ export default function ExtensionPage() {
         </section>
 
         {/* Installation Instructions Section */}
-        <section className="rounded-2xl border border-neutral-200 bg-white p-6">
-          <h2 className="text-lg font-semibold text-neutral-900 mb-4">
+        <section className="rounded-2xl border border-border bg-surface p-6">
+          <h2 className="text-lg font-semibold text-text-primary mb-4">
             Instrukcja instalacji
           </h2>
 
@@ -85,8 +85,8 @@ export default function ExtensionPage() {
               onClick={() => setBrowser('chrome')}
               className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                 browser === 'chrome'
-                  ? 'bg-neutral-900 text-white'
-                  : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
+                  ? 'bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900'
+                  : 'bg-surface-muted text-text-tertiary hover:bg-surface-inset'
               }`}
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
@@ -99,8 +99,8 @@ export default function ExtensionPage() {
               onClick={() => setBrowser('firefox')}
               className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                 browser === 'firefox'
-                  ? 'bg-neutral-900 text-white'
-                  : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
+                  ? 'bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900'
+                  : 'bg-surface-muted text-text-tertiary hover:bg-surface-inset'
               }`}
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
@@ -115,63 +115,63 @@ export default function ExtensionPage() {
             <div className="space-y-4">
               <ol className="space-y-3">
                 <li className="flex gap-3">
-                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-sm font-semibold flex items-center justify-center">
+                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 text-sm font-semibold flex items-center justify-center">
                     1
                   </span>
                   <div>
-                    <p className="text-sm text-neutral-700">
+                    <p className="text-sm text-text-secondary">
                       <strong>Rozpakuj</strong> pobrany plik ZIP do wybranego folderu
                     </p>
                   </div>
                 </li>
                 <li className="flex gap-3">
-                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-sm font-semibold flex items-center justify-center">
+                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 text-sm font-semibold flex items-center justify-center">
                     2
                   </span>
                   <div>
-                    <p className="text-sm text-neutral-700">
-                      Otwórz <code className="px-1.5 py-0.5 rounded bg-neutral-100 text-neutral-800 text-xs font-mono">chrome://extensions</code> w przeglądarce
+                    <p className="text-sm text-text-secondary">
+                      Otwórz <code className="px-1.5 py-0.5 rounded bg-surface-muted text-text-primary text-xs font-mono">chrome://extensions</code> w przeglądarce
                     </p>
                   </div>
                 </li>
                 <li className="flex gap-3">
-                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-sm font-semibold flex items-center justify-center">
+                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 text-sm font-semibold flex items-center justify-center">
                     3
                   </span>
                   <div>
-                    <p className="text-sm text-neutral-700">
+                    <p className="text-sm text-text-secondary">
                       Włącz <strong>&quot;Tryb dewelopera&quot;</strong> (przełącznik w prawym górnym rogu)
                     </p>
                   </div>
                 </li>
                 <li className="flex gap-3">
-                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-sm font-semibold flex items-center justify-center">
+                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 text-sm font-semibold flex items-center justify-center">
                     4
                   </span>
                   <div>
-                    <p className="text-sm text-neutral-700">
+                    <p className="text-sm text-text-secondary">
                       Kliknij <strong>&quot;Załaduj rozpakowane&quot;</strong> (Load unpacked)
                     </p>
                   </div>
                 </li>
                 <li className="flex gap-3">
-                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-sm font-semibold flex items-center justify-center">
+                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 text-sm font-semibold flex items-center justify-center">
                     5
                   </span>
                   <div>
-                    <p className="text-sm text-neutral-700">
+                    <p className="text-sm text-text-secondary">
                       Wybierz folder z rozpakowaną wtyczką
                     </p>
                   </div>
                 </li>
               </ol>
 
-              <div className="rounded-xl bg-amber-50 border border-amber-200 p-4 mt-4">
+              <div className="rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/30 p-4 mt-4">
                 <div className="flex gap-3">
-                  <svg className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <p className="text-sm text-amber-800">
+                  <p className="text-sm text-amber-800 dark:text-amber-300">
                     <strong>Wskazówka:</strong> Przypnij wtyczkę do paska narzędzi klikając ikonę puzzla i wybierając pin przy SAIVED.
                   </p>
                 </div>
@@ -184,53 +184,53 @@ export default function ExtensionPage() {
             <div className="space-y-4">
               <ol className="space-y-3">
                 <li className="flex gap-3">
-                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-sm font-semibold flex items-center justify-center">
+                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 text-sm font-semibold flex items-center justify-center">
                     1
                   </span>
                   <div>
-                    <p className="text-sm text-neutral-700">
+                    <p className="text-sm text-text-secondary">
                       <strong>Rozpakuj</strong> pobrany plik ZIP do wybranego folderu
                     </p>
                   </div>
                 </li>
                 <li className="flex gap-3">
-                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-sm font-semibold flex items-center justify-center">
+                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 text-sm font-semibold flex items-center justify-center">
                     2
                   </span>
                   <div>
-                    <p className="text-sm text-neutral-700">
-                      Otwórz <code className="px-1.5 py-0.5 rounded bg-neutral-100 text-neutral-800 text-xs font-mono">about:debugging#/runtime/this-firefox</code>
+                    <p className="text-sm text-text-secondary">
+                      Otwórz <code className="px-1.5 py-0.5 rounded bg-surface-muted text-text-primary text-xs font-mono">about:debugging#/runtime/this-firefox</code>
                     </p>
                   </div>
                 </li>
                 <li className="flex gap-3">
-                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-sm font-semibold flex items-center justify-center">
+                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 text-sm font-semibold flex items-center justify-center">
                     3
                   </span>
                   <div>
-                    <p className="text-sm text-neutral-700">
+                    <p className="text-sm text-text-secondary">
                       Kliknij <strong>&quot;Załaduj tymczasowy dodatek...&quot;</strong> (Load Temporary Add-on)
                     </p>
                   </div>
                 </li>
                 <li className="flex gap-3">
-                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-sm font-semibold flex items-center justify-center">
+                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 text-sm font-semibold flex items-center justify-center">
                     4
                   </span>
                   <div>
-                    <p className="text-sm text-neutral-700">
-                      Wybierz plik <code className="px-1.5 py-0.5 rounded bg-neutral-100 text-neutral-800 text-xs font-mono">manifest.json</code> z rozpakowanego folderu
+                    <p className="text-sm text-text-secondary">
+                      Wybierz plik <code className="px-1.5 py-0.5 rounded bg-surface-muted text-text-primary text-xs font-mono">manifest.json</code> z rozpakowanego folderu
                     </p>
                   </div>
                 </li>
               </ol>
 
-              <div className="rounded-xl bg-amber-50 border border-amber-200 p-4 mt-4">
+              <div className="rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/30 p-4 mt-4">
                 <div className="flex gap-3">
-                  <svg className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                   </svg>
-                  <p className="text-sm text-amber-800">
+                  <p className="text-sm text-amber-800 dark:text-amber-300">
                     <strong>Uwaga:</strong> Firefox wymaga ponownego załadowania wtyczki po każdym restarcie przeglądarki. To ograniczenie tymczasowych dodatków.
                   </p>
                 </div>
@@ -240,51 +240,51 @@ export default function ExtensionPage() {
         </section>
 
         {/* Post-installation Section */}
-        <section className="rounded-2xl border border-neutral-200 bg-white p-6">
-          <h2 className="text-lg font-semibold text-neutral-900 mb-4">
+        <section className="rounded-2xl border border-border bg-surface p-6">
+          <h2 className="text-lg font-semibold text-text-primary mb-4">
             Po instalacji
           </h2>
 
           <ol className="space-y-3 mb-6">
             <li className="flex gap-3">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-sm font-semibold flex items-center justify-center">
+              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 text-sm font-semibold flex items-center justify-center">
                 1
               </span>
-              <p className="text-sm text-neutral-700">
+              <p className="text-sm text-text-secondary">
                 Kliknij ikonę wtyczki SAIVED w pasku przeglądarki
               </p>
             </li>
             <li className="flex gap-3">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-sm font-semibold flex items-center justify-center">
+              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 text-sm font-semibold flex items-center justify-center">
                 2
               </span>
-              <p className="text-sm text-neutral-700">
+              <p className="text-sm text-text-secondary">
                 Wklej swój token API (skopiuj go poniżej)
               </p>
             </li>
             <li className="flex gap-3">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-sm font-semibold flex items-center justify-center">
+              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 text-sm font-semibold flex items-center justify-center">
                 3
               </span>
-              <p className="text-sm text-neutral-700">
+              <p className="text-sm text-text-secondary">
                 <strong>Gotowe!</strong> Możesz teraz zbierać produkty ze sklepów
               </p>
             </li>
           </ol>
 
           {/* Token display */}
-          <div className="rounded-xl bg-neutral-50 border border-neutral-200 p-4">
-            <label className="block text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-2">
+          <div className="rounded-xl bg-surface-hover border border-border p-4">
+            <label className="block text-xs font-semibold text-text-tertiary uppercase tracking-wider mb-2">
               Twój token API
             </label>
             <div className="flex items-center gap-3">
-              <code className="flex-1 rounded-lg border border-neutral-200 bg-white px-4 py-2.5 text-sm font-mono text-neutral-600 truncate">
+              <code className="flex-1 rounded-lg border border-border bg-surface px-4 py-2.5 text-sm font-mono text-text-tertiary truncate">
                 {user?.api_token}
               </code>
               <button
                 type="button"
                 onClick={handleCopyToken}
-                className="inline-flex items-center gap-2 rounded-full border border-neutral-300 bg-white px-4 py-2.5 text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-colors"
+                className="inline-flex items-center gap-2 rounded-full border border-border-hover bg-surface px-4 py-2.5 text-sm font-medium text-text-secondary hover:bg-surface-hover transition-colors"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -296,13 +296,13 @@ export default function ExtensionPage() {
         </section>
 
         {/* Help Section */}
-        <section className="rounded-2xl border border-neutral-200 bg-white p-6">
-          <h2 className="text-lg font-semibold text-neutral-900 mb-2">
+        <section className="rounded-2xl border border-border bg-surface p-6">
+          <h2 className="text-lg font-semibold text-text-primary mb-2">
             Potrzebujesz pomocy?
           </h2>
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-text-tertiary">
             Jeśli masz pytania lub problemy z instalacją, napisz do nas na{' '}
-            <a href="mailto:support@saived.ai" className="text-emerald-600 hover:text-emerald-700 font-medium">
+            <a href="mailto:support@saived.ai" className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 font-medium">
               support@saived.ai
             </a>
           </p>

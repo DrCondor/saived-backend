@@ -69,7 +69,7 @@ export default function EditableField({
   }
 
   if (isEditing) {
-    const baseInputClass = `w-full bg-white border border-emerald-300 rounded px-1.5 py-0.5 text-neutral-900 focus:outline-none focus:ring-1 focus:ring-emerald-500 ${inputClassName}`;
+    const baseInputClass = `w-full bg-surface border border-emerald-300 rounded px-1.5 py-0.5 text-text-primary focus:outline-none focus:ring-1 focus:ring-emerald-500 ${inputClassName}`;
 
     if (type === 'textarea') {
       return (
@@ -109,7 +109,7 @@ export default function EditableField({
     <button
       type="button"
       onClick={() => setIsEditing(true)}
-      className={`text-left hover:bg-emerald-50 hover:text-emerald-700 rounded px-1.5 py-0.5 -mx-1.5 -my-0.5 transition-colors ${isEmpty ? 'text-neutral-400' : ''} ${className}`}
+      className={`text-left hover:bg-emerald-50 dark:hover:bg-emerald-950/30 hover:text-emerald-700 dark:hover:text-emerald-400 rounded px-1.5 py-0.5 -mx-1.5 -my-0.5 transition-colors ${isEmpty ? 'text-text-muted' : ''} ${className}`}
     >
       {displayValue}
     </button>
