@@ -3,7 +3,7 @@ import { Droppable, Draggable, type DraggableProvidedDragHandleProps } from '@he
 import type { ProjectSection, CreateItemInput, UpdateItemInput, ViewMode, ItemType } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
 import { shouldIncludeInSum } from '../../utils/statusHelpers';
-import { useCreateItem, useUpdateItem, useDeleteItem, useDuplicateItem } from '../../hooks/useItems';
+import { useCreateItem, useUpdateItem, useDeleteItem, useDuplicateItem, useAddFromFavorite } from '../../hooks/useItems';
 import { useUpdateSection, useDeleteSection } from '../../hooks/useSections';
 import { useCurrentUser } from '../../hooks/useUser';
 import { useToggleFavorite } from '../../hooks/useFavorites';
@@ -11,6 +11,7 @@ import ItemCard from './ItemCard';
 import ItemCardCompact from './ItemCardCompact';
 import ItemCardMoodboard from './ItemCardMoodboard';
 import AddItemForm from './AddItemForm';
+import FavoritePicker from './FavoritePicker';
 
 interface SectionProps {
   section: ProjectSection;
@@ -56,7 +57,7 @@ export default function Section({ section, projectId, viewMode, isDnDEnabled, is
   const [isCollapsed, setIsCollapsed] = useState(() => getCollapsedSections().has(section.id));
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(section.name);
-  const [openForm, setOpenForm] = useState<ItemType | null>(null);
+  const [openForm, setOpenForm] = useState<ItemType | 'favorite' | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const dragStartPosRef = useRef<{ x: number; y: number } | null>(null);
 
@@ -70,6 +71,7 @@ export default function Section({ section, projectId, viewMode, isDnDEnabled, is
   const updateItem = useUpdateItem(projectId, section.id);
   const deleteItem = useDeleteItem(projectId, section.id);
   const duplicateItemMutation = useDuplicateItem(projectId, section.id);
+  const addFromFavorite = useAddFromFavorite(projectId, section.id);
   const toggleFavorite = useToggleFavorite();
 
   useEffect(() => {
@@ -436,7 +438,32 @@ export default function Section({ section, projectId, viewMode, isDnDEnabled, is
                 </svg>
                 Notatka
               </button>
+
+              {/* Divider */}
+              <div className="w-px bg-border" />
+
+              {/* Favorites picker */}
+              <button
+                type="button"
+                onClick={() => setOpenForm('favorite')}
+                className="inline-flex items-center justify-center px-3 py-2 text-xs font-medium text-text-muted hover:text-rose-500 hover:bg-surface-hover transition-colors"
+                title="Dodaj z ulubionych"
+              >
+                <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+              </button>
             </div>
+          ) : openForm === 'favorite' ? (
+            <FavoritePicker
+              onSelect={(itemId) => {
+                addFromFavorite.mutate(itemId, {
+                  onSuccess: () => setOpenForm(null),
+                });
+              }}
+              onClose={() => setOpenForm(null)}
+              isAdding={addFromFavorite.isPending}
+            />
           ) : (
             <AddItemForm
               itemType={openForm}

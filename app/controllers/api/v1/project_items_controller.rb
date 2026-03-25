@@ -5,6 +5,7 @@ module Api
 
       before_action :set_section
       before_action :set_item, only: [ :update, :destroy, :duplicate ]
+      before_action :set_source_item, only: [ :from_favorite ]
       before_action :set_section_for_restore, only: [ :restore ]
       before_action :set_deleted_item, only: [ :restore ]
 
@@ -69,6 +70,30 @@ module Api
         render json: item_json(new_item), status: :created
       end
 
+      # POST /api/v1/project_sections/:section_id/items/from_favorite/:item_id
+      def from_favorite
+        new_item = @source_item.dup
+        new_item.deleted_at = nil
+        new_item.project_section = @section
+
+        # Append at end of target section
+        max_position = @section.items.maximum(:position)
+        new_item.position = max_position ? max_position + 1 : 0
+
+        new_item.save!
+
+        # Copy ActiveStorage attachment if present
+        if @source_item.attachment.attached?
+          new_item.attachment.attach(
+            io: StringIO.new(@source_item.attachment.download),
+            filename: @source_item.attachment.filename.to_s,
+            content_type: @source_item.attachment.content_type
+          )
+        end
+
+        render json: item_json(new_item), status: :created
+      end
+
       # POST /api/v1/project_sections/:section_id/items/:id/restore
       def restore
         if @item.deleted_at.nil?
@@ -96,6 +121,14 @@ module Api
 
       def set_item
         @item = @section.items.find(params[:id])
+      rescue ActiveRecord::RecordNotFound
+        render json: { error: "Not found" }, status: :not_found
+      end
+
+      def set_source_item
+        @source_item = ProjectItem.joins(project_section: :project)
+                                  .where(projects: { id: current_user.projects.select(:id) })
+                                  .find(params[:item_id])
       rescue ActiveRecord::RecordNotFound
         render json: { error: "Not found" }, status: :not_found
       end

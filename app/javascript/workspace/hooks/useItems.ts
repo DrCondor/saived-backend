@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createItem, updateItem, deleteItem, duplicateItem, restoreItem } from '../api/items';
+import { createItem, updateItem, deleteItem, duplicateItem, restoreItem, copyFromFavorite } from '../api/items';
 import { useOptionalUndoRedo } from '../contexts/UndoRedoContext';
 import type { CreateItemInput, UpdateItemInput, Project, ProjectItem } from '../types';
 
@@ -376,6 +376,17 @@ export function useDuplicateItem(projectId: number, sectionId: number) {
     },
 
     onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['project', projectId] });
+    },
+  });
+}
+
+export function useAddFromFavorite(projectId: number, sectionId: number) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (sourceItemId: number) => copyFromFavorite(sectionId, sourceItemId),
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['project', projectId] });
     },
   });

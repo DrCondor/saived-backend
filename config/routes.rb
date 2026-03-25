@@ -72,6 +72,7 @@ Rails.application.routes.draw do
           post :restore, on: :member
           post :duplicate, on: :member
         end
+        post "items/from_favorite/:item_id", to: "project_items#from_favorite", as: :item_from_favorite
       end
 
       # Item favorites

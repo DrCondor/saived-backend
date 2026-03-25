@@ -87,6 +87,16 @@ export async function duplicateItem(
   );
 }
 
+export async function copyFromFavorite(
+  sectionId: number,
+  itemId: number
+): Promise<ProjectItem> {
+  return apiClient<ProjectItem>(
+    `/project_sections/${sectionId}/items/from_favorite/${itemId}`,
+    { method: 'POST' }
+  );
+}
+
 export async function restoreItem(
   sectionId: number,
   itemId: number

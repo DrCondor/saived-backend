@@ -387,4 +387,175 @@ class Api::V1::ProjectItemsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :not_found
   end
+
+  # ============================================================
+  # FROM FAVORITE (copy item from another project/section)
+  # ============================================================
+
+  test "from_favorite copies a product into the target section" do
+    source_project = create(:project, owner: @user)
+    source_project.project_memberships.create!(user: @user, role: "owner")
+    source_section = create(:project_section, project: source_project)
+    source_item = create(:project_item, project_section: source_section,
+      name: "Szafka MALM", note: "Biała", quantity: 2,
+      unit_price_cents: 24999, currency: "PLN", category: "Meble",
+      dimensions: "80x48x100", status: "kupione", item_type: "product",
+      external_url: "https://ikea.pl/p/malm", thumbnail_url: "https://ikea.pl/img/malm.jpg",
+      discount_percent: 15, discount_code: "SALE15", discount_label: "-15% (SALE15)",
+      original_unit_price_cents: 29411, position: 0)
+
+    assert_difference "ProjectItem.count", 1 do
+      post api_v1_project_section_item_from_favorite_path(@section, item_id: source_item.id),
+           headers: auth_headers(@user)
+    end
+
+    assert_response :created
+    assert_equal "Szafka MALM", json_response["name"]
+    assert_equal "Biała", json_response["note"]
+    assert_equal 2, json_response["quantity"]
+    assert_equal 249.99, json_response["unit_price"]
+    assert_equal "PLN", json_response["currency"]
+    assert_equal "Meble", json_response["category"]
+    assert_equal "80x48x100", json_response["dimensions"]
+    assert_equal "kupione", json_response["status"]
+    assert_equal "product", json_response["item_type"]
+    assert_equal "https://ikea.pl/p/malm", json_response["external_url"]
+    assert_equal "https://ikea.pl/img/malm.jpg", json_response["thumbnail_url"]
+    assert_equal 15, json_response["discount_percent"]
+    assert_equal "-15% (SALE15)", json_response["discount_label"]
+    assert_not_equal source_item.id, json_response["id"]
+  end
+
+  test "from_favorite copies a contractor into the target section" do
+    source_project = create(:project, owner: @user)
+    source_project.project_memberships.create!(user: @user, role: "owner")
+    source_section = create(:project_section, project: source_project)
+    source_item = create(:project_item, project_section: source_section,
+      name: "Elektryk Jan", item_type: "contractor",
+      unit_price_cents: 300000, status: "kupione",
+      phone: "555123456", address: "ul. Prądowa 5", position: 0)
+
+    assert_difference "ProjectItem.count", 1 do
+      post api_v1_project_section_item_from_favorite_path(@section, item_id: source_item.id),
+           headers: auth_headers(@user)
+    end
+
+    assert_response :created
+    assert_equal "Elektryk Jan", json_response["name"]
+    assert_equal "contractor", json_response["item_type"]
+    assert_equal 3000.0, json_response["unit_price"]
+    assert_equal "555123456", json_response["phone"]
+    assert_equal "ul. Prądowa 5", json_response["address"]
+  end
+
+  test "from_favorite appends item at end of target section" do
+    create(:project_item, project_section: @section, name: "Existing 1", position: 0)
+    create(:project_item, project_section: @section, name: "Existing 2", position: 1)
+
+    source_project = create(:project, owner: @user)
+    source_project.project_memberships.create!(user: @user, role: "owner")
+    source_section = create(:project_section, project: source_project)
+    source_item = create(:project_item, project_section: source_section, name: "New from fav", position: 0)
+
+    post api_v1_project_section_item_from_favorite_path(@section, item_id: source_item.id),
+         headers: auth_headers(@user)
+
+    assert_response :created
+    new_item = ProjectItem.find(json_response["id"])
+    assert_equal 2, new_item.position
+  end
+
+  test "from_favorite into empty section assigns position 0" do
+    source_project = create(:project, owner: @user)
+    source_project.project_memberships.create!(user: @user, role: "owner")
+    source_section = create(:project_section, project: source_project)
+    source_item = create(:project_item, project_section: source_section, name: "Item", position: 0)
+
+    post api_v1_project_section_item_from_favorite_path(@section, item_id: source_item.id),
+         headers: auth_headers(@user)
+
+    assert_response :created
+    new_item = ProjectItem.find(json_response["id"])
+    assert_equal 0, new_item.position
+  end
+
+  test "from_favorite does not copy capture samples or favorites" do
+    source_project = create(:project, owner: @user)
+    source_project.project_memberships.create!(user: @user, role: "owner")
+    source_section = create(:project_section, project: source_project)
+    source_item = create(:project_item, project_section: source_section, position: 0)
+    create(:product_capture_sample, project_item: source_item, user: @user,
+      url: "https://test.com", domain: "test.com")
+    @user.item_favorites.create!(project_item: source_item)
+
+    post api_v1_project_section_item_from_favorite_path(@section, item_id: source_item.id),
+         headers: auth_headers(@user)
+
+    assert_response :created
+    new_item = ProjectItem.find(json_response["id"])
+    assert_equal 0, new_item.product_capture_samples.count
+    assert_equal false, json_response["favorite"]
+  end
+
+  test "from_favorite copies attachment as independent blob" do
+    source_project = create(:project, owner: @user)
+    source_project.project_memberships.create!(user: @user, role: "owner")
+    source_section = create(:project_section, project: source_project)
+    source_item = create(:project_item, project_section: source_section,
+      name: "With file", item_type: "contractor", position: 0)
+    source_item.attachment.attach(
+      io: StringIO.new("contract content"),
+      filename: "umowa.pdf",
+      content_type: "application/pdf"
+    )
+
+    assert_difference "ActiveStorage::Blob.count", 1 do
+      post api_v1_project_section_item_from_favorite_path(@section, item_id: source_item.id),
+           headers: auth_headers(@user)
+    end
+
+    assert_response :created
+    new_item = ProjectItem.find(json_response["id"])
+    assert new_item.attachment.attached?
+    assert_equal "umowa.pdf", new_item.attachment.filename.to_s
+    assert_equal "contract content", new_item.attachment.download
+    assert_not_equal source_item.attachment.blob_id, new_item.attachment.blob_id
+  end
+
+  test "from_favorite returns 401 without auth" do
+    post api_v1_project_section_item_from_favorite_path(@section, item_id: 1)
+    assert_response :unauthorized
+  end
+
+  test "from_favorite returns 404 for inaccessible target section" do
+    other_user = create(:user)
+    other_project = create(:project, owner: other_user)
+    other_section = create(:project_section, project: other_project)
+
+    source_item = create(:project_item, project_section: @section, position: 0)
+
+    post api_v1_project_section_item_from_favorite_path(other_section, item_id: source_item.id),
+         headers: auth_headers(@user)
+
+    assert_response :not_found
+  end
+
+  test "from_favorite returns 404 for inaccessible source item" do
+    other_user = create(:user)
+    other_project = create(:project, owner: other_user)
+    other_section = create(:project_section, project: other_project)
+    other_item = create(:project_item, project_section: other_section, position: 0)
+
+    post api_v1_project_section_item_from_favorite_path(@section, item_id: other_item.id),
+         headers: auth_headers(@user)
+
+    assert_response :not_found
+  end
+
+  test "from_favorite returns 404 for non-existent source item" do
+    post api_v1_project_section_item_from_favorite_path(@section, item_id: 999999),
+         headers: auth_headers(@user)
+
+    assert_response :not_found
+  end
 end
