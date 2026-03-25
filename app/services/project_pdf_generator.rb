@@ -432,15 +432,22 @@ class ProjectPdfGenerator
     # Section header - simple text with number
     render_section_header(section, section_number)
 
-    # Items table
-    if items.any?
-      render_items_table(items)
-    else
+    # Separate notes from priced items (products/contractors)
+    notes = items.select(&:note?)
+    priced_items = items.reject(&:note?)
+
+    # Render notes first - above the items table
+    render_section_notes(notes) if notes.any?
+
+    # Items table (products and contractors only)
+    if priced_items.any?
+      render_items_table(priced_items)
+    elsif notes.empty?
       render_empty_section_message
     end
 
-    # Section subtotal from filtered items
-    subtotal = items.sum { |item| item.include_in_sum? ? item.total_price : 0 }
+    # Section subtotal from filtered items (notes return 0, but we use priced_items for clarity)
+    subtotal = priced_items.sum { |item| item.include_in_sum? ? item.total_price : 0 }
     @section_subtotals << subtotal
     render_section_subtotal_value(subtotal)
 
@@ -461,6 +468,53 @@ class ProjectPdfGenerator
     stroke_horizontal_line 0, CONTENT_WIDTH, at: cursor
 
     move_down 6
+  end
+
+  def render_section_notes(notes)
+    notes.each do |note|
+      start_new_page if cursor < 50
+
+      # Light background box for the note
+      note_title = note.name.present? ? note.name : nil
+      note_body = note.note.present? ? note.note : nil
+
+      # Calculate content height estimate
+      title_height = note_title ? 14 : 0
+      body_height = note_body ? [ (note_body.length / 70.0).ceil * 13, 13 ].max : 0
+      box_height = title_height + body_height + 14  # padding top + bottom
+
+      # Draw light background
+      fill_color "f7f7f5"
+      fill_rectangle [ 0, cursor ], CONTENT_WIDTH, box_height
+      # Left accent bar
+      fill_color BRAND_BORDER
+      fill_rectangle [ 0, cursor ], 3, box_height
+
+      # Render note content inside the box
+      y_pos = cursor - 7  # top padding
+
+      if note_title
+        fill_color BRAND_PRIMARY
+        font_size 9
+        text_box note_title,
+                 at: [ 12, y_pos ],
+                 width: CONTENT_WIDTH - 24,
+                 height: 14,
+                 style: :bold
+        y_pos -= 14
+      end
+
+      if note_body
+        fill_color BRAND_SECONDARY
+        font_size 8.5
+        text_box note_body,
+                 at: [ 12, y_pos ],
+                 width: CONTENT_WIDTH - 24,
+                 height: body_height
+      end
+
+      move_down box_height + 6
+    end
   end
 
   def render_items_table(items)

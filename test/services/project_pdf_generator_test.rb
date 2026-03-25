@@ -218,6 +218,71 @@ class ProjectPdfGeneratorTest < ActiveSupport::TestCase
     end
   end
 
+  test "renders note items above the items table without price columns" do
+    # Note item - should render as a styled text block, not in the table
+    create(:project_item, project_section: @section, name: "Informacja", note: "Poniżej 3 opcje płytek do łazienki", item_type: "note", quantity: 1)
+    # Product item - should render in the table with prices
+    create(:project_item, project_section: @section, name: "Płytka A", unit_price_cents: 5000)
+
+    generator = ProjectPdfGenerator.new(@project, @user)
+
+    assert_nothing_raised do
+      generator.generate
+      pdf_data = generator.to_pdf
+      assert pdf_data.present?
+      assert pdf_data.start_with?("%PDF")
+    end
+  end
+
+  test "renders section with only notes and no priced items" do
+    create(:project_item, project_section: @section, name: "Uwaga", note: "Klient preferuje jasne kolory", item_type: "note", quantity: 1)
+
+    generator = ProjectPdfGenerator.new(@project, @user)
+
+    assert_nothing_raised do
+      generator.generate
+      pdf_data = generator.to_pdf
+      assert pdf_data.present?
+    end
+  end
+
+  test "renders note with only body content" do
+    create(:project_item, project_section: @section, name: "Notatka", note: "To jest ważna informacja dla klienta dotycząca wyboru materiałów", item_type: "note", quantity: 1)
+
+    generator = ProjectPdfGenerator.new(@project, @user)
+
+    assert_nothing_raised do
+      generator.generate
+      pdf_data = generator.to_pdf
+      assert pdf_data.present?
+    end
+  end
+
+  test "renders multiple notes in a section" do
+    create(:project_item, project_section: @section, name: "Nota 1", note: "Pierwsza uwaga", item_type: "note", quantity: 1)
+    create(:project_item, project_section: @section, name: "Nota 2", note: "Druga uwaga", item_type: "note", quantity: 1)
+    create(:project_item, project_section: @section, name: "Krzesło", unit_price_cents: 30000)
+
+    generator = ProjectPdfGenerator.new(@project, @user)
+
+    assert_nothing_raised do
+      generator.generate
+      pdf_data = generator.to_pdf
+      assert pdf_data.present?
+    end
+  end
+
+  test "notes do not affect section subtotal" do
+    create(:project_item, project_section: @section, name: "Notatka", note: "Info", item_type: "note", quantity: 1)
+    create(:project_item, project_section: @section, name: "Stolik", unit_price_cents: 10000, quantity: 2, status: "kupione")
+
+    generator = ProjectPdfGenerator.new(@project, @user)
+    generator.generate
+
+    # Subtotal should only reflect the product (100.00 * 2 = 200.00)
+    assert_equal [ 200.0 ], generator.instance_variable_get(:@section_subtotals)
+  end
+
   test "handles items with external URLs" do
     create(:project_item, project_section: @section, name: "Chair", external_url: "https://ikea.pl/chair")
 
