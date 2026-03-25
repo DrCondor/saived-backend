@@ -23,6 +23,7 @@ class ProjectItem < ApplicationRecord
 
   validates :name, presence: true
   validates :quantity, numericality: { greater_than: 0 }, if: :product?
+  validate :quantity_must_be_integer_for_countable_units, if: :product?
   validates :status, presence: true
   validates :item_type, inclusion: { in: ITEM_TYPES }
 
@@ -62,6 +63,13 @@ class ProjectItem < ApplicationRecord
 
   def note?
     item_type == "note"
+  end
+
+  # Countable units that only allow whole numbers
+  COUNTABLE_UNITS = %w[szt kpl zestaw opak].freeze
+
+  def countable_unit?
+    COUNTABLE_UNITS.include?(unit_type || "szt")
   end
 
   # Unit types for quantity measurement
@@ -120,7 +128,7 @@ class ProjectItem < ApplicationRecord
     else
       # Products: price × quantity
       return nil unless quantity
-      (unit_price_cents * quantity) / 100.0
+      ((unit_price_cents * quantity) / 100.0).to_f
     end
   end
 
@@ -177,5 +185,14 @@ class ProjectItem < ApplicationRecord
 
     custom = owner.custom_statuses.find { |s| s["id"] == status }
     custom ? custom["include_in_sum"] : true
+  end
+
+  private
+
+  def quantity_must_be_integer_for_countable_units
+    return unless quantity.present? && countable_unit?
+    unless quantity == quantity.to_i
+      errors.add(:quantity, "musi być liczbą całkowitą dla #{UNIT_TYPES.dig(unit_type, :full_name) || unit_type}")
+    end
   end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_02_11_170534) do
+ActiveRecord::Schema[7.2].define(version: 2026_03_25_125932) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -148,7 +148,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_11_170534) do
     t.bigint "project_section_id", null: false
     t.string "name", null: false
     t.text "note"
-    t.integer "quantity", default: 1, null: false
+    t.decimal "quantity", precision: 10, scale: 2, default: "1.0", null: false
     t.integer "unit_price_cents"
     t.string "currency", default: "PLN", null: false
     t.string "category"

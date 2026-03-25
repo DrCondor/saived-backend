@@ -40,3 +40,15 @@ export function getUnitTypeConfig(unitType: UnitType): UnitTypeConfig {
 export function getUnitLabel(unitType: UnitType): string {
   return getUnitTypeConfig(unitType).label;
 }
+
+/**
+ * Countable units (pieces, sets, packages) - only whole numbers make sense
+ */
+const COUNTABLE_UNITS: UnitType[] = ['szt', 'kpl', 'zestaw', 'opak'];
+
+/**
+ * Check if a unit type allows decimal quantities (m², kg, etc.)
+ */
+export function allowsDecimalQuantity(unitType: UnitType): boolean {
+  return !COUNTABLE_UNITS.includes(unitType);
+}

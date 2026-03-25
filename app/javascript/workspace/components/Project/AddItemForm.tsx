@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import type { CreateItemInput, ItemType, CustomCategory } from '../../types';
 import { SYSTEM_STATUSES } from '../../utils/statusHelpers';
-import { UNIT_TYPES, DEFAULT_UNIT_TYPE } from '../../utils/unitTypes';
+import { UNIT_TYPES, DEFAULT_UNIT_TYPE, allowsDecimalQuantity } from '../../utils/unitTypes';
 import { getAllCategories } from '../../utils/categoryHelpers';
 
 interface AddItemFormProps {
@@ -46,10 +46,17 @@ export default function AddItemForm({ onSubmit, isSubmitting, itemType, onClose,
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value, type } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === 'number' ? (value ? parseFloat(value) : undefined) : value,
-    }));
+    setFormData((prev) => {
+      const updated = {
+        ...prev,
+        [name]: type === 'number' ? (value ? parseFloat(value) : undefined) : value,
+      };
+      // Round quantity when switching to a countable unit
+      if (name === 'unit_type' && updated.quantity && !allowsDecimalQuantity(value as any)) {
+        updated.quantity = Math.ceil(updated.quantity);
+      }
+      return updated;
+    });
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -174,7 +181,8 @@ export default function AddItemForm({ onSubmit, isSubmitting, itemType, onClose,
                     name="quantity"
                     value={formData.quantity}
                     onChange={handleChange}
-                    min={1}
+                    min={allowsDecimalQuantity(formData.unit_type as any) ? 0.01 : 1}
+                    step={allowsDecimalQuantity(formData.unit_type as any) ? "any" : "1"}
                     className="flex-1 rounded-xl border border-border-hover bg-surface px-3 py-2 text-sm text-text-primary focus:border-neutral-900 dark:focus:border-neutral-100 focus:outline-none focus:ring-1 focus:ring-neutral-900 dark:focus:ring-neutral-100"
                   />
                   <select

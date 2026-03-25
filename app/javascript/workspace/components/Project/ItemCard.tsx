@@ -2,6 +2,7 @@ import { useState, memo, useRef } from 'react';
 import type { ProjectItem, UpdateItemInput, CustomStatus, CustomCategory, UnitType } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
 import { getAllCategories } from '../../utils/categoryHelpers';
+import { allowsDecimalQuantity } from '../../utils/unitTypes';
 import EditableField from '../shared/EditableField';
 import StatusSelect from '../shared/StatusSelect';
 import UnitTypeSelect from '../shared/UnitTypeSelect';
@@ -74,8 +75,9 @@ const ItemCard = memo(function ItemCard({
 
     // Convert numeric fields
     if (field === 'quantity') {
-      const num = parseInt(value, 10);
-      processedValue = isNaN(num) || num < 1 ? 1 : num;
+      const num = parseFloat(value.replace(',', '.'));
+      const parsed = isNaN(num) || num < 0.01 ? 1 : num;
+      processedValue = allowsDecimalQuantity(item.unit_type as any) ? parsed : Math.ceil(parsed);
     } else if (field === 'unit_price') {
       const num = parseFloat(value.replace(',', '.'));
       processedValue = isNaN(num) ? undefined : num;
@@ -477,7 +479,14 @@ const ItemCard = memo(function ItemCard({
                     />
                     <UnitTypeSelect
                       value={item.unit_type}
-                      onChange={(v: UnitType) => onUpdate?.(item.id, { unit_type: v })}
+                      onChange={(v: UnitType) => {
+                        const update: UpdateItemInput = { unit_type: v };
+                        // Round up quantity when switching to a countable unit
+                        if (!allowsDecimalQuantity(v) && item.quantity !== Math.ceil(item.quantity)) {
+                          update.quantity = Math.ceil(item.quantity);
+                        }
+                        onUpdate?.(item.id, update);
+                      }}
                     />
                   </div>
                 </div>

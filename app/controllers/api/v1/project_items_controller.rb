@@ -121,7 +121,7 @@ module Api
           id: item.id,
           name: item.name,
           note: item.note,
-          quantity: item.quantity,
+          quantity: item.quantity&.to_f,
           unit_type: item.unit_type,
           unit_price: item.unit_price,
           total_price: item.total_price,
