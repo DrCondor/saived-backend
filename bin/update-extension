@@ -9,7 +9,7 @@ NC='\033[0m' # No Color
 BACKEND_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 EXTENSION_DIR="$BACKEND_DIR/../saived-extension"
 VERSION_FILE="$BACKEND_DIR/config/initializers/extension_version.rb"
-ZIP_PATH="$BACKEND_DIR/public/downloads/saived-extension.zip"
+DOWNLOADS_DIR="$BACKEND_DIR/public/downloads"
 
 echo -e "${YELLOW}🔄 Aktualizacja wtyczki SAIVED${NC}"
 echo ""
@@ -20,28 +20,36 @@ if [ ! -d "$EXTENSION_DIR" ]; then
   exit 1
 fi
 
-# 2. Create ZIP with all extension files
-echo -e "${GREEN}📦 Tworzenie ZIP...${NC}"
-rm -f "$ZIP_PATH"
-
-# Create zip from extension directory (preserves folder structure for lib/)
+# 2. Build both browser versions
+echo -e "${GREEN}🔨 Budowanie wersji Chrome i Firefox...${NC}"
 cd "$EXTENSION_DIR"
-zip -r "$ZIP_PATH" \
-  manifest.json \
-  popup.html \
-  popup.js \
-  content-script.js \
-  logo.jpg \
-  icon48.png \
-  icon96.png \
-  icon128.png \
-  lib/
-
-cd "$BACKEND_DIR"
-echo "   Utworzono: $ZIP_PATH"
+npm run build
 echo ""
 
-# 3. Bump version
+# 3. Create ZIP files from dist folders
+echo -e "${GREEN}📦 Tworzenie plików ZIP...${NC}"
+mkdir -p "$DOWNLOADS_DIR"
+
+# Chrome ZIP
+rm -f "$DOWNLOADS_DIR/saived-extension-chrome.zip"
+cd "$EXTENSION_DIR/dist/chrome"
+zip -r "$DOWNLOADS_DIR/saived-extension-chrome.zip" .
+echo "   ✓ saived-extension-chrome.zip"
+
+# Firefox ZIP
+rm -f "$DOWNLOADS_DIR/saived-extension-firefox.zip"
+cd "$EXTENSION_DIR/dist/firefox"
+zip -r "$DOWNLOADS_DIR/saived-extension-firefox.zip" .
+echo "   ✓ saived-extension-firefox.zip"
+
+# Legacy single ZIP (keep for backwards compat, points to Chrome version)
+cp "$DOWNLOADS_DIR/saived-extension-chrome.zip" "$DOWNLOADS_DIR/saived-extension.zip"
+echo "   ✓ saived-extension.zip (Chrome copy)"
+
+cd "$BACKEND_DIR"
+echo ""
+
+# 4. Bump version
 echo -e "${GREEN}⬆️  Bumpowanie wersji...${NC}"
 CURRENT_VERSION=$(grep -o 'EXTENSION_VERSION = [0-9]*' "$VERSION_FILE" | grep -o '[0-9]*')
 NEW_VERSION=$((CURRENT_VERSION + 1))
@@ -52,6 +60,6 @@ echo ""
 echo -e "${GREEN}✅ Gotowe! Wtyczka zaktualizowana do v$NEW_VERSION${NC}"
 echo ""
 echo "Następne kroki:"
-echo "  git add public/downloads/saived-extension.zip config/initializers/extension_version.rb"
+echo "  git add public/downloads/ config/initializers/extension_version.rb"
 echo "  git commit -m 'chore: update extension to v$NEW_VERSION'"
 echo "  git push && fly deploy"

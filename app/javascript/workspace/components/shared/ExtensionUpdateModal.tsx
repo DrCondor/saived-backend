@@ -257,7 +257,7 @@ export default function ExtensionUpdateModal({
             Później
           </button>
           <a
-            href="/downloads/saived-extension.zip"
+            href={browser === 'firefox' ? '/downloads/saived-extension-firefox.zip' : '/downloads/saived-extension-chrome.zip'}
             download
             onClick={onDismiss}
             className="flex-1 px-4 py-2.5 bg-emerald-500 text-white rounded-xl font-medium hover:bg-emerald-600 transition-colors flex items-center justify-center gap-2"
