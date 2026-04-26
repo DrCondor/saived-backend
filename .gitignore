@@ -44,3 +44,6 @@ coverage/
 # Claude Code local settings (per-developer, not committed)
 .claude/settings.local.json
 
+# Claude Code local audit logs (committed: .gitkeep only)
+.claude/logs/*.jsonl
+
