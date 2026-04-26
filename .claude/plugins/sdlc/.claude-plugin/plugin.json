@@ -1,0 +1,6 @@
+{
+  "name": "sdlc",
+  "version": "0.1.0",
+  "description": "SAIVED SDLC workflow skills: TDD, PR with dynamic checklist, parallel agents, verification, retro, debug",
+  "author": "Konrad Smolinski"
+}
