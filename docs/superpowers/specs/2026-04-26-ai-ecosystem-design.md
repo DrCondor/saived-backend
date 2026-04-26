@@ -429,14 +429,15 @@ All under `saived-backend/.github/workflows/`:
     "PreToolUse": [
       {
         "matcher": "Bash",
-        "command": ".claude/hooks/pre_bash_guard.sh"
+        "hooks": [
+          { "type": "command", "command": ".claude/hooks/pre_bash_guard.sh" }
+        ]
       }
     ],
     "PostToolUse": [
-      {
-        "matcher": "*",
-        "command": ".claude/hooks/audit_log.sh"
-      }
+      { "matcher": "Bash",  "hooks": [ { "type": "command", "command": ".claude/hooks/audit_log.sh" } ] },
+      { "matcher": "Edit",  "hooks": [ { "type": "command", "command": ".claude/hooks/audit_log.sh" } ] },
+      { "matcher": "Write", "hooks": [ { "type": "command", "command": ".claude/hooks/audit_log.sh" } ] }
     ]
   }
 }

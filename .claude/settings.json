@@ -50,7 +50,19 @@
     ],
     "PostToolUse": [
       {
-        "matcher": "Bash|Edit|Write",
+        "matcher": "Bash",
+        "hooks": [
+          { "type": "command", "command": ".claude/hooks/audit_log.sh" }
+        ]
+      },
+      {
+        "matcher": "Edit",
+        "hooks": [
+          { "type": "command", "command": ".claude/hooks/audit_log.sh" }
+        ]
+      },
+      {
+        "matcher": "Write",
         "hooks": [
           { "type": "command", "command": ".claude/hooks/audit_log.sh" }
         ]
