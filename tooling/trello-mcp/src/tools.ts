@@ -2,22 +2,38 @@ import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { TrelloClient } from "./trello-client.js";
 
+type ToolResult = {
+  content: { type: "text"; text: string }[];
+  isError?: boolean;
+};
+
+function ok(text: string): ToolResult {
+  return { content: [{ type: "text", text }] };
+}
+
+function err(e: unknown): ToolResult {
+  const msg = e instanceof Error ? e.message : String(e);
+  return { content: [{ type: "text", text: `Error: ${msg}` }], isError: true };
+}
+
 export function registerTools(server: McpServer, client: TrelloClient) {
   server.tool(
     "trello_list_cards",
     "List cards in a Trello list (by list name).",
     { list_name: z.string().describe("Name of the Trello list, e.g. 'To Do'") },
     async ({ list_name }) => {
-      const cards = await client.listCards(list_name);
-      const summary = cards.map((c) => ({
-        id: c.id,
-        name: c.name,
-        url: c.url,
-        labels: c.labels.map((l) => l.name),
-      }));
-      return {
-        content: [{ type: "text", text: JSON.stringify(summary, null, 2) }],
-      };
+      try {
+        const cards = await client.listCards(list_name);
+        const summary = cards.map((c) => ({
+          id: c.id,
+          name: c.name,
+          url: c.url,
+          labels: c.labels.map((l) => l.name),
+        }));
+        return ok(JSON.stringify(summary, null, 2));
+      } catch (e) {
+        return err(e);
+      }
     },
   );
 
@@ -26,10 +42,12 @@ export function registerTools(server: McpServer, client: TrelloClient) {
     "Get full details of a Trello card including comments.",
     { card_id: z.string().describe("Trello card ID") },
     async ({ card_id }) => {
-      const card = await client.getCard(card_id);
-      return {
-        content: [{ type: "text", text: JSON.stringify(card, null, 2) }],
-      };
+      try {
+        const card = await client.getCard(card_id);
+        return ok(JSON.stringify(card, null, 2));
+      } catch (e) {
+        return err(e);
+      }
     },
   );
 
@@ -41,8 +59,12 @@ export function registerTools(server: McpServer, client: TrelloClient) {
       target_list: z.string().describe("Name of target list, e.g. 'In Progress'"),
     },
     async ({ card_id, target_list }) => {
-      await client.moveCard(card_id, target_list);
-      return { content: [{ type: "text", text: `moved ${card_id} → ${target_list}` }] };
+      try {
+        await client.moveCard(card_id, target_list);
+        return ok(`moved ${card_id} → ${target_list}`);
+      } catch (e) {
+        return err(e);
+      }
     },
   );
 
@@ -51,8 +73,12 @@ export function registerTools(server: McpServer, client: TrelloClient) {
     "Post a comment on a Trello card.",
     { card_id: z.string(), text: z.string() },
     async ({ card_id, text }) => {
-      const r = await client.commentCard(card_id, text);
-      return { content: [{ type: "text", text: `comment ${r.id}` }] };
+      try {
+        const r = await client.commentCard(card_id, text);
+        return ok(`comment ${r.id}`);
+      } catch (e) {
+        return err(e);
+      }
     },
   );
 
@@ -61,8 +87,12 @@ export function registerTools(server: McpServer, client: TrelloClient) {
     "Summary of the configured board: list names with card counts.",
     {},
     async () => {
-      const s = await client.getBoardSummary();
-      return { content: [{ type: "text", text: JSON.stringify(s, null, 2) }] };
+      try {
+        const s = await client.getBoardSummary();
+        return ok(JSON.stringify(s, null, 2));
+      } catch (e) {
+        return err(e);
+      }
     },
   );
 }

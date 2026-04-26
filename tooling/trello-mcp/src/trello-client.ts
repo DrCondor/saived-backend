@@ -22,6 +22,8 @@ export interface TrelloComment {
   author: string;
 }
 
+type RequestParams = Record<string, string>;
+
 export class TrelloClient {
   private key: string;
   private token: string;
@@ -37,8 +39,15 @@ export class TrelloClient {
     this.boardId = boardId;
   }
 
-  private async request<T>(path: string, init: RequestInit = {}): Promise<T> {
+  private async request<T>(
+    path: string,
+    params: RequestParams = {},
+    init: RequestInit = {},
+  ): Promise<T> {
     const url = new URL(`${BASE}${path}`);
+    for (const [k, v] of Object.entries(params)) {
+      url.searchParams.set(k, v);
+    }
     url.searchParams.set("key", this.key);
     url.searchParams.set("token", this.token);
 
@@ -50,6 +59,7 @@ export class TrelloClient {
         if (res.status === 429) {
           await sleep(2000 * Math.pow(2, attempt));
           attempt++;
+          lastErr = new Error("Trello 429: rate limited");
           continue;
         }
         if (!res.ok) {
@@ -62,7 +72,7 @@ export class TrelloClient {
         await sleep(500 * attempt);
       }
     }
-    throw lastErr;
+    throw lastErr ?? new Error("Trello request failed: max retries exceeded");
   }
 
   async getLists(): Promise<TrelloList[]> {
@@ -90,13 +100,14 @@ export class TrelloClient {
     const card = await this.request<TrelloCard>(`/cards/${cardId}`);
     type Action = { id: string; date: string; data: { text?: string }; memberCreator: { fullName: string } };
     const actions = await this.request<Action[]>(
-      `/cards/${cardId}/actions?filter=commentCard`,
+      `/cards/${cardId}/actions`,
+      { filter: "commentCard" },
     );
     const comments: TrelloComment[] = actions
-      .filter((a) => a.data?.text)
+      .filter((a): a is Action & { data: { text: string } } => typeof a.data?.text === "string" && a.data.text.length > 0)
       .map((a) => ({
         id: a.id,
-        text: a.data.text!,
+        text: a.data.text,
         date: a.date,
         author: a.memberCreator.fullName,
       }));
@@ -105,12 +116,13 @@ export class TrelloClient {
 
   async moveCard(cardId: string, targetListName: string): Promise<void> {
     const targetId = await this.listIdByName(targetListName);
-    await this.request(`/cards/${cardId}?idList=${targetId}`, { method: "PUT" });
+    await this.request(`/cards/${cardId}`, { idList: targetId }, { method: "PUT" });
   }
 
   async commentCard(cardId: string, text: string): Promise<{ id: string }> {
     const r = await this.request<{ id: string }>(
-      `/cards/${cardId}/actions/comments?text=${encodeURIComponent(text)}`,
+      `/cards/${cardId}/actions/comments`,
+      { text },
       { method: "POST" },
     );
     return { id: r.id };
