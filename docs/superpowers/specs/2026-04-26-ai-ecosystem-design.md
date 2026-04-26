@@ -395,7 +395,7 @@ All under `saived-backend/.github/workflows/`:
 |---|---|---|
 | `claude-review.yml` | `issue_comment` containing `@claude` on PR | Run `anthropics/claude-code-action@v1` with `ANTHROPIC_API_KEY` secret. Posts review comments back. |
 | `trello-sync.yml` | `pull_request: closed` AND `merged == true` | 1) Parse `Trello-Card: <id>` regex from PR body. 2) PUT `https://api.trello.com/1/cards/<id>?idList=<DONE_LIST_ID>`. 3) POST comment with merged commit URL. Uses `TRELLO_KEY`/`TRELLO_TOKEN` org secrets. |
-| `deploy.yml` | `push` to `main` | `flyctl deploy` using `FLY_API_TOKEN` secret. Posts release URL to merged PR. |
+| `deploy.yml` | `push` to `main` | `flyctl deploy --remote-only` using `FLY_API_TOKEN` secret. Release URL surfaced via Fly.io dashboard / `fly releases list`; not posted back to PR (kept simple for demo). |
 
 **Existing `ci.yml`** stays unchanged.
 
@@ -497,7 +497,7 @@ GitHub Actions:
     ▼
 GitHub Actions on merge:
     ├── trello-sync.yml → MCP-equivalent → card "Done" + commit comment
-    └── deploy.yml → fly deploy → release URL posted to PR
+    └── deploy.yml → fly deploy (release viewable via fly releases list)
     │
     🛑 GATE 4 — HUMAN TICKS POST-MERGE CHECKLIST
        smoke test prod, verify logs, confirm rollback command

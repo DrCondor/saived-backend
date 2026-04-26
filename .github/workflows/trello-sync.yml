@@ -18,9 +18,10 @@ jobs:
     steps:
       - name: Extract Trello card ID
         id: extract
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
         run: |
-          body="${{ github.event.pull_request.body }}"
-          card_id=$(printf '%s' "$body" | grep -oE 'Trello-Card:[[:space:]]*[A-Za-z0-9]+' | head -1 | awk '{print $2}')
+          card_id=$(printf '%s' "$PR_BODY" | grep -oE 'Trello-Card:[[:space:]]*[A-Za-z0-9]+' | head -1 | awk '{print $2}')
           if [ -z "$card_id" ]; then
             echo "No Trello-Card line in PR body — skipping."
             echo "card_id=" >> "$GITHUB_OUTPUT"
@@ -30,12 +31,18 @@ jobs:
 
       - name: Move card to Done
         if: steps.extract.outputs.card_id != ''
+        env:
+          CARD_ID: ${{ steps.extract.outputs.card_id }}
         run: |
-          curl -fsSL -X PUT "https://api.trello.com/1/cards/${{ steps.extract.outputs.card_id }}?idList=${TRELLO_DONE_LIST_ID}&key=${TRELLO_KEY}&token=${TRELLO_TOKEN}"
+          curl -fsSL -X PUT "https://api.trello.com/1/cards/${CARD_ID}?idList=${TRELLO_DONE_LIST_ID}&key=${TRELLO_KEY}&token=${TRELLO_TOKEN}" >/dev/null
 
       - name: Post merge comment
         if: steps.extract.outputs.card_id != ''
+        env:
+          CARD_ID: ${{ steps.extract.outputs.card_id }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
         run: |
-          msg="✅ Merged: ${{ github.event.pull_request.html_url }} (commit ${{ github.event.pull_request.merge_commit_sha }})"
-          curl -fsSL -X POST "https://api.trello.com/1/cards/${{ steps.extract.outputs.card_id }}/actions/comments?key=${TRELLO_KEY}&token=${TRELLO_TOKEN}" \
-            --data-urlencode "text=${msg}"
+          msg="✅ Merged: ${PR_URL} (commit ${MERGE_SHA})"
+          curl -fsSL -X POST "https://api.trello.com/1/cards/${CARD_ID}/actions/comments?key=${TRELLO_KEY}&token=${TRELLO_TOKEN}" \
+            --data-urlencode "text=${msg}" >/dev/null
