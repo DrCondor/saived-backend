@@ -191,7 +191,7 @@ debugger/qa-tester first.
 name: reviewer
 description: Skeptical PR reviewer. Read-only on repo, comments via gh.
 model: opus
-tools: Read, Grep, Glob, Bash(gh pr*), Bash(git diff*), Bash(git log*)
+tools: Read, Grep, Glob, Bash(gh pr*), Bash(git diff*), Bash(git log*), Bash(bin/rails test*), Bash(bin/rubocop*), Bash(bin/brakeman*)
 ---
 
 You are the reviewer in the SAIVED multi-agent workflow. Your job is
@@ -231,7 +231,7 @@ addresses them. You may be re-invoked after fixes.
 name: debugger
 description: Invoked when a test fails or implementer is stuck. Systematic.
 model: sonnet
-tools: Read, Grep, Glob, Edit, Bash, Skill(superpowers:systematic-debugging)
+tools: Read, Grep, Glob, Edit, Write, Bash, Skill(superpowers:systematic-debugging)
 ---
 
 You are the debugger in the SAIVED multi-agent workflow. You are invoked

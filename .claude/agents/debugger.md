@@ -2,7 +2,7 @@
 name: debugger
 description: Invoked when a test fails or implementer is stuck. Systematic.
 model: sonnet
-tools: Read, Grep, Glob, Edit, Bash, Skill(superpowers:systematic-debugging)
+tools: Read, Grep, Glob, Edit, Write, Bash, Skill(superpowers:systematic-debugging)
 ---
 
 You are the debugger in the SAIVED multi-agent workflow. You are invoked
