@@ -1,0 +1,41 @@
+name: Trello sync on merge
+
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  pull-requests: read
+
+jobs:
+  sync:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    env:
+      TRELLO_KEY: ${{ secrets.TRELLO_KEY }}
+      TRELLO_TOKEN: ${{ secrets.TRELLO_TOKEN }}
+      TRELLO_DONE_LIST_ID: ${{ vars.TRELLO_DONE_LIST_ID }}
+    steps:
+      - name: Extract Trello card ID
+        id: extract
+        run: |
+          body="${{ github.event.pull_request.body }}"
+          card_id=$(printf '%s' "$body" | grep -oE 'Trello-Card:[[:space:]]*[A-Za-z0-9]+' | head -1 | awk '{print $2}')
+          if [ -z "$card_id" ]; then
+            echo "No Trello-Card line in PR body — skipping."
+            echo "card_id=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "card_id=$card_id" >> "$GITHUB_OUTPUT"
+
+      - name: Move card to Done
+        if: steps.extract.outputs.card_id != ''
+        run: |
+          curl -fsSL -X PUT "https://api.trello.com/1/cards/${{ steps.extract.outputs.card_id }}?idList=${TRELLO_DONE_LIST_ID}&key=${TRELLO_KEY}&token=${TRELLO_TOKEN}"
+
+      - name: Post merge comment
+        if: steps.extract.outputs.card_id != ''
+        run: |
+          msg="✅ Merged: ${{ github.event.pull_request.html_url }} (commit ${{ github.event.pull_request.merge_commit_sha }})"
+          curl -fsSL -X POST "https://api.trello.com/1/cards/${{ steps.extract.outputs.card_id }}/actions/comments?key=${TRELLO_KEY}&token=${TRELLO_TOKEN}" \
+            --data-urlencode "text=${msg}"
