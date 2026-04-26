@@ -1,0 +1,6 @@
+{
+  "name": "trellosync",
+  "version": "0.1.0",
+  "description": "Trello ↔ git/opsx synchronization skills for SAIVED",
+  "author": "Konrad Smolinski"
+}
