@@ -550,3 +550,46 @@ curl -X PUT "https://api.trello.com/1/cards/CARD_ID?idList=LIST_ID&idMembers=MEM
 - UI is in Polish (target market)
 - Code comments often in Polish
 - Currency default: PLN
+
+## AI-driven workflow
+
+This repo uses Claude Code as the primary code-production mechanism. The setup is documented in detail in `docs/superpowers/specs/2026-04-26-ai-ecosystem-design.md`. Quick reference:
+
+### Subagents (`.claude/agents/`)
+- `architect` (opus) — writes opsx specs, never code
+- `implementer` (sonnet) — writes code under TDD, never specs
+- `reviewer` (opus) — read-only PR review via `gh`
+- `debugger` (sonnet) — invoked on stuck/failing tests, systematic methodology
+- `qa-tester` (sonnet) — adds tests, never edits prod code
+
+### Plugins
+- `opsx` — OpenSpec workflow (existing)
+- `sdlc` — TDD, PR (with dynamic checklist), parallel, verification, retro, debug
+- `trellosync` — start, ship, backlog, comment
+
+### MCP servers
+- `trello` — `tooling/trello-mcp/`, project-scoped via `.mcp.json`. Requires `TRELLO_KEY` and `TRELLO_TOKEN` in shell env (sourced from `~/.trello_credentials`).
+
+### Workflow
+
+1. `/trellosync:backlog` → see "To Do"
+2. `/trellosync:start <CARD_ID>` → branch + opsx scaffold + card moved
+3. **architect** → /opsx:explore + /opsx:propose → human reviews proposal (Gate 1)
+4. **implementer** → /sdlc:tdd + /opsx:apply → human reviews diff (Gate 2)
+5. /sdlc:verification → all gates green
+6. /sdlc:pr → PR with dynamic checklist
+7. **reviewer** triggered via `@claude` PR comment
+8. Human ticks pre-merge checklist + merges (Gate 3)
+9. CI: trello-sync.yml moves card to Done; deploy.yml ships to Fly.io
+10. Human ticks post-merge checklist (Gate 4)
+11. /opsx:archive + optional /sdlc:retro
+
+### Guardrails
+
+- `.claude/settings.json` — allow/deny permissions
+- `.claude/hooks/pre_bash_guard.sh` — blocks destructive commands
+- `.claude/hooks/audit_log.sh` — every tool call logged to `.claude/logs/`
+
+### Onboarding
+
+Run `/opsx:onboard` for a guided walkthrough. Read this section, then read the design spec.
