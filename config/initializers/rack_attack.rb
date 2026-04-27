@@ -48,13 +48,13 @@ class Rack::Attack
     [
       429,
       headers,
-      ["Rate limit exceeded. Please wait before retrying.\n"]
+      [ "Rate limit exceeded. Please wait before retrying.\n" ]
     ]
   end
 
   # Custom response for blocked requests
   self.blocklisted_responder = lambda do |env|
-    [403, { "Content-Type" => "text/plain" }, ["Access denied.\n"]]
+    [ 403, { "Content-Type" => "text/plain" }, [ "Access denied.\n" ] ]
   end
 end
 

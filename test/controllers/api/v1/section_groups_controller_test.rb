@@ -43,6 +43,7 @@ class Api::V1::SectionGroupsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create sets position automatically" do
+    @project.section_groups.destroy_all
     create(:section_group, project: @project, position: 5)
 
     post api_v1_project_section_groups_path(@project),

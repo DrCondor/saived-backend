@@ -45,10 +45,10 @@ ActiveAdmin.register DomainSelector do
     column "Confidence" do |ds|
       confidence = ds.confidence
       css = case confidence
-            when 0.7..1.0 then "confidence-high"
-            when 0.4..0.7 then "confidence-medium"
-            else "confidence-low"
-            end
+      when 0.7..1.0 then "confidence-high"
+      when 0.4..0.7 then "confidence-medium"
+      else "confidence-low"
+      end
       span "#{(confidence * 100).round(1)}%", class: css
     end
     column :discovery_method do |ds|
@@ -74,10 +74,10 @@ ActiveAdmin.register DomainSelector do
       row "Confidence" do |ds|
         confidence = ds.confidence
         css = case confidence
-              when 0.7..1.0 then "confidence-high"
-              when 0.4..0.7 then "confidence-medium"
-              else "confidence-low"
-              end
+        when 0.7..1.0 then "confidence-high"
+        when 0.4..0.7 then "confidence-medium"
+        else "confidence-low"
+        end
         span "#{(confidence * 100).round(2)}%", class: css
       end
       row :discovery_method do |ds|
@@ -103,10 +103,10 @@ ActiveAdmin.register DomainSelector do
           column("Confidence") do |ds|
             confidence = ds.confidence
             css = case confidence
-                  when 0.7..1.0 then "confidence-high"
-                  when 0.4..0.7 then "confidence-medium"
-                  else "confidence-low"
-                  end
+            when 0.7..1.0 then "confidence-high"
+            when 0.4..0.7 then "confidence-medium"
+            else "confidence-low"
+            end
             span "#{(confidence * 100).round(1)}%", class: css
           end
           column("") { |ds| link_to "View", admin_domain_selector_path(ds) }

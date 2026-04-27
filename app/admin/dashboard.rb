@@ -162,10 +162,10 @@ ActiveAdmin.register_page "Dashboard" do
       return "-" if confidence.nil? || confidence.zero?
 
       css_class = case confidence
-                  when 0.7..1.0 then "confidence-high"
-                  when 0.4..0.7 then "confidence-medium"
-                  else "confidence-low"
-                  end
+      when 0.7..1.0 then "confidence-high"
+      when 0.4..0.7 then "confidence-medium"
+      else "confidence-low"
+      end
       helpers.content_tag(:span, "#{(confidence * 100).round(1)}%", class: css_class)
     end
   end

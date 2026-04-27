@@ -550,3 +550,47 @@ curl -X PUT "https://api.trello.com/1/cards/CARD_ID?idList=LIST_ID&idMembers=MEM
 - UI is in Polish (target market)
 - Code comments often in Polish
 - Currency default: PLN
+
+## AI-driven workflow
+
+This repo uses Claude Code as the primary code-production mechanism. The setup is documented in detail in `docs/superpowers/specs/2026-04-26-ai-ecosystem-design.md`. Quick reference:
+
+### Subagents (`.claude/agents/`)
+- `architect` (opus) — writes opsx specs, never code
+- `implementer` (sonnet) — writes code under TDD, never specs
+- `reviewer` (opus) — read-only PR review via `gh`
+- `debugger` (sonnet) — invoked on stuck/failing tests, systematic methodology
+- `qa-tester` (sonnet) — adds tests, never edits prod code
+
+### Plugins
+- `opsx` — OpenSpec workflow (existing)
+- `saived` (formerly `sdlc`) — TDD, PR (with dynamic checklist), parallel, verification, retro, debug
+- `trellosync` — backlog, refine, start, ship, comment
+
+### MCP servers
+- `trello` — `tooling/trello-mcp/`, project-scoped via `.mcp.json`. Reads `TRELLO_KEY` / `TRELLO_TOKEN` from shell env or, as a fallback, from `~/.trello_credentials` directly (so it works even when CC was launched without sourcing the creds).
+
+### Workflow
+
+1. `/trellosync:backlog` → see "To Do"
+2. `/trellosync:refine <CARD_ID>` → architect-style clarification posted back to Trello as a comment (acceptance criteria, scope, out-of-scope, open questions, risks). PM reviews on Trello. **No branch yet.**
+3. `/trellosync:start <CARD_ID>` → branch + opsx scaffold + card moved to "In Progress"
+4. **architect** → /opsx:explore + /opsx:propose → human reviews proposal (Gate 1)
+5. **implementer** → /saived:tdd + /opsx:apply → human reviews diff (Gate 2)
+6. /saived:verification → all gates green
+7. /saived:pr → PR with dynamic checklist
+8. **reviewer** subagent invoked from CC (uses subscription auth, no API key) — posts review comments via `gh pr comment`
+9. Human ticks pre-merge checklist + merges (Gate 3)
+10. CI: trello-sync.yml moves card to Done; deploy.yml ships to Fly.io
+11. Human ticks post-merge checklist (Gate 4)
+12. /opsx:archive + optional /saived:retro
+
+### Guardrails
+
+- `.claude/settings.json` — allow/deny permissions
+- `.claude/hooks/pre_bash_guard.sh` — blocks destructive commands
+- `.claude/hooks/audit_log.sh` — every tool call logged to `.claude/logs/`
+
+### Onboarding
+
+Run `/opsx:onboard` for a guided walkthrough. Read this section, then read the design spec.

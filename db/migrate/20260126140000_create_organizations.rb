@@ -16,7 +16,7 @@ class CreateOrganizations < ActiveRecord::Migration[7.2]
     User.reset_column_information
 
     # Users with company_name
-    User.where.not(company_name: [nil, ""]).find_each do |user|
+    User.where.not(company_name: [ nil, "" ]).find_each do |user|
       org = Organization.create!(name: user.company_name)
       user.update_column(:organization_id, org.id)
 
@@ -27,7 +27,7 @@ class CreateOrganizations < ActiveRecord::Migration[7.2]
     end
 
     # Users with logo but no company_name
-    User.where(company_name: [nil, ""]).find_each do |user|
+    User.where(company_name: [ nil, "" ]).find_each do |user|
       next unless user.respond_to?(:company_logo) && user.company_logo.attached?
       org = Organization.create!(name: nil)
       user.update_column(:organization_id, org.id)
