@@ -15,6 +15,7 @@ module Api
               favorite: project.favorite,
               position: project.position,
               total_price: project.total_price,
+              is_owner: project.owner_id == current_user.id,
               section_groups: project.section_groups.order(:position, :created_at).map { |group|
                 {
                   id: group.id,
@@ -138,6 +139,30 @@ module Api
         render json: { error: "Not found" }, status: :not_found
       end
 
+      # POST /api/v1/projects/:id/duplicate
+      def duplicate
+        # brakeman:safe-by-design — intentional unscoped find to distinguish
+        # 404 (foreign/nonexistent project) from 403 (non-owner member).
+        # Access control is enforced below via membership check + owner_id comparison.
+        project = Project.find(params[:id]) # rubocop:disable CodeReuse/ActiveRecord
+
+        # Foreign project (no membership at all) → 404
+        is_member = project.users.exists?(id: current_user.id)
+        raise ActiveRecord::RecordNotFound unless is_member
+
+        # Non-owner member (editor/viewer) → 403
+        unless project.owner_id == current_user.id
+          return render json: { error: "Forbidden" }, status: :forbidden
+        end
+
+        new_project = Projects::Duplicator.new(project, current_user).call
+        render json: project_json(new_project), status: :created
+      rescue ActiveRecord::RecordNotFound
+        render json: { error: "Not found" }, status: :not_found
+      rescue ActiveRecord::RecordInvalid => e
+        render json: { errors: e.record.errors.full_messages }, status: :unprocessable_entity
+      end
+
       # POST /api/v1/projects/:id/reorder
       # Handles item reordering within sections and moving between sections
       # Also handles section reordering
@@ -217,6 +242,7 @@ module Api
           favorite: project.favorite,
           position: project.position,
           total_price: project.total_price,
+          is_owner: project.owner_id == current_user.id,
           section_groups: project.section_groups.order(:position, :created_at).map { |group|
             {
               id: group.id,

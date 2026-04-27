@@ -34,6 +34,9 @@ class Project < ApplicationRecord
   private
 
   def create_default_section
+    # Thread-local flag suppresses this callback during Projects::Duplicator#call
+    # to prevent a stray empty section. The flag is set/cleared with ensure in the service.
+    return if Thread.current[:saived_skip_default_section]
     sections.create!(name: "Nowa sekcja", position: 1)
   end
 end

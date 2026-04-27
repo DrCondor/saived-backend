@@ -71,6 +71,10 @@ export async function reorderProjects(
   });
 }
 
+export async function duplicateProject(id: number): Promise<Project> {
+  return apiClient<Project>(`/projects/${id}/duplicate`, { method: 'POST' });
+}
+
 export async function downloadPdf(
   projectId: number,
   itemIds: number[]

@@ -70,7 +70,7 @@ describe('useCreateProject', () => {
   });
 
   it('creates project successfully', async () => {
-    const newProject = { id: 3, name: 'New Project', favorite: false, position: 2, total_price: 0, sections: [] };
+    const newProject = { id: 3, name: 'New Project', favorite: false, position: 2, total_price: 0, is_owner: true, section_groups: [], sections: [] };
     mockedApi.createProject.mockResolvedValueOnce(newProject);
     mockedApi.fetchProjects.mockResolvedValueOnce([...mockProjects, newProject]);
 

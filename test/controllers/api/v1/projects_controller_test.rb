@@ -358,4 +358,87 @@ class Api::V1::ProjectsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :not_found
   end
+
+  # ============================================================
+  # DUPLICATE
+  # ============================================================
+
+  test "duplicate returns 201 and new project JSON for owner" do
+    post duplicate_api_v1_project_path(@project), headers: auth_headers(@user)
+
+    assert_response :created
+    assert_equal "#{@project.name} (kopia)", json_response["name"]
+    assert json_response.key?("sections")
+    assert json_response.key?("is_owner")
+    assert_equal true, json_response["is_owner"]
+  end
+
+  test "duplicate returns 401 without auth" do
+    post duplicate_api_v1_project_path(@project)
+    assert_response :unauthorized
+  end
+
+  test "duplicate returns 403 for editor member" do
+    other_user = create(:user)
+    @project.project_memberships.create!(user: other_user, role: "editor")
+
+    post duplicate_api_v1_project_path(@project), headers: auth_headers(other_user)
+
+    assert_response :forbidden
+  end
+
+  test "duplicate returns 403 for viewer member" do
+    other_user = create(:user)
+    @project.project_memberships.create!(user: other_user, role: "viewer")
+
+    post duplicate_api_v1_project_path(@project), headers: auth_headers(other_user)
+
+    assert_response :forbidden
+  end
+
+  test "duplicate returns 404 for foreign project" do
+    other_user = create(:user)
+    other_project = create(:project, owner: other_user)
+
+    post duplicate_api_v1_project_path(other_project), headers: auth_headers(@user)
+
+    assert_response :not_found
+  end
+
+  test "duplicate returns 404 for non-existent project id" do
+    post duplicate_api_v1_project_path(id: 999999), headers: auth_headers(@user)
+    assert_response :not_found
+  end
+
+  test "duplicate creates a new project" do
+    assert_difference "Project.count", 1 do
+      post duplicate_api_v1_project_path(@project), headers: auth_headers(@user)
+    end
+  end
+
+  # ============================================================
+  # IS_OWNER FIELD
+  # ============================================================
+
+  test "index includes is_owner true for owned project" do
+    get api_v1_projects_path, headers: auth_headers(@user)
+
+    assert_response :success
+    project_json = json_response["projects"].find { |p| p["id"] == @project.id }
+    assert_not_nil project_json
+    assert_equal true, project_json["is_owner"]
+  end
+
+  test "index includes is_owner false for member-only project" do
+    other_user = create(:user)
+    other_project = create(:project, owner: other_user)
+    other_project.project_memberships.create!(user: @user, role: "editor")
+
+    get api_v1_projects_path, headers: auth_headers(@user)
+
+    assert_response :success
+    member_project_json = json_response["projects"].find { |p| p["id"] == other_project.id }
+    assert_not_nil member_project_json
+    assert_equal false, member_project_json["is_owner"]
+  end
 end

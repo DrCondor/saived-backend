@@ -1,0 +1,22 @@
+{
+  "ignored_warnings": [
+    {
+      "warning_type": "Unscoped Find",
+      "warning_code": 82,
+      "fingerprint": "e73ac7a49e4d081fd8feca033049222a0445c88944e04e82a4b176042a68efd1",
+      "check_name": "UnscopedFind",
+      "message": "Unscoped call to `Project#find`",
+      "file": "app/controllers/api/v1/projects_controller.rb",
+      "line": 147,
+      "code": "Project.find(params[:id])",
+      "location": {
+        "type": "method",
+        "class": "Api::V1::ProjectsController",
+        "method": "duplicate"
+      },
+      "user_input": "params[:id]",
+      "confidence": "Weak",
+      "note": "Safe by design: intentional unscoped find in the duplicate action to distinguish 404 (foreign/nonexistent project) from 403 (non-owner member). Access is immediately controlled by membership check (project.users.exists?) + owner_id comparison before any mutation occurs."
+    }
+  ]
+}

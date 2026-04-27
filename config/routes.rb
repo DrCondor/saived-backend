@@ -61,6 +61,8 @@ Rails.application.routes.draw do
         post :toggle_favorite, on: :member
         # PDF generation
         post :pdf, on: :member
+        # Duplicate project
+        post :duplicate, on: :member
       end
 
       # Reorder all projects

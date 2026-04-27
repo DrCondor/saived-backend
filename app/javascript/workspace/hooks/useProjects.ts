@@ -6,9 +6,10 @@ import {
   deleteProject,
   toggleFavorite,
   reorderProjects,
+  duplicateProject,
 } from '../api/projects';
 import { useOptionalUndoRedo } from '../contexts/UndoRedoContext';
-import type { CreateProjectInput, UpdateProjectInput, ProjectListItem } from '../types';
+import type { CreateProjectInput, UpdateProjectInput, ProjectListItem, Project } from '../types';
 
 export function useProjects() {
   return useQuery({
@@ -128,6 +129,17 @@ export function useToggleFavorite() {
       });
     },
     onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+    },
+  });
+}
+
+export function useDuplicateProject() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: number) => duplicateProject(id),
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projects'] });
     },
   });
