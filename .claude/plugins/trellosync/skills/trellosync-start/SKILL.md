@@ -14,6 +14,20 @@ description: Use when starting work on a Trello card. Pulls card, creates branch
 
 Call MCP tool: `trello_get_card(card_id)`. If not found, halt with the Trello error verbatim.
 
+### 1a. Refinement gate (MANDATORY)
+
+A card is **not ready to start** unless it has been refined. Check `card.desc`:
+
+- If `card.desc` is empty, whitespace-only, or shorter than 200 characters, **HALT immediately** before any branch/scaffold work.
+- If `card.desc` is missing the marker `## Acceptance criteria` (case-insensitive), **HALT immediately**.
+
+On halt, output verbatim:
+
+> Card has no refined description (or it's too thin / missing acceptance criteria).
+> Run `/trellosync:refine <CARD_ID>` first so PM can review the clarified scope on Trello, then re-run `/trellosync:start <CARD_ID>`.
+
+Do **not** create a branch, do **not** scaffold opsx, do **not** move the card. The user may explicitly override with "skip refinement" — only then proceed.
+
 ### 2. Derive a slug
 
 From the card name, lowercase, kebab-case, max 40 chars, alphanumeric + `-`.
