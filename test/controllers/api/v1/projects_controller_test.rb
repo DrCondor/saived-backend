@@ -358,4 +358,115 @@ class Api::V1::ProjectsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :not_found
   end
+
+  # ============================================================
+  # IS_OWNER in index + show (task 4.1)
+  # ============================================================
+
+  test "index includes is_owner true for own project" do
+    get api_v1_projects_path, headers: auth_headers(@user)
+    assert_response :success
+    project_data = json_response["projects"].find { |p| p["id"] == @project.id }
+    assert_equal true, project_data["is_owner"]
+  end
+
+  test "index includes is_owner false for member project" do
+    other_owner = create(:user)
+    member_project = create(:project, owner: other_owner)
+    member_project.project_memberships.create!(user: @user, role: "editor")
+
+    get api_v1_projects_path, headers: auth_headers(@user)
+    assert_response :success
+    project_data = json_response["projects"].find { |p| p["id"] == member_project.id }
+    assert_equal false, project_data["is_owner"]
+  end
+
+  test "show includes is_owner true for own project" do
+    get api_v1_project_path(@project), headers: auth_headers(@user)
+    assert_response :success
+    assert_equal true, json_response["is_owner"]
+  end
+
+  test "show includes is_owner false for member project" do
+    other_owner = create(:user)
+    member_project = create(:project, owner: other_owner)
+    member_project.project_memberships.create!(user: @user, role: "editor")
+
+    get api_v1_project_path(member_project), headers: auth_headers(@user)
+    assert_response :success
+    assert_equal false, json_response["is_owner"]
+  end
+
+  # ============================================================
+  # DUPLICATE (tasks 5.7 – 5.11)
+  # ============================================================
+
+  test "duplicate returns 401 without auth" do
+    post duplicate_api_v1_project_path(@project)
+    assert_response :unauthorized
+  end
+
+  test "duplicate returns 201 with new project JSON for owner" do
+    assert_difference "Project.count", 1 do
+      post duplicate_api_v1_project_path(@project), headers: auth_headers(@user)
+    end
+
+    assert_response :created
+    assert_equal "Kopia: #{@project.name}", json_response["name"]
+    assert json_response.key?("sections")
+    assert json_response.key?("is_owner")
+    assert_equal true, json_response["is_owner"]
+  end
+
+  test "duplicate creates a new project with Kopia: prefix" do
+    post duplicate_api_v1_project_path(@project), headers: auth_headers(@user)
+    new_project = Project.last
+    assert_equal "Kopia: #{@project.name}", new_project.name
+  end
+
+  test "duplicate returns 403 for editor member" do
+    other_owner = create(:user)
+    their_project = create(:project, owner: other_owner)
+    their_project.project_memberships.create!(user: @user, role: "editor")
+
+    post duplicate_api_v1_project_path(their_project), headers: auth_headers(@user)
+    assert_response :forbidden
+    assert_equal "Forbidden", json_response["error"]
+  end
+
+  test "duplicate returns 403 for viewer member" do
+    other_owner = create(:user)
+    their_project = create(:project, owner: other_owner)
+    their_project.project_memberships.create!(user: @user, role: "viewer")
+
+    post duplicate_api_v1_project_path(their_project), headers: auth_headers(@user)
+    assert_response :forbidden
+  end
+
+  test "duplicate returns 404 when project not visible to current user" do
+    other_user = create(:user)
+    invisible_project = create(:project, owner: other_user)
+
+    post duplicate_api_v1_project_path(invisible_project), headers: auth_headers(@user)
+    assert_response :not_found
+  end
+
+  test "duplicate called twice creates two distinct duplicates" do
+    post duplicate_api_v1_project_path(@project), headers: auth_headers(@user)
+    first_id = json_response["id"]
+
+    post duplicate_api_v1_project_path(@project), headers: auth_headers(@user)
+    second_id = json_response["id"]
+
+    assert_not_equal first_id, second_id
+    assert_equal "Kopia: #{@project.name}", Project.find(first_id).name
+    assert_equal "Kopia: #{@project.name}", Project.find(second_id).name
+  end
+
+  test "duplicate response includes sections" do
+    post duplicate_api_v1_project_path(@project), headers: auth_headers(@user)
+    assert_response :created
+    # @project has 1 default section; duplicate should too
+    assert_equal 1, json_response["sections"].length
+  end
 end

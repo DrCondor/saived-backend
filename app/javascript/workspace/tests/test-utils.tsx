@@ -58,9 +58,11 @@ export const mockProjects = [
     favorite: false,
     position: 0,
     total_price: 5000,
+    is_owner: true,
+    section_groups: [],
     sections: [
-      { id: 1, name: 'Meble', position: 0 },
-      { id: 2, name: 'Oswietlenie', position: 1 },
+      { id: 1, name: 'Meble', position: 0, section_group_id: null },
+      { id: 2, name: 'Oswietlenie', position: 1, section_group_id: null },
     ],
   },
   {
@@ -69,7 +71,9 @@ export const mockProjects = [
     favorite: true,
     position: 1,
     total_price: 12000,
-    sections: [{ id: 3, name: 'Sprzety', position: 0 }],
+    is_owner: true,
+    section_groups: [],
+    sections: [{ id: 3, name: 'Sprzety', position: 0, section_group_id: null }],
   },
 ];
 

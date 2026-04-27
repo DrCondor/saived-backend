@@ -15,6 +15,7 @@ module Api
               favorite: project.favorite,
               position: project.position,
               total_price: project.total_price,
+              is_owner: project.owner_id == current_user.id,
               section_groups: project.section_groups.order(:position, :created_at).map { |group|
                 {
                   id: group.id,
@@ -112,6 +113,27 @@ module Api
             }
           }
         }
+      rescue ActiveRecord::RecordNotFound
+        render json: { error: "Not found" }, status: :not_found
+      rescue ActiveRecord::RecordInvalid => e
+        render json: { errors: e.record.errors.full_messages }, status: :unprocessable_entity
+      end
+
+      # POST /api/v1/projects/:id/duplicate
+      def duplicate
+        source = current_user.projects.find(params[:id])
+
+        if source.owner_id != current_user.id
+          render json: { error: "Forbidden" }, status: :forbidden
+          return
+        end
+
+        new_project = ProjectDuplicator.new(source, current_user).call
+        new_project = current_user.projects
+                                  .includes(:section_groups, sections: { items: { attachment_attachment: :blob } })
+                                  .find(new_project.id)
+
+        render json: project_json(new_project), status: :created
       rescue ActiveRecord::RecordNotFound
         render json: { error: "Not found" }, status: :not_found
       rescue ActiveRecord::RecordInvalid => e
@@ -217,6 +239,7 @@ module Api
           favorite: project.favorite,
           position: project.position,
           total_price: project.total_price,
+          is_owner: project.owner_id == current_user.id,
           section_groups: project.section_groups.order(:position, :created_at).map { |group|
             {
               id: group.id,
