@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "trello": {
+      "command": "node",
+      "args": ["./tooling/trello-mcp/dist/index.js"],
+      "env": {
+        "TRELLO_KEY": "${TRELLO_KEY}",
+        "TRELLO_TOKEN": "${TRELLO_TOKEN}",
+        "TRELLO_BOARD_ID": "6963562a6d9c4475295fc205"
+      }
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "name": "saived",
+  "owner": {
+    "name": "SAIVED"
+  },
+  "plugins": [
+    {
+      "name": "saived",
+      "source": "./saived",
+      "description": "SAIVED SDLC workflow skills: TDD, PR with dynamic checklist, parallel agents, verification, retro, debug"
+    },
+    {
+      "name": "trellosync",
+      "source": "./trellosync",
+      "description": "SAIVED Trello sync skills: start, ship, backlog, comment"
+    }
+  ]
+}

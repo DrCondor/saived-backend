@@ -191,7 +191,7 @@ debugger/qa-tester first.
 name: reviewer
 description: Skeptical PR reviewer. Read-only on repo, comments via gh.
 model: opus
-tools: Read, Grep, Glob, Bash(gh pr*), Bash(git diff*), Bash(git log*)
+tools: Read, Grep, Glob, Bash(gh pr*), Bash(git diff*), Bash(git log*), Bash(bin/rails test*), Bash(bin/rubocop*), Bash(bin/brakeman*)
 ---
 
 You are the reviewer in the SAIVED multi-agent workflow. Your job is
@@ -231,7 +231,7 @@ addresses them. You may be re-invoked after fixes.
 name: debugger
 description: Invoked when a test fails or implementer is stuck. Systematic.
 model: sonnet
-tools: Read, Grep, Glob, Edit, Bash, Skill(superpowers:systematic-debugging)
+tools: Read, Grep, Glob, Edit, Write, Bash, Skill(superpowers:systematic-debugging)
 ---
 
 You are the debugger in the SAIVED multi-agent workflow. You are invoked
@@ -395,7 +395,7 @@ All under `saived-backend/.github/workflows/`:
 |---|---|---|
 | `claude-review.yml` | `issue_comment` containing `@claude` on PR | Run `anthropics/claude-code-action@v1` with `ANTHROPIC_API_KEY` secret. Posts review comments back. |
 | `trello-sync.yml` | `pull_request: closed` AND `merged == true` | 1) Parse `Trello-Card: <id>` regex from PR body. 2) PUT `https://api.trello.com/1/cards/<id>?idList=<DONE_LIST_ID>`. 3) POST comment with merged commit URL. Uses `TRELLO_KEY`/`TRELLO_TOKEN` org secrets. |
-| `deploy.yml` | `push` to `main` | `flyctl deploy` using `FLY_API_TOKEN` secret. Posts release URL to merged PR. |
+| `deploy.yml` | `push` to `main` | `flyctl deploy --remote-only` using `FLY_API_TOKEN` secret. Release URL surfaced via Fly.io dashboard / `fly releases list`; not posted back to PR (kept simple for demo). |
 
 **Existing `ci.yml`** stays unchanged.
 
@@ -429,14 +429,15 @@ All under `saived-backend/.github/workflows/`:
     "PreToolUse": [
       {
         "matcher": "Bash",
-        "command": ".claude/hooks/pre_bash_guard.sh"
+        "hooks": [
+          { "type": "command", "command": ".claude/hooks/pre_bash_guard.sh" }
+        ]
       }
     ],
     "PostToolUse": [
-      {
-        "matcher": "*",
-        "command": ".claude/hooks/audit_log.sh"
-      }
+      { "matcher": "Bash",  "hooks": [ { "type": "command", "command": ".claude/hooks/audit_log.sh" } ] },
+      { "matcher": "Edit",  "hooks": [ { "type": "command", "command": ".claude/hooks/audit_log.sh" } ] },
+      { "matcher": "Write", "hooks": [ { "type": "command", "command": ".claude/hooks/audit_log.sh" } ] }
     ]
   }
 }
@@ -496,7 +497,7 @@ GitHub Actions:
     ▼
 GitHub Actions on merge:
     ├── trello-sync.yml → MCP-equivalent → card "Done" + commit comment
-    └── deploy.yml → fly deploy → release URL posted to PR
+    └── deploy.yml → fly deploy (release viewable via fly releases list)
     │
     🛑 GATE 4 — HUMAN TICKS POST-MERGE CHECKLIST
        smoke test prod, verify logs, confirm rollback command

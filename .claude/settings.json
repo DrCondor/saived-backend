@@ -1,0 +1,89 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bin/rails test*)",
+      "Bash(bin/rails routes*)",
+      "Bash(bin/rails db:migrate*)",
+      "Bash(bin/rails db:rollback*)",
+      "Bash(bin/rubocop*)",
+      "Bash(bin/brakeman*)",
+      "Bash(bin/setup*)",
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git add*)",
+      "Bash(git commit*)",
+      "Bash(git checkout*)",
+      "Bash(git branch*)",
+      "Bash(git push*)",
+      "Bash(git worktree*)",
+      "Bash(gh pr*)",
+      "Bash(gh run*)",
+      "Bash(gh issue*)",
+      "Bash(npm run*)",
+      "Bash(npm install*)",
+      "Bash(yarn*)",
+      "Bash(node *)",
+      "Bash(jq *)",
+      "Bash(curl *)"
+    ],
+    "deny": [
+      "Bash(bin/rails db:reset*)",
+      "Bash(bin/rails db:drop*)",
+      "Bash(rm -rf*)",
+      "Bash(git push --force*main*)",
+      "Bash(git push -f*main*)",
+      "Read(.env*)",
+      "Read(**/trello_credentials*)",
+      "Read(**/.fly.toml.secrets)",
+      "Read(**/*.pem)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/pre_bash_guard.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/audit_log.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/audit_log.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/audit_log.sh"
+          }
+        ]
+      }
+    ]
+  },
+  "enabledPlugins": {
+    "sdlc@terro": true,
+    "saived@saived": true,
+    "trellosync@saived": true
+  }
+}
