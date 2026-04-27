@@ -25,6 +25,9 @@ class Project < ApplicationRecord
 
   validates :name, presence: true
 
+  # Set skip_default_section = true before save to suppress this callback during duplication
+  attr_accessor :skip_default_section
+
   after_create :create_default_section
 
   def total_price
@@ -34,6 +37,7 @@ class Project < ApplicationRecord
   private
 
   def create_default_section
+    return if skip_default_section
     sections.create!(name: "Nowa sekcja", position: 1)
   end
 end

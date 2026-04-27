@@ -145,6 +145,7 @@ export interface Project {
   favorite: boolean;
   position: number;
   total_price: number;
+  is_owner: boolean;
   section_groups: SectionGroup[];
   sections: ProjectSection[];
 }
@@ -155,6 +156,7 @@ export interface ProjectListItem {
   favorite: boolean;
   position: number;
   total_price: number;
+  is_owner: boolean;
   section_groups: SectionGroup[];
   sections: Array<{ id: number; name: string; position: number; section_group_id: number | null }>;
 }

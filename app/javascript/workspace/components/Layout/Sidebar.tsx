@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
 import type { ProjectListItem, Project } from '../../types';
-import { useToggleFavorite, useReorderProjects, useDeleteProject } from '../../hooks/useProjects';
+import { useToggleFavorite, useReorderProjects, useDeleteProject, useDuplicateProject } from '../../hooks/useProjects';
 import { reorderProject as reorderProjectApi } from '../../api/projects';
 import { useQueryClient } from '@tanstack/react-query';
 import { formatCurrency } from '../../utils/formatters';
@@ -382,6 +382,7 @@ export default function Sidebar({
   const toggleFavorite = useToggleFavorite();
   const reorderProjects = useReorderProjects();
   const deleteProject = useDeleteProject();
+  const duplicateProject = useDuplicateProject();
 
   // Local state for DnD
   const [localProjects, setLocalProjects] = useState(projects);
@@ -472,6 +473,18 @@ export default function Sidebar({
     }
     setContextMenu((prev) => ({ ...prev, visible: false }));
   }, [contextMenu.projectId, projects, deleteProject, currentProjectId, navigate]);
+
+  const handleDuplicateProject = useCallback(async () => {
+    const projectId = contextMenu.projectId;
+    setContextMenu((prev) => ({ ...prev, visible: false }));
+    if (!projectId) return;
+    try {
+      const newProject = await duplicateProject.mutateAsync(projectId);
+      navigate(`/workspace/projects/${newProject.id}`);
+    } catch {
+      // errors are handled by the mutation's onError; nothing extra needed here
+    }
+  }, [contextMenu.projectId, duplicateProject, navigate]);
 
   const queryClient = useQueryClient();
 
@@ -894,6 +907,23 @@ export default function Sidebar({
           </button>
 
           <div className="h-px bg-border-subtle my-1" />
+
+          {contextMenuProject.is_owner && (
+            <button
+              onClick={handleDuplicateProject}
+              className="flex items-center gap-2.5 w-full px-3 py-2 text-sm text-text-secondary hover:bg-surface-hover transition-colors"
+            >
+              <svg className="w-4 h-4 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                />
+              </svg>
+              Duplikuj
+            </button>
+          )}
 
           <button
             onClick={handleDeleteProject}
