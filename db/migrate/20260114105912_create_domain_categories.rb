@@ -9,7 +9,7 @@ class CreateDomainCategories < ActiveRecord::Migration[7.2]
       t.datetime :last_seen_at
       t.timestamps
 
-      t.index [:domain, :category_value], unique: true
+      t.index [ :domain, :category_value ], unique: true
       t.index :domain
     end
   end

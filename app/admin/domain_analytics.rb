@@ -104,10 +104,10 @@ ActiveAdmin.register_page "Domain Analytics" do
       return nil if confidence.nil?
 
       css = case confidence
-            when 0.7..1.0 then "confidence-high"
-            when 0.4..0.7 then "confidence-medium"
-            else "confidence-low"
-            end
+      when 0.7..1.0 then "confidence-high"
+      when 0.4..0.7 then "confidence-medium"
+      else "confidence-low"
+      end
       helpers.content_tag(:span, "#{(confidence * 100).round(0)}%", class: css)
     end
   end
