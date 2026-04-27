@@ -27,7 +27,7 @@ For each slice `<S>` in the proposal:
 2. **Dispatch implementer agent** in that worktree, with the proposal section for `<S>` as input. Use the `Task` tool with `subagent_type: implementer`. Give it:
    - Path to the worktree
    - The slice section of the proposal
-   - Instruction: "implement only this slice, do not touch other paths, run sdlc:tdd then sdlc:verification before claiming done"
+   - Instruction: "implement only this slice, do not touch other paths, run saived:tdd then saived:verification before claiming done"
 
 3. **Wait** for all implementers to report back.
 

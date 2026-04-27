@@ -17,7 +17,7 @@ description: Use AFTER opening a PR for a feature branch. Posts PR link to Trell
 gh pr view --json number,url,title,body
 ```
 
-If no PR: halt with "Open a PR first via /sdlc:pr."
+If no PR: halt with "Open a PR first via /saived:pr."
 
 ### 2. Extract card ID
 

@@ -1,6 +1,6 @@
 ---
 name: sdlc-pr
-description: Use AFTER sdlc:verification passes, to open a GitHub PR with a context-aware checklist. The checklist adapts to what the diff touched.
+description: Use AFTER saived:verification passes, to open a GitHub PR with a context-aware checklist. The checklist adapts to what the diff touched.
 ---
 
 # SAIVED PR Creation

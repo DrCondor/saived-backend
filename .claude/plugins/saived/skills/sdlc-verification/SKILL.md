@@ -58,7 +58,7 @@ bin/rails test:system
 After running, post a summary as plain text:
 
 ```
-sdlc:verification
+saived:verification
 - rails test: PASS (224 runs, 0 fail)
 - rubocop:    PASS
 - brakeman:   PASS (0 new)

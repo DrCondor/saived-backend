@@ -44,7 +44,10 @@
       {
         "matcher": "Bash",
         "hooks": [
-          { "type": "command", "command": ".claude/hooks/pre_bash_guard.sh" }
+          {
+            "type": "command",
+            "command": ".claude/hooks/pre_bash_guard.sh"
+          }
         ]
       }
     ],
@@ -52,21 +55,35 @@
       {
         "matcher": "Bash",
         "hooks": [
-          { "type": "command", "command": ".claude/hooks/audit_log.sh" }
+          {
+            "type": "command",
+            "command": ".claude/hooks/audit_log.sh"
+          }
         ]
       },
       {
         "matcher": "Edit",
         "hooks": [
-          { "type": "command", "command": ".claude/hooks/audit_log.sh" }
+          {
+            "type": "command",
+            "command": ".claude/hooks/audit_log.sh"
+          }
         ]
       },
       {
         "matcher": "Write",
         "hooks": [
-          { "type": "command", "command": ".claude/hooks/audit_log.sh" }
+          {
+            "type": "command",
+            "command": ".claude/hooks/audit_log.sh"
+          }
         ]
       }
     ]
+  },
+  "enabledPlugins": {
+    "sdlc@terro": true,
+    "saived@saived": true,
+    "trellosync@saived": true
   }
 }
