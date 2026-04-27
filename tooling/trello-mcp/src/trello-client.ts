@@ -119,6 +119,10 @@ export class TrelloClient {
     await this.request(`/cards/${cardId}`, { idList: targetId }, { method: "PUT" });
   }
 
+  async updateCardDescription(cardId: string, desc: string): Promise<void> {
+    await this.request(`/cards/${cardId}`, { desc }, { method: "PUT" });
+  }
+
   async commentCard(cardId: string, text: string): Promise<{ id: string }> {
     const r = await this.request<{ id: string }>(
       `/cards/${cardId}/actions/comments`,

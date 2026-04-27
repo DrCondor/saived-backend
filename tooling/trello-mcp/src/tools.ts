@@ -69,6 +69,20 @@ export function registerTools(server: McpServer, client: TrelloClient) {
   );
 
   server.tool(
+    "trello_update_card_description",
+    "Replace a Trello card's description (overwrites existing). Use for refined specs that should live as the canonical card body, not as a comment.",
+    { card_id: z.string(), desc: z.string().describe("New description (markdown supported)") },
+    async ({ card_id, desc }) => {
+      try {
+        await client.updateCardDescription(card_id, desc);
+        return ok(`description updated for ${card_id}`);
+      } catch (e) {
+        return err(e);
+      }
+    },
+  );
+
+  server.tool(
     "trello_comment_card",
     "Post a comment on a Trello card.",
     { card_id: z.string(), text: z.string() },

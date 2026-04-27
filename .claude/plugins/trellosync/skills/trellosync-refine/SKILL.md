@@ -10,7 +10,7 @@ Translate a loose ticket into a reviewable spec **on Trello itself**, before any
 ## Inputs
 - `<CARD_ID>` — Trello card short ID (e.g. `abc123XY`) OR full URL
 
-The refined spec is posted as a Trello **comment**, not written to the card description. This preserves the original PM-authored description as a verbatim record of the request, while the comment thread captures the evolution. The next agent (`trellosync-start`) will read both.
+The refined spec **replaces the card description** so the card itself becomes the production-ready brief. A short audit comment is also posted noting the agent + timestamp for traceability. The original (vague) description is intentionally not preserved — the card is the spec, not a history of how it got there.
 
 ## Protocol
 
@@ -36,37 +36,35 @@ If the card is **already well-formed** (has clear acceptance criteria + scope + 
 
 ### 4. Produce the refined spec
 
-Markdown structure (keep it tight — this is a Trello comment, not a novel):
+Markdown structure (this becomes the card description — keep it scannable but complete):
 
 ```markdown
-## 🎯 Refined by architect agent
-
-### Business context
+## Business context
 <2-3 sentences on why this matters and who benefits>
 
-### Acceptance criteria
+## Acceptance criteria
 - [ ] <testable criterion 1>
 - [ ] <testable criterion 2>
 - [ ] ...
 
-### Scope (in)
+## Scope (in)
 - <concrete deliverable>
 - ...
 
-### Out of scope (explicitly)
+## Out of scope (explicitly)
 - <what we are NOT doing — name it, don't say "nothing else">
 - ...
 
-### Open questions for PM
+## Open questions for PM
 - <ambiguity that needs human decision before development starts>
 - ...
 
-### Technical risks / notes
+## Technical risks / notes
 - <migration? new public route? PII surface? N+1 risk? cross-team impact?>
 - ...
 
-### Estimated decomposition
-<one of: "single slice", "2 parallel slices: A) backend ..., B) frontend ...", "3+ slices, candidate for /sdlc-parallel">
+## Estimated decomposition
+<one of: "single slice", "2 parallel slices: A) backend ..., B) frontend ...", "3+ slices, candidate for /saived:sdlc-parallel">
 ```
 
 **Hard rules for the refined spec:**
@@ -75,9 +73,17 @@ Markdown structure (keep it tight — this is a Trello comment, not a novel):
 - Open questions are encouraged — better to surface ambiguity than guess
 - If you cannot find ≥1 risk, say so explicitly ("No notable risks identified — pure-additive change") rather than inventing one
 
-### 5. Post the refined version to Trello
+### 5. Write the refined spec to the card
 
-Call MCP tool: `trello_comment_card(card_id, <refined_markdown>)`.
+Call MCP tool: `trello_update_card_description(card_id, <refined_markdown>)`.
+
+Then post a short audit comment so the change is traceable:
+
+```
+trello_comment_card(card_id, "🤖 Description refined by architect agent on YYYY-MM-DD. Open questions surfaced — see card body.")
+```
+
+If the description update fails: do NOT silently fall back to a comment. Halt with the Trello error and the full markdown printed so the human can paste it into the card manually. Description is the contract; a comment is not an acceptable substitute.
 
 ### 6. Halt — hand back to human
 
@@ -99,7 +105,8 @@ Refinement is a **standalone reviewable step**. The next move belongs to the hum
 |---|---|
 | Card not found | halt, surface Trello error |
 | Card already well-formed | halt with "already refined" message (see step 3) |
-| MCP comment fails | retry once, then halt and print the markdown so the human can paste it manually |
+| MCP description update fails | retry once, then halt with full markdown printed for manual paste — do NOT post as comment instead |
+| MCP audit comment fails | description update succeeded → continue, just note the audit comment failed |
 | Card has 5+ open questions | halt with "Card too vague for automated refinement — needs human PM input first" |
 | Codebase context contradicts card intent | flag in "Open questions for PM" section, do NOT silently override |
 
