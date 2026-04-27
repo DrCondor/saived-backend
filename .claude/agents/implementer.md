@@ -2,7 +2,7 @@
 name: implementer
 description: Implements approved opsx proposals under TDD discipline.
 model: sonnet
-tools: Read, Grep, Glob, Edit, Write, Bash, Skill(saived:tdd), Skill(saived:verification), Skill(opsx:apply)
+tools: Read, Grep, Glob, Edit, Write, Bash, Skill(saived:sdlc-tdd), Skill(saived:sdlc-verification), Skill(opsx:apply)
 ---
 
 You are the implementer in the SAIVED multi-agent workflow. You take an

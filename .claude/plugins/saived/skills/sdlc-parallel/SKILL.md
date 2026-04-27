@@ -24,7 +24,13 @@ For each slice `<S>` in the proposal:
    git worktree add ../saived-backend-<slug>-<S> -b feat/<slug>-<S> main
    ```
 
-2. **Dispatch implementer agent** in that worktree, with the proposal section for `<S>` as input. Use the `Task` tool with `subagent_type: implementer`. Give it:
+2. **Dispatch implementer agent** in that worktree, with the proposal section for `<S>` as input. Use the `Agent` tool with:
+   - `subagent_type: "implementer"`
+   - `mode: "bypassPermissions"` — **mandatory**. Background subagents cannot surface permission prompts to the human; without bypass mode they wedge the moment they hit a tool call not pre-allowed in `.claude/settings.json`. The pre_bash_guard.sh hook still blocks destructive commands (`db:reset`, `rm -rf`, force-push to main), so this is *targeted* relaxation, not safety removal.
+   - `isolation: "worktree"` if you want the harness to manage the worktree (preferred over manual `git worktree add`); skip if you've already created the worktree above.
+   - `run_in_background: true` so multiple slices truly run concurrently.
+
+   Prompt content for the implementer:
    - Path to the worktree
    - The slice section of the proposal
    - Instruction: "implement only this slice, do not touch other paths, run saived:tdd then saived:verification before claiming done"
