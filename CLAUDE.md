@@ -564,25 +564,26 @@ This repo uses Claude Code as the primary code-production mechanism. The setup i
 
 ### Plugins
 - `opsx` — OpenSpec workflow (existing)
-- `sdlc` — TDD, PR (with dynamic checklist), parallel, verification, retro, debug
-- `trellosync` — start, ship, backlog, comment
+- `saived` (formerly `sdlc`) — TDD, PR (with dynamic checklist), parallel, verification, retro, debug
+- `trellosync` — backlog, refine, start, ship, comment
 
 ### MCP servers
-- `trello` — `tooling/trello-mcp/`, project-scoped via `.mcp.json`. Requires `TRELLO_KEY` and `TRELLO_TOKEN` in shell env (sourced from `~/.trello_credentials`).
+- `trello` — `tooling/trello-mcp/`, project-scoped via `.mcp.json`. Reads `TRELLO_KEY` / `TRELLO_TOKEN` from shell env or, as a fallback, from `~/.trello_credentials` directly (so it works even when CC was launched without sourcing the creds).
 
 ### Workflow
 
 1. `/trellosync:backlog` → see "To Do"
-2. `/trellosync:start <CARD_ID>` → branch + opsx scaffold + card moved
-3. **architect** → /opsx:explore + /opsx:propose → human reviews proposal (Gate 1)
-4. **implementer** → /sdlc:tdd + /opsx:apply → human reviews diff (Gate 2)
-5. /sdlc:verification → all gates green
-6. /sdlc:pr → PR with dynamic checklist
-7. **reviewer** triggered via `@claude` PR comment
-8. Human ticks pre-merge checklist + merges (Gate 3)
-9. CI: trello-sync.yml moves card to Done; deploy.yml ships to Fly.io
-10. Human ticks post-merge checklist (Gate 4)
-11. /opsx:archive + optional /sdlc:retro
+2. `/trellosync:refine <CARD_ID>` → architect-style clarification posted back to Trello as a comment (acceptance criteria, scope, out-of-scope, open questions, risks). PM reviews on Trello. **No branch yet.**
+3. `/trellosync:start <CARD_ID>` → branch + opsx scaffold + card moved to "In Progress"
+4. **architect** → /opsx:explore + /opsx:propose → human reviews proposal (Gate 1)
+5. **implementer** → /saived:tdd + /opsx:apply → human reviews diff (Gate 2)
+6. /saived:verification → all gates green
+7. /saived:pr → PR with dynamic checklist
+8. **reviewer** subagent invoked from CC (uses subscription auth, no API key) — posts review comments via `gh pr comment`
+9. Human ticks pre-merge checklist + merges (Gate 3)
+10. CI: trello-sync.yml moves card to Done; deploy.yml ships to Fly.io
+11. Human ticks post-merge checklist (Gate 4)
+12. /opsx:archive + optional /saived:retro
 
 ### Guardrails
 
